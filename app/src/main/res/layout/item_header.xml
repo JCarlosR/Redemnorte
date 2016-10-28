@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.v7.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:card_view="http://schemas.android.com/tools"
+    android:id="@+id/cardView"
+    card_view:cardCornerRadius="4dp"
+    android:layout_width="match_parent"
+    android:layout_height="105dp"
+    android:layout_margin="5dp">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:gravity="center">
+
+        <TextView
+            android:id="@+id/headerCode"
+            android:textColor="@color/colorAccent"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="1000001" />
+
+        <TextView
+            android:id="@+id/responsibleName"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textAppearance="@android:style/TextAppearance"
+            android:text="Juan Ramos" />
+
+        <TextView
+            android:id="@+id/headerDate"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="27 de Octubre del 2016"/>
+
+
+    </LinearLayout>
+
+</android.support.v7.widget.CardView>
