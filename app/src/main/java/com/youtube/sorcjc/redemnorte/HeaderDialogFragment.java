@@ -2,6 +2,7 @@ package com.youtube.sorcjc.redemnorte;
 
 import android.app.Dialog;
 import android.os.Bundle;
+import android.support.design.widget.TextInputLayout;
 import android.support.v4.app.DialogFragment;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
@@ -13,9 +14,16 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
+import android.widget.EditText;
 import android.widget.Toast;
 
+import org.w3c.dom.Text;
+
 public class HeaderDialogFragment extends DialogFragment {
+
+    private EditText etLocal, etUbicacion, etCargo, etDependencia, etAmbiente, etArea;
+    private TextInputLayout tilLocal, tilUbicacion, tilCargo, tilDependencia, tilAmbiente, tilArea;
+
     /** The system calls this to get the DialogFragment's layout, regardless
      of whether it's being displayed as a dialog or an embedded fragment. */
     @Override
@@ -37,6 +45,20 @@ public class HeaderDialogFragment extends DialogFragment {
             actionBar.setHomeAsUpIndicator(android.R.drawable.ic_menu_close_clear_cancel);
         }
         setHasOptionsMenu(true);
+
+        etLocal = (EditText) view.findViewById(R.id.etLocal);
+        etUbicacion = (EditText) view.findViewById(R.id.etUbicacion);
+        etCargo = (EditText) view.findViewById(R.id.etCargo);
+        etDependencia = (EditText) view.findViewById(R.id.etDependencia);
+        etAmbiente = (EditText) view.findViewById(R.id.etAmbiente);
+        etArea = (EditText) view.findViewById(R.id.etArea);
+
+        tilLocal = (TextInputLayout) view.findViewById(R.id.tilLocal);
+        tilUbicacion = (TextInputLayout) view.findViewById(R.id.tilUbicacion);
+        tilCargo = (TextInputLayout) view.findViewById(R.id.tilCargo);
+        tilDependencia = (TextInputLayout) view.findViewById(R.id.tilDependencia);
+        tilAmbiente = (TextInputLayout) view.findViewById(R.id.tilAmbiente);
+        tilArea = (TextInputLayout) view.findViewById(R.id.tilArea);
 
         return view;
     }
@@ -63,7 +85,7 @@ public class HeaderDialogFragment extends DialogFragment {
         int id = item.getItemId();
 
         if (id == R.id.save) {
-            Toast.makeText(getContext(), "Realizar petición", Toast.LENGTH_SHORT).show();
+            validateForm();
             return true;
         } else if (id == android.R.id.home) {
             // handle close button click here
@@ -73,4 +95,40 @@ public class HeaderDialogFragment extends DialogFragment {
 
         return super.onOptionsItemSelected(item);
     }
+
+    private void validateForm() {
+        if (!validateEditText(etLocal, tilLocal, R.string.error_local)) {
+            return;
+        }
+
+        if (!validateEditText(etUbicacion, tilUbicacion, R.string.error_ubicacion)) {
+            return;
+        }
+
+        if (!validateEditText(etDependencia, tilDependencia, R.string.error_dependencia)) {
+            return;
+        }
+
+        if (!validateEditText(etAmbiente, tilAmbiente, R.string.error_ambiente)) {
+            return;
+        }
+
+        if (!validateEditText(etArea, tilArea, R.string.error_area)) {
+            return;
+        }
+
+        Toast.makeText(getContext(), "Realizar petición", Toast.LENGTH_SHORT).show();
+    }
+
+    private boolean validateEditText(EditText editText, TextInputLayout textInputLayout, int errorString) {
+        if (editText.getText().toString().trim().isEmpty()) {
+            textInputLayout.setError(getString(errorString));
+            return false;
+        } else {
+            textInputLayout.setErrorEnabled(false);
+        }
+
+        return true;
+    }
+
 }
