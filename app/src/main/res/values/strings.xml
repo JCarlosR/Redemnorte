@@ -1,3 +1,5 @@
 <resources>
     <string name="app_name">Redemnorte</string>
+
+    <string name="save_action">Guardar</string>
 </resources>
