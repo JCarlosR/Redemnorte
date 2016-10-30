@@ -22,6 +22,7 @@
             android:name=".PanelActivity"
             android:label="Hojas de inventario"
             android:theme="@style/AppTheme.NoActionBar" />
+        <activity android:name=".DetailsActivity"></activity>
     </application>
 
 </manifest>
