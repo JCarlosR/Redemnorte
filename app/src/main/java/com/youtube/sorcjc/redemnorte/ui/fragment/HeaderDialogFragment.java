@@ -1,4 +1,4 @@
-package com.youtube.sorcjc.redemnorte;
+package com.youtube.sorcjc.redemnorte.ui.fragment;
 
 import android.app.Dialog;
 import android.os.Bundle;
@@ -14,13 +14,21 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
+import android.widget.ArrayAdapter;
 import android.widget.EditText;
+import android.widget.Spinner;
 import android.widget.Toast;
+
+import com.youtube.sorcjc.redemnorte.R;
 
 import org.w3c.dom.Text;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class HeaderDialogFragment extends DialogFragment {
 
+    private Spinner spinnerResponsible;
     private EditText etLocal, etUbicacion, etCargo, etDependencia, etAmbiente, etArea;
     private TextInputLayout tilLocal, tilUbicacion, tilCargo, tilDependencia, tilAmbiente, tilArea;
 
@@ -59,6 +67,16 @@ public class HeaderDialogFragment extends DialogFragment {
         tilDependencia = (TextInputLayout) view.findViewById(R.id.tilDependencia);
         tilAmbiente = (TextInputLayout) view.findViewById(R.id.tilAmbiente);
         tilArea = (TextInputLayout) view.findViewById(R.id.tilArea);
+
+        spinnerResponsible = (Spinner) view.findViewById(R.id.spinnerResponsible);
+        List<String> list = new ArrayList<String>();
+        list.add("Usuario A");
+        list.add("Usuario B");
+        list.add("Usuario C");
+
+        ArrayAdapter<String> spinnerArrayAdapter = new ArrayAdapter<String>(getContext(), android.R.layout.simple_spinner_item, list);
+        spinnerArrayAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        spinnerResponsible.setAdapter(spinnerArrayAdapter);
 
         return view;
     }

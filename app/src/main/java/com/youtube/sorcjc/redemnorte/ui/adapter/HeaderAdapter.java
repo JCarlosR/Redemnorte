@@ -1,4 +1,4 @@
-package com.youtube.sorcjc.redemnorte;
+package com.youtube.sorcjc.redemnorte.ui.adapter;
 
 import android.content.Context;
 import android.content.Intent;
@@ -8,6 +8,10 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.TextView;
+
+import com.youtube.sorcjc.redemnorte.R;
+import com.youtube.sorcjc.redemnorte.model.Header;
+import com.youtube.sorcjc.redemnorte.ui.DetailsActivity;
 
 import java.util.ArrayList;
 
@@ -60,7 +64,7 @@ public class HeaderAdapter extends RecyclerView.Adapter<HeaderAdapter.ViewHolder
     }
 
     // Provide a suitable constructor (depends on the kind of dataset)
-    HeaderAdapter(ArrayList<Header> myDataset) {
+    public HeaderAdapter(ArrayList<Header> myDataset) {
         mDataset = myDataset;
     }
 

@@ -10,19 +10,22 @@
         android:label="@string/app_name"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".MainActivity">
+        <activity android:name=".ui.MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".SimpleScannerActivity" />
+        <activity android:name=".ui.SimpleScannerActivity" />
         <activity
-            android:name=".PanelActivity"
+            android:name=".ui.PanelActivity"
             android:label="Hojas de inventario"
             android:theme="@style/AppTheme.NoActionBar" />
-        <activity android:name=".DetailsActivity"></activity>
+        <activity
+            android:name=".ui.DetailsActivity"
+            android:parentActivityName=".ui.PanelActivity"
+            android:theme="@style/AppTheme.NoActionBar" />
     </application>
 
 </manifest>

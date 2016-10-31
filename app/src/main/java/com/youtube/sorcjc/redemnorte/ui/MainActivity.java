@@ -1,10 +1,12 @@
-package com.youtube.sorcjc.redemnorte;
+package com.youtube.sorcjc.redemnorte.ui;
 
 import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
+
+import com.youtube.sorcjc.redemnorte.R;
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener {
 

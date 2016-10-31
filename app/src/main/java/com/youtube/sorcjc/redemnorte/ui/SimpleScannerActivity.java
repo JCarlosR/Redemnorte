@@ -1,4 +1,4 @@
-package com.youtube.sorcjc.redemnorte;
+package com.youtube.sorcjc.redemnorte.ui;
 
 import android.media.Ringtone;
 import android.media.RingtoneManager;
@@ -7,6 +7,8 @@ import android.os.Bundle;
 import android.support.v4.app.DialogFragment;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
+
+import com.youtube.sorcjc.redemnorte.ui.fragment.MessageDialogFragment;
 
 import me.dm7.barcodescanner.zbar.Result;
 import me.dm7.barcodescanner.zbar.ZBarScannerView;

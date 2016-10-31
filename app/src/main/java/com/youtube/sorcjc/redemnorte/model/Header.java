@@ -1,4 +1,4 @@
-package com.youtube.sorcjc.redemnorte;
+package com.youtube.sorcjc.redemnorte.model;
 
 public class Header {
     private String headerCode;

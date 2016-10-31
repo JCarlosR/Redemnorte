@@ -1,4 +1,4 @@
-package com.youtube.sorcjc.redemnorte;
+package com.youtube.sorcjc.redemnorte.ui.fragment;
 
 import android.app.Dialog;
 import android.content.DialogInterface;
