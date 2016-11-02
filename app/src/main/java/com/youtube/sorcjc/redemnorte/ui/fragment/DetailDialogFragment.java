@@ -1,10 +1,14 @@
 package com.youtube.sorcjc.redemnorte.ui.fragment;
 
+import android.app.Activity;
 import android.app.Dialog;
+import android.content.DialogInterface;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.TextInputLayout;
 import android.support.v4.app.DialogFragment;
 import android.support.v7.app.ActionBar;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.LayoutInflater;
@@ -14,15 +18,32 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
+import android.widget.Button;
+import android.widget.CheckBox;
+import android.widget.CompoundButton;
 import android.widget.EditText;
+import android.widget.ImageButton;
+import android.widget.Spinner;
 import android.widget.Toast;
 
 import com.youtube.sorcjc.redemnorte.R;
+import com.youtube.sorcjc.redemnorte.ui.MainActivity;
+import com.youtube.sorcjc.redemnorte.ui.SimpleScannerActivity;
 
-public class DetailDialogFragment extends DialogFragment {
+public class DetailDialogFragment extends DialogFragment implements View.OnClickListener, CompoundButton.OnCheckedChangeListener {
 
-    private EditText etLocal, etUbicacion, etCargo, etDependencia, etAmbiente, etArea;
-    private TextInputLayout tilLocal, tilUbicacion, tilCargo, tilDependencia, tilAmbiente, tilArea;
+    private EditText etQR, etPatrimonial,
+            etDescription, etColor, etBrand, etModel, etSeries,
+            etDimLong, etDimWidth, etDimHigh,
+            etObservation;
+
+    private Spinner spinnerPreservation;
+    private CheckBox checkOperative, checkSurplus;
+
+    private TextInputLayout tilQR, tilPatrimonial,
+            tilDescription, tilColor, tilBrand, tilModel, tilSeries,
+            tilDimLong, tilDimWidth, tilDimHigh,
+            tilObservation;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -41,19 +62,39 @@ public class DetailDialogFragment extends DialogFragment {
         }
         setHasOptionsMenu(true);
 
-        etLocal = (EditText) view.findViewById(R.id.etLocal);
-        etUbicacion = (EditText) view.findViewById(R.id.etUbicacion);
-        etCargo = (EditText) view.findViewById(R.id.etCargo);
-        etDependencia = (EditText) view.findViewById(R.id.etDependencia);
-        etAmbiente = (EditText) view.findViewById(R.id.etAmbiente);
-        etArea = (EditText) view.findViewById(R.id.etArea);
+        etQR = (EditText) view.findViewById(R.id.etQR);
+        etPatrimonial = (EditText) view.findViewById(R.id.etPatrimonial);
+        etDescription = (EditText) view.findViewById(R.id.etDescription);
+        etColor = (EditText) view.findViewById(R.id.etColor);
+        etBrand = (EditText) view.findViewById(R.id.etBrand);
+        etModel = (EditText) view.findViewById(R.id.etModel);
+        etSeries = (EditText) view.findViewById(R.id.etSeries);
+        etDimLong = (EditText) view.findViewById(R.id.etDimLong);
+        etDimWidth = (EditText) view.findViewById(R.id.etDimWidth);
+        etDimHigh = (EditText) view.findViewById(R.id.etDimHigh);
+        etObservation = (EditText) view.findViewById(R.id.etObservation);
 
-        tilLocal = (TextInputLayout) view.findViewById(R.id.tilLocal);
-        tilUbicacion = (TextInputLayout) view.findViewById(R.id.tilUbicacion);
-        tilCargo = (TextInputLayout) view.findViewById(R.id.tilCargo);
-        tilDependencia = (TextInputLayout) view.findViewById(R.id.tilDependencia);
-        tilAmbiente = (TextInputLayout) view.findViewById(R.id.tilAmbiente);
-        tilArea = (TextInputLayout) view.findViewById(R.id.tilArea);
+        spinnerPreservation = (Spinner) view.findViewById(R.id.spinnerPreservation);
+        checkOperative = (CheckBox) view.findViewById(R.id.checkOperative);
+        checkSurplus = (CheckBox) view.findViewById(R.id.checkSurplus);
+        checkSurplus.setOnCheckedChangeListener(this);
+
+        tilQR = (TextInputLayout) view.findViewById(R.id.tilQR);
+        tilPatrimonial = (TextInputLayout) view.findViewById(R.id.tilPatrimonial);
+        tilDescription = (TextInputLayout) view.findViewById(R.id.tilDescription);
+        tilColor = (TextInputLayout) view.findViewById(R.id.tilColor);
+        tilBrand = (TextInputLayout) view.findViewById(R.id.tilBrand);
+        tilModel = (TextInputLayout) view.findViewById(R.id.tilModel);
+        tilSeries = (TextInputLayout) view.findViewById(R.id.tilSeries);
+        tilDimLong = (TextInputLayout) view.findViewById(R.id.tilDimLong);
+        tilDimWidth = (TextInputLayout) view.findViewById(R.id.tilDimWidth);
+        tilDimHigh = (TextInputLayout) view.findViewById(R.id.tilDimHigh);
+        tilObservation = (TextInputLayout) view.findViewById(R.id.tilObservation);
+
+        ImageButton btnCaptureQR = (ImageButton) view.findViewById(R.id.btnCaptureQR);
+        btnCaptureQR.setOnClickListener(this);
+        ImageButton btnCapturePatrimonial = (ImageButton) view.findViewById(R.id.btnCapturePatrimonial);
+        btnCapturePatrimonial.setOnClickListener(this);
 
         return view;
     }
@@ -88,24 +129,19 @@ public class DetailDialogFragment extends DialogFragment {
     }
 
     private void validateForm() {
-        if (!validateEditText(etLocal, tilLocal, R.string.error_local)) {
+        if (!validateEditText(etQR, tilQR, R.string.error_til_qr)) {
             return;
         }
 
-        if (!validateEditText(etUbicacion, tilUbicacion, R.string.error_ubicacion)) {
+        if (!validateEditText(etDescription, tilDescription, R.string.error_til_description)) {
             return;
         }
 
-        if (!validateEditText(etDependencia, tilDependencia, R.string.error_dependencia)) {
+        if (etPatrimonial.getText().toString().trim().isEmpty() && !checkSurplus.isChecked()) {
+            tilPatrimonial.setError("Escanea el código o declara que es un bien sobrante !");
             return;
-        }
-
-        if (!validateEditText(etAmbiente, tilAmbiente, R.string.error_ambiente)) {
-            return;
-        }
-
-        if (!validateEditText(etArea, tilArea, R.string.error_area)) {
-            return;
+        } else {
+            tilPatrimonial.setErrorEnabled(false);
         }
 
         Toast.makeText(getContext(), "Realizar petición", Toast.LENGTH_SHORT).show();
@@ -122,4 +158,53 @@ public class DetailDialogFragment extends DialogFragment {
         return true;
     }
 
+    @Override
+    public void onClick(View view) {
+        switch (view.getId()) {
+            case R.id.btnCaptureQR:
+                Intent intentQR = new Intent(getContext(), SimpleScannerActivity.class);
+                startActivityForResult(intentQR, 1);
+                break;
+            case R.id.btnCapturePatrimonial:
+                Intent intentPatrimonial = new Intent(getContext(), SimpleScannerActivity.class);
+                startActivityForResult(intentPatrimonial, 2);
+                break;
+        }
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        if (requestCode == 1) {
+            if (resultCode == Activity.RESULT_OK) {
+                final String result = data.getStringExtra("code");
+                etQR.setText(result);
+                Toast.makeText(getContext(), "Usa el botón del ojito para verificar que no se repita el QR.", Toast.LENGTH_SHORT).show();
+            }
+        } else if (requestCode == 2) {
+            if (resultCode == Activity.RESULT_OK) {
+                final String result = data.getStringExtra("code");
+                etPatrimonial.setText(result);
+                Toast.makeText(getContext(), "Usa el botón de la diana para buscar y traer datos.", Toast.LENGTH_SHORT).show();
+            }
+        }
+    }
+
+    @Override
+    public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
+        // checkSurplus
+        if (b) {
+            AlertDialog alertDialog = new AlertDialog.Builder(getContext()).create();
+            alertDialog.setTitle("Importante");
+            alertDialog.setMessage("Un bien sobrante es aquel que no tiene código patrimonial asignado. Si no estás seguro, comunícate con tu superior.");
+            alertDialog.setButton(AlertDialog.BUTTON_POSITIVE, "Ok",
+                    new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int which) {
+                            dialog.dismiss();
+                        }
+                    });
+            alertDialog.show();
+        }
+    }
 }

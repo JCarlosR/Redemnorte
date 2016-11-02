@@ -8,7 +8,9 @@ import android.support.v7.app.AlertDialog;
 
 public class MessageDialogFragment extends DialogFragment {
     public interface MessageDialogListener {
-        public void onDialogPositiveClick(DialogFragment dialog);
+        void onDialogPositiveClick(DialogFragment dialog);
+        void onDialogNeutralClick(DialogFragment dialog);
+        void onDialogNegativeClick(DialogFragment dialog);
     }
 
     private String mTitle;
@@ -34,10 +36,24 @@ public class MessageDialogFragment extends DialogFragment {
         builder.setMessage(mMessage)
                 .setTitle(mTitle);
 
-        builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+        builder.setPositiveButton("Usar código", new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int id) {
-                if(mListener != null) {
+                if (mListener != null) {
                     mListener.onDialogPositiveClick(MessageDialogFragment.this);
+                }
+            }
+        });
+        builder.setNeutralButton("Volver a tomar", new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int id) {
+                if (mListener != null) {
+                    mListener.onDialogNeutralClick(MessageDialogFragment.this);
+                }
+            }
+        });
+        builder.setNegativeButton("Cancelar", new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int id) {
+                if (mListener != null) {
+                    mListener.onDialogNegativeClick(MessageDialogFragment.this);
                 }
             }
         });

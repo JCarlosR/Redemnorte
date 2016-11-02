@@ -5,6 +5,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
+import android.widget.Toast;
 
 import com.youtube.sorcjc.redemnorte.R;
 
@@ -16,11 +17,11 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        Button btnCaptureCode = (Button) findViewById(R.id.btnCaptureCode);
-        btnCaptureCode.setOnClickListener(this);
-
         Button btnLogin = (Button) findViewById(R.id.btnLogin);
         btnLogin.setOnClickListener(this);
+
+        Button btnCall = (Button) findViewById(R.id.btnCall);
+        btnCall.setOnClickListener(this);
     }
 
     @Override
@@ -30,9 +31,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 Intent intentPanel = new Intent(this, PanelActivity.class);
                 startActivity(intentPanel);
                 break;
-            case R.id.btnCaptureCode:
-                Intent intentScanner = new Intent(this, SimpleScannerActivity.class);
-                startActivity(intentScanner);
+            case R.id.btnCall:
+                Toast.makeText(this, "Are you serious?", Toast.LENGTH_SHORT).show();
                 break;
         }
     }

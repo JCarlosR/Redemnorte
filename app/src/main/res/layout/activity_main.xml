@@ -42,9 +42,9 @@
         android:text="Iniciar sesión"/>
 
     <Button
-        android:id="@+id/btnCaptureCode"
+        android:id="@+id/btnCall"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Capturar código QR"/>
+        android:text="Llamar a Alfaro"/>
 
 </LinearLayout>

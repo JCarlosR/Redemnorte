@@ -18,7 +18,7 @@
             android:textColor="@color/colorPrimary"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="1000001" />
+            android:text="HOJA 1000001" />
 
         <TextView
             android:id="@+id/responsibleName"
@@ -44,7 +44,7 @@
                 android:layout_width="0dp"
                 android:layout_weight="1"
                 android:layout_height="wrap_content"
-                android:text="Ver detalles"
+                android:text="Ver bienes"
                 android:id="@+id/btnDetails" />
 
             <Button

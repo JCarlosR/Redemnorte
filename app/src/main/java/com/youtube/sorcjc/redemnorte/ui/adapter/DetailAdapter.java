@@ -77,9 +77,9 @@ public class DetailAdapter extends RecyclerView.Adapter<DetailAdapter.ViewHolder
     public void onBindViewHolder(ViewHolder holder, int position) {
         // get element from your data-set at this position
         // replace the contents of the view with that element
-        holder.tvDetailQR.setText(mDataSet.get(position).getQr());
+        holder.tvDetailQR.setText("QR: " + mDataSet.get(position).getQr());
         holder.tvDescription.setText(mDataSet.get(position).getDescription());
-        holder.tvPatrimonial.setText(mDataSet.get(position).getPatrimonial());
+        holder.tvPatrimonial.setText("Cód Patrimonial: " + mDataSet.get(position).getPatrimonial());
 
         // set events
         holder.setOnClickListeners();
