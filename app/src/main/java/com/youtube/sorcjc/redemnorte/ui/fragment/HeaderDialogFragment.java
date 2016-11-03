@@ -1,6 +1,8 @@
 package com.youtube.sorcjc.redemnorte.ui.fragment;
 
 import android.app.Dialog;
+import android.content.Context;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.design.widget.TextInputLayout;
 import android.support.v4.app.DialogFragment;
@@ -135,7 +137,14 @@ public class HeaderDialogFragment extends DialogFragment {
             return;
         }
 
-        Toast.makeText(getContext(), "Realizar petición", Toast.LENGTH_SHORT).show();
+        String username = getFromSharedPreferences("username");
+
+        Toast.makeText(getContext(), "Realizar petición => " + username, Toast.LENGTH_SHORT).show();
+    }
+
+    private String getFromSharedPreferences(String key) {
+        SharedPreferences sharedPref = getActivity().getSharedPreferences("login_preferences", Context.MODE_PRIVATE);
+        return sharedPref.getString(key, "");
     }
 
     private boolean validateEditText(EditText editText, TextInputLayout textInputLayout, int errorString) {

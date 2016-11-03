@@ -58,4 +58,5 @@
     <string name="error_til_qr">Es obligatorio ingresar el cód QR</string>
     <string name="error_til_description">Ingresa una descripción</string>
 
+    <string name="error_login">Los datos son incorrectos</string>
 </resources>

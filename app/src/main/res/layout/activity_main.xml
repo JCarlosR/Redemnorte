@@ -29,6 +29,7 @@
 
         <EditText
             android:id="@+id/etPassword"
+            android:inputType="textPassword"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:hint="@string/password" />
@@ -45,6 +46,6 @@
         android:id="@+id/btnCall"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Llamar a Alfaro"/>
+        android:text="Llamar a soporte"/>
 
 </LinearLayout>
