@@ -1,23 +1,51 @@
 package com.youtube.sorcjc.redemnorte.model;
 
+import com.google.gson.annotations.SerializedName;
+
 public class Bien {
-    // General
+
+    // Parent (header)
+    @SerializedName("hoja_id")
+    private String hoja_id;
+
+    // Codes
+    @SerializedName("QR_code")
     private String qr;
+    @SerializedName("patrimonial_code")
     private String patrimonial;
+
+    // Meta-data
+    @SerializedName("old_code")
+    private String old_code;
+    @SerializedName("old_year")
+    private String old_year;
+
+    // General
+    @SerializedName("denominacion")
     private String description;
-    private String color;
+    @SerializedName("marca")
     private String brand;
+    @SerializedName("modelo")
     private String model;
+    @SerializedName("serie")
     private String series;
+    @SerializedName("color")
+    private String color;
 
     // Dimensions
+    @SerializedName("largo")
     private String dimLong;
+    @SerializedName("ancho")
     private String dimWidth;
+    @SerializedName("alto")
     private String dimHigh;
 
     // Status
+    @SerializedName("condicion")
     private String preservation;
+    @SerializedName("operativo")
     private boolean operative;
+    @SerializedName("observacion")
     private String observation;
 
     public Bien(String qr, String patrimonial, String description) {
@@ -128,5 +156,29 @@ public class Bien {
 
     public void setPatrimonial(String patrimonial) {
         this.patrimonial = patrimonial;
+    }
+
+    public String getHoja_id() {
+        return hoja_id;
+    }
+
+    public void setHoja_id(String hoja_id) {
+        this.hoja_id = hoja_id;
+    }
+
+    public String getOld_year() {
+        return old_year;
+    }
+
+    public void setOld_year(String old_year) {
+        this.old_year = old_year;
+    }
+
+    public String getOld_code() {
+        return old_code;
+    }
+
+    public void setOld_code(String old_code) {
+        this.old_code = old_code;
     }
 }

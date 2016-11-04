@@ -12,24 +12,34 @@ import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.Toast;
 
 import com.youtube.sorcjc.redemnorte.R;
+import com.youtube.sorcjc.redemnorte.io.RedemnorteApiAdapter;
+import com.youtube.sorcjc.redemnorte.io.response.BienesResponse;
+import com.youtube.sorcjc.redemnorte.io.response.HojasResponse;
 import com.youtube.sorcjc.redemnorte.model.Bien;
 import com.youtube.sorcjc.redemnorte.ui.adapter.DetailAdapter;
 import com.youtube.sorcjc.redemnorte.ui.fragment.DetailDialogFragment;
 
+import org.json.JSONObject;
+
 import java.util.ArrayList;
 
-public class DetailsActivity extends AppCompatActivity implements View.OnClickListener {
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
+
+public class DetailsActivity extends AppCompatActivity implements View.OnClickListener, Callback<BienesResponse> {
 
     private DetailAdapter detailAdapter;
+    private String headerCode;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_details);
 
-        String headerCode = "";
         Bundle extras = getIntent().getExtras();
         if (extras != null) {
              headerCode = extras.getString("headerCode");
@@ -40,14 +50,11 @@ public class DetailsActivity extends AppCompatActivity implements View.OnClickLi
         recyclerView.setLayoutManager(linearLayoutManager);
 
         ArrayList<Bien> myDataSet = new ArrayList<>();
-        myDataSet.add(new Bien("100001", "1002001", "Descripción"));
-        myDataSet.add(new Bien("100002", "1002001", "Descripción"));
-        myDataSet.add(new Bien("100003", "1002001", "Descripción"));
-        myDataSet.add(new Bien("100004", "1002001", "Descripción"));
-        myDataSet.add(new Bien("100005", "1002001", "Descripción"));
 
         detailAdapter = new DetailAdapter(myDataSet);
         recyclerView.setAdapter(detailAdapter);
+
+        cargarBienes();
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         toolbar.setTitle("Hoja " + headerCode);
@@ -84,6 +91,11 @@ public class DetailsActivity extends AppCompatActivity implements View.OnClickLi
         });
     }
 
+    public void cargarBienes() {
+        Call<BienesResponse> call = RedemnorteApiAdapter.getApiService().getBienes(headerCode);
+        call.enqueue(this);
+    }
+
     @Override
     public void onClick(View view) {
         switch (view.getId()) {
@@ -105,6 +117,7 @@ public class DetailsActivity extends AppCompatActivity implements View.OnClickLi
                 NavUtils.navigateUpFromSameTask(this);
                 return true;
         }
+
         return super.onOptionsItemSelected(item);
     }
 
@@ -120,5 +133,26 @@ public class DetailsActivity extends AppCompatActivity implements View.OnClickLi
         // for the fragment, which is always the root view for the activity
         transaction.add(android.R.id.content, newFragment)
                 .addToBackStack(null).commit();
+    }
+
+    @Override
+    public void onResponse(Call<BienesResponse> call, Response<BienesResponse> response) {
+        if (response.isSuccessful()) {
+            ArrayList<Bien> bienes = response.body().getBienes();
+            detailAdapter.setDataSet(bienes);
+            Toast.makeText(this, "Cantidad de bienes => " + bienes.size(), Toast.LENGTH_SHORT).show();
+        } else {
+            try {
+                JSONObject jObjError = new JSONObject(response.errorBody().string());
+                Toast.makeText(this, jObjError.getString("message"), Toast.LENGTH_LONG).show();
+            } catch (Exception e) {
+                Toast.makeText(this, e.getMessage(), Toast.LENGTH_LONG).show();
+            }
+        }
+    }
+
+    @Override
+    public void onFailure(Call<BienesResponse> call, Throwable t) {
+        Toast.makeText(this, t.getLocalizedMessage(), Toast.LENGTH_SHORT).show();
     }
 }

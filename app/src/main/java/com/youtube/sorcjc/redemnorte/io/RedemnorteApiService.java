@@ -1,5 +1,6 @@
 package com.youtube.sorcjc.redemnorte.io;
 
+import com.youtube.sorcjc.redemnorte.io.response.BienesResponse;
 import com.youtube.sorcjc.redemnorte.io.response.HojasResponse;
 import com.youtube.sorcjc.redemnorte.io.response.SimpleResponse;
 
@@ -14,6 +15,10 @@ public interface RedemnorteApiService {
     @FormUrlEncoded
     @POST("hojas.php")
     Call<HojasResponse> getHojas(@Field("dni") String dni);
+
+    @FormUrlEncoded
+    @POST("bienes.php")
+    Call<BienesResponse> getBienes(@Field("hoja_id") String hoja_id);
 
     @FormUrlEncoded
     @POST("login.php")

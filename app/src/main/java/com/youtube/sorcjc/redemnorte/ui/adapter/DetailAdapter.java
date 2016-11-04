@@ -14,7 +14,7 @@ import com.youtube.sorcjc.redemnorte.model.Bien;
 import java.util.ArrayList;
 
 public class DetailAdapter extends RecyclerView.Adapter<DetailAdapter.ViewHolder> {
-    private ArrayList<Bien> mDataSet;
+    private ArrayList<Bien> dataSet;
 
     // Provide a reference to the views for each data item
     static class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
@@ -58,7 +58,12 @@ public class DetailAdapter extends RecyclerView.Adapter<DetailAdapter.ViewHolder
 
     // Provide a suitable constructor
     public DetailAdapter(ArrayList<Bien> myDataSet) {
-        mDataSet = myDataSet;
+        dataSet = myDataSet;
+    }
+
+    public void setDataSet(ArrayList<Bien> dataSet) {
+        this.dataSet = dataSet;
+        notifyDataSetChanged();
     }
 
     // Create new views
@@ -77,9 +82,9 @@ public class DetailAdapter extends RecyclerView.Adapter<DetailAdapter.ViewHolder
     public void onBindViewHolder(ViewHolder holder, int position) {
         // get element from your data-set at this position
         // replace the contents of the view with that element
-        holder.tvDetailQR.setText("QR: " + mDataSet.get(position).getQr());
-        holder.tvDescription.setText(mDataSet.get(position).getDescription());
-        holder.tvPatrimonial.setText("Cód Patrimonial: " + mDataSet.get(position).getPatrimonial());
+        holder.tvDetailQR.setText("QR: " + dataSet.get(position).getQr());
+        holder.tvDescription.setText(dataSet.get(position).getDescription());
+        holder.tvPatrimonial.setText("Cód Patrimonial: " + dataSet.get(position).getPatrimonial());
 
         // set events
         holder.setOnClickListeners();
@@ -87,6 +92,6 @@ public class DetailAdapter extends RecyclerView.Adapter<DetailAdapter.ViewHolder
 
     @Override
     public int getItemCount() {
-        return mDataSet.size();
+        return dataSet.size();
     }
 }
