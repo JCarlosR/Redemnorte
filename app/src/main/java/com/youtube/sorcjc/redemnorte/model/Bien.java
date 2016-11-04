@@ -1,6 +1,6 @@
 package com.youtube.sorcjc.redemnorte.model;
 
-public class Detail {
+public class Bien {
     // General
     private String qr;
     private String patrimonial;
@@ -20,7 +20,7 @@ public class Detail {
     private boolean operative;
     private String observation;
 
-    public Detail(String qr, String patrimonial, String description) {
+    public Bien(String qr, String patrimonial, String description) {
         this.qr = qr;
         this.patrimonial = patrimonial;
         this.description = description;

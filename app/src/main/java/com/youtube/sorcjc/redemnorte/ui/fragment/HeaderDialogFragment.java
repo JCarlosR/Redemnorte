@@ -4,6 +4,7 @@ import android.app.Dialog;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.design.widget.TextInputLayout;
 import android.support.v4.app.DialogFragment;
 import android.support.v7.app.ActionBar;
@@ -21,12 +22,20 @@ import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.Toast;
 
+import com.youtube.sorcjc.redemnorte.Global;
 import com.youtube.sorcjc.redemnorte.R;
+import com.youtube.sorcjc.redemnorte.io.RedemnorteApiAdapter;
+import com.youtube.sorcjc.redemnorte.io.response.SimpleResponse;
+import com.youtube.sorcjc.redemnorte.ui.PanelActivity;
 
 import org.w3c.dom.Text;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 public class HeaderDialogFragment extends DialogFragment {
 
@@ -34,8 +43,6 @@ public class HeaderDialogFragment extends DialogFragment {
     private EditText etLocal, etUbicacion, etCargo, etDependencia, etAmbiente, etArea;
     private TextInputLayout tilLocal, tilUbicacion, tilCargo, tilDependencia, tilAmbiente, tilArea;
 
-    /** The system calls this to get the DialogFragment's layout, regardless
-     of whether it's being displayed as a dialog or an embedded fragment. */
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -83,13 +90,11 @@ public class HeaderDialogFragment extends DialogFragment {
         return view;
     }
 
-    /** The system calls this only when creating the layout in a dialog. */
+    @NonNull
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
         // The only reason you might override this method when using onCreateView() is
-        // to modify any dialog characteristics. For example, the dialog includes a
-        // title by default, but your custom layout might not need it. So here you can
-        // remove the dialog title, but you must call the superclass to get the Dialog.
+        // to modify any dialog characteristics.
         Dialog dialog = super.onCreateDialog(savedInstanceState);
         dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
         return dialog;
@@ -125,6 +130,10 @@ public class HeaderDialogFragment extends DialogFragment {
             return;
         }
 
+        if (!validateEditText(etCargo, tilCargo, R.string.error_cargo)) {
+            return;
+        }
+
         if (!validateEditText(etDependencia, tilDependencia, R.string.error_dependencia)) {
             return;
         }
@@ -137,14 +146,41 @@ public class HeaderDialogFragment extends DialogFragment {
             return;
         }
 
-        String username = getFromSharedPreferences("username");
+        final String local = etLocal.getText().toString().trim();
+        final String ubicacion = etUbicacion.getText().toString().trim();
+        final String responsable = spinnerResponsible.getSelectedItem().toString();
+        final String cargo = etCargo.getText().toString().trim();
+        final String dependencia = etDependencia.getText().toString().trim();
+        final String ambiente = etAmbiente.getText().toString().trim();
+        final String area = etArea.getText().toString().trim();
+        final String inventariador = Global.getFromSharedPreferences(getActivity(), "username");
 
-        Toast.makeText(getContext(), "Realizar petición => " + username, Toast.LENGTH_SHORT).show();
+        Call<SimpleResponse> call = RedemnorteApiAdapter.getApiService().postRegistrarHoja(
+                local, ubicacion, responsable, cargo, dependencia,
+                ambiente, area, inventariador
+        );
+        call.enqueue(new RegistrarHojaCallback());
     }
 
-    private String getFromSharedPreferences(String key) {
-        SharedPreferences sharedPref = getActivity().getSharedPreferences("login_preferences", Context.MODE_PRIVATE);
-        return sharedPref.getString(key, "");
+    class RegistrarHojaCallback implements Callback<SimpleResponse> {
+
+        @Override
+        public void onResponse(Call<SimpleResponse> call, Response<SimpleResponse> response) {
+            if (response.isSuccessful()) {
+                Toast.makeText(getContext(), "Se ha registrado una nueva hoja", Toast.LENGTH_SHORT).show();
+                // Re-load the sheets
+                ((PanelActivity) getActivity()).cargarHojas();
+                // and then dismiss this dialog
+                dismiss();
+            } else {
+                Toast.makeText(getContext(), "Error en el formato de respuesta", Toast.LENGTH_SHORT).show();
+            }
+        }
+
+        @Override
+        public void onFailure(Call<SimpleResponse> call, Throwable t) {
+            Toast.makeText(getContext(), t.getLocalizedMessage(), Toast.LENGTH_SHORT).show();
+        }
     }
 
     private boolean validateEditText(EditText editText, TextInputLayout textInputLayout, int errorString) {

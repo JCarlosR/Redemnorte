@@ -9,15 +9,26 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
+import android.widget.Toast;
 
 import com.youtube.sorcjc.redemnorte.R;
-import com.youtube.sorcjc.redemnorte.model.Header;
+import com.youtube.sorcjc.redemnorte.io.RedemnorteApiAdapter;
+import com.youtube.sorcjc.redemnorte.io.response.HojasResponse;
+import com.youtube.sorcjc.redemnorte.model.Hoja;
 import com.youtube.sorcjc.redemnorte.ui.adapter.HeaderAdapter;
 import com.youtube.sorcjc.redemnorte.ui.fragment.HeaderDialogFragment;
 
+import org.json.JSONObject;
+
 import java.util.ArrayList;
 
-public class PanelActivity extends AppCompatActivity implements View.OnClickListener {
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
+
+import static java.security.AccessController.getContext;
+
+public class PanelActivity extends AppCompatActivity implements View.OnClickListener, Callback<HojasResponse> {
 
     private HeaderAdapter headerAdapter;
 
@@ -31,18 +42,8 @@ public class PanelActivity extends AppCompatActivity implements View.OnClickList
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this);
         recyclerView.setLayoutManager(linearLayoutManager);
 
-        ArrayList<Header> myDataset = new ArrayList<>();
-        myDataset.add(new Header("100001", "Juan Ramos", "27 de Octubre del 2016"));
-        myDataset.add(new Header("100002", "Juan Ramos", "28 de Octubre del 2016"));
-        myDataset.add(new Header("100003", "Juan Ramos", "29 de Octubre del 2016"));
-
-        myDataset.add(new Header("100004", "Juan Ramos", "27 de Noviembre del 2016"));
-        myDataset.add(new Header("100005", "Juan Ramos", "28 de Noviembre del 2016"));
-        myDataset.add(new Header("100006", "Juan Ramos", "29 de Noviembre del 2016"));
-
-        myDataset.add(new Header("100007", "Juan Ramos", "27 de Diciembre del 2016"));
-        myDataset.add(new Header("100008", "Juan Ramos", "28 de Diciembre del 2016"));
-        myDataset.add(new Header("100009", "Juan Ramos", "29 de Diciembre del 2016"));
+        ArrayList<Hoja> myDataset = new ArrayList<>();
+        cargarHojas();
 
         headerAdapter = new HeaderAdapter(myDataset);
         recyclerView.setAdapter(headerAdapter);
@@ -77,6 +78,11 @@ public class PanelActivity extends AppCompatActivity implements View.OnClickList
         });
     }
 
+    public void cargarHojas() {
+        Call<HojasResponse> call = RedemnorteApiAdapter.getApiService().getHojas("76474871");
+        call.enqueue(this);
+    }
+
     @Override
     public void onClick(View view) {
         switch (view.getId()) {
@@ -98,5 +104,26 @@ public class PanelActivity extends AppCompatActivity implements View.OnClickList
         // for the fragment, which is always the root view for the activity
         transaction.add(android.R.id.content, newFragment)
                 .addToBackStack(null).commit();
+    }
+
+    @Override
+    public void onResponse(Call<HojasResponse> call, Response<HojasResponse> response) {
+        if (response.isSuccessful()) {
+            ArrayList<Hoja> hojas = response.body().getHojas();
+            headerAdapter.setDataSet(hojas);
+            Toast.makeText(this, "Cantidad de hojas => " + hojas.size(), Toast.LENGTH_SHORT).show();
+        } else {
+            try {
+                JSONObject jObjError = new JSONObject(response.errorBody().string());
+                Toast.makeText(this, jObjError.getString("message"), Toast.LENGTH_LONG).show();
+            } catch (Exception e) {
+                Toast.makeText(this, e.getMessage(), Toast.LENGTH_LONG).show();
+            }
+        }
+    }
+
+    @Override
+    public void onFailure(Call<HojasResponse> call, Throwable t) {
+        Toast.makeText(this, t.getLocalizedMessage(), Toast.LENGTH_SHORT).show();
     }
 }

@@ -10,17 +10,17 @@ import android.widget.Button;
 import android.widget.TextView;
 
 import com.youtube.sorcjc.redemnorte.R;
-import com.youtube.sorcjc.redemnorte.model.Header;
+import com.youtube.sorcjc.redemnorte.model.Hoja;
 import com.youtube.sorcjc.redemnorte.ui.DetailsActivity;
 
 import java.util.ArrayList;
 
 public class HeaderAdapter extends RecyclerView.Adapter<HeaderAdapter.ViewHolder> {
-    private ArrayList<Header> mDataset;
+    private ArrayList<Hoja> dataSet;
 
-    // Provide a reference to the views for each data item
-    // Complex data items may need more than one view per item, and
-    // you provide access to all the views for a data item in a view holder
+    // Provide a reference to the views for each dataSet item
+    // Complex dataSet items may need more than one view per item, and
+    // you provide access to all the views for a dataSet item in a view holder
     static class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
         // context
         Context context;
@@ -64,8 +64,13 @@ public class HeaderAdapter extends RecyclerView.Adapter<HeaderAdapter.ViewHolder
     }
 
     // Provide a suitable constructor (depends on the kind of dataset)
-    public HeaderAdapter(ArrayList<Header> myDataset) {
-        mDataset = myDataset;
+    public HeaderAdapter(ArrayList<Hoja> dataSet) {
+        this.dataSet = dataSet;
+    }
+
+    public void setDataSet(ArrayList<Hoja> dataSet) {
+        this.dataSet = dataSet;
+        notifyDataSetChanged();
     }
 
     // Create new views (invoked by the layout manager)
@@ -82,11 +87,11 @@ public class HeaderAdapter extends RecyclerView.Adapter<HeaderAdapter.ViewHolder
     // Replace the contents of a view (invoked by the layout manager)
     @Override
     public void onBindViewHolder(ViewHolder holder, int position) {
-        // get element from your data-set at this position
+        // get element from your dataSet-set at this position
         // replace the contents of the view with that element
-        holder.headerCode.setText(mDataset.get(position).getHeaderCode());
-        holder.responsibleName.setText(mDataset.get(position).getResponsibleName());
-        holder.headerDate.setText(mDataset.get(position).getHeaderDate());
+        holder.headerCode.setText(dataSet.get(position).getId());
+        holder.responsibleName.setText(dataSet.get(position).getResponsable());
+        holder.headerDate.setText(dataSet.get(position).getFecha());
 
         // set events
         holder.setOnClickListeners();
@@ -95,6 +100,6 @@ public class HeaderAdapter extends RecyclerView.Adapter<HeaderAdapter.ViewHolder
     // Return the size of your dataset (invoked by the layout manager)
     @Override
     public int getItemCount() {
-        return mDataset.size();
+        return dataSet.size();
     }
 }

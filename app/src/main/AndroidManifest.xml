@@ -3,6 +3,7 @@
     package="com.youtube.sorcjc.redemnorte">
 
     <uses-permission android:name="android.permission.CAMERA" />
+    <uses-permission android:name="android.permission.INTERNET" />
 
     <application
         android:allowBackup="true"

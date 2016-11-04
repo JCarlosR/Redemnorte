@@ -9,12 +9,12 @@ import android.widget.Button;
 import android.widget.TextView;
 
 import com.youtube.sorcjc.redemnorte.R;
-import com.youtube.sorcjc.redemnorte.model.Detail;
+import com.youtube.sorcjc.redemnorte.model.Bien;
 
 import java.util.ArrayList;
 
 public class DetailAdapter extends RecyclerView.Adapter<DetailAdapter.ViewHolder> {
-    private ArrayList<Detail> mDataSet;
+    private ArrayList<Bien> mDataSet;
 
     // Provide a reference to the views for each data item
     static class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
@@ -57,7 +57,7 @@ public class DetailAdapter extends RecyclerView.Adapter<DetailAdapter.ViewHolder
     }
 
     // Provide a suitable constructor
-    public DetailAdapter(ArrayList<Detail> myDataSet) {
+    public DetailAdapter(ArrayList<Bien> myDataSet) {
         mDataSet = myDataSet;
     }
 

@@ -10,6 +10,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
+import com.youtube.sorcjc.redemnorte.Global;
 import com.youtube.sorcjc.redemnorte.R;
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener {
@@ -29,6 +30,12 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
         Button btnCall = (Button) findViewById(R.id.btnCall);
         btnCall.setOnClickListener(this);
+
+        writeLastAuthenticatedUser();
+    }
+
+    private void writeLastAuthenticatedUser() {
+        etUsername.setText(Global.getFromSharedPreferences(this, "username"));
     }
 
     @Override
@@ -39,7 +46,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 final String password = etPassword.getText().toString();
 
                 if (username.equals("76474871") && password.equals("123123")) {
-                    saveLoginSharedPreferences(username);
+                    Global.saveInSharedPreferences(this, "username", username);
 
                     Intent intentPanel = new Intent(this, PanelActivity.class);
                     startActivity(intentPanel);
@@ -54,10 +61,5 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         }
     }
 
-    private void saveLoginSharedPreferences(String username) {
-        SharedPreferences sharedPref = getSharedPreferences("login_preferences", Context.MODE_PRIVATE);
-        SharedPreferences.Editor editor = sharedPref.edit();
-        editor.putString("username", username);
-        editor.apply();
-    }
+
 }

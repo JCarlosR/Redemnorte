@@ -1,0 +1,6 @@
+0. Conocer los paráms y respuestas del WS.
+
+1. Añadir dependencias al proyecto.
+2. Configurar ApiAdapter y ApiService.
+3. Definir nuestro formato de respuesta.
+4. Realizar una petición.

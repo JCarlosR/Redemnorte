@@ -12,15 +12,11 @@ import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.TextView;
 
 import com.youtube.sorcjc.redemnorte.R;
-import com.youtube.sorcjc.redemnorte.model.Detail;
-import com.youtube.sorcjc.redemnorte.model.Header;
+import com.youtube.sorcjc.redemnorte.model.Bien;
 import com.youtube.sorcjc.redemnorte.ui.adapter.DetailAdapter;
-import com.youtube.sorcjc.redemnorte.ui.adapter.HeaderAdapter;
 import com.youtube.sorcjc.redemnorte.ui.fragment.DetailDialogFragment;
-import com.youtube.sorcjc.redemnorte.ui.fragment.HeaderDialogFragment;
 
 import java.util.ArrayList;
 
@@ -43,12 +39,12 @@ public class DetailsActivity extends AppCompatActivity implements View.OnClickLi
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this);
         recyclerView.setLayoutManager(linearLayoutManager);
 
-        ArrayList<Detail> myDataSet = new ArrayList<>();
-        myDataSet.add(new Detail("100001", "1002001", "Descripción"));
-        myDataSet.add(new Detail("100002", "1002001", "Descripción"));
-        myDataSet.add(new Detail("100003", "1002001", "Descripción"));
-        myDataSet.add(new Detail("100004", "1002001", "Descripción"));
-        myDataSet.add(new Detail("100005", "1002001", "Descripción"));
+        ArrayList<Bien> myDataSet = new ArrayList<>();
+        myDataSet.add(new Bien("100001", "1002001", "Descripción"));
+        myDataSet.add(new Bien("100002", "1002001", "Descripción"));
+        myDataSet.add(new Bien("100003", "1002001", "Descripción"));
+        myDataSet.add(new Bien("100004", "1002001", "Descripción"));
+        myDataSet.add(new Bien("100005", "1002001", "Descripción"));
 
         detailAdapter = new DetailAdapter(myDataSet);
         recyclerView.setAdapter(detailAdapter);
