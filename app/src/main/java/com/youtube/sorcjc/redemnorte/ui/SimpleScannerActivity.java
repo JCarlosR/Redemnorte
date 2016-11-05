@@ -70,7 +70,7 @@ public class SimpleScannerActivity extends AppCompatActivity implements ZBarScan
 
     @Override
     public void onDialogPositiveClick(DialogFragment dialog) {
-        Toast.makeText(this, "Código a usar => " + code, Toast.LENGTH_SHORT).show();
+        // Toast.makeText(this, "Código a usar => " + code, Toast.LENGTH_SHORT).show();
 
         final Intent data = new Intent();
         data.putExtra("code", code);

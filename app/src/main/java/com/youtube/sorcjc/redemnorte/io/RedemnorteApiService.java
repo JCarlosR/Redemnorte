@@ -8,7 +8,6 @@ import retrofit2.Call;
 import retrofit2.http.Field;
 import retrofit2.http.FormUrlEncoded;
 import retrofit2.http.POST;
-import retrofit2.http.Query;
 
 public interface RedemnorteApiService {
 
@@ -35,5 +34,29 @@ public interface RedemnorteApiService {
             @Field("ambiente") String ambiente,
             @Field("area") String area,
             @Field("inventariador") String inventariador
+    );
+
+    @FormUrlEncoded
+    @POST("registrar-bien.php")
+    Call<SimpleResponse> postRegistrarBien(
+            @Field("hoja_id") String hoja_id,
+            @Field("QR_code") String QR_code,
+            @Field("patrimonial_code") String patrimonial_code,
+            @Field("old_code") String old_code,
+            @Field("old_year") String old_year,
+
+            @Field("denominacion") String denominacion,
+            @Field("marca") String marca,
+            @Field("modelo") String modelo,
+            @Field("serie") String serie,
+            @Field("color") String color,
+
+            @Field("largo") String largo,
+            @Field("ancho") String ancho,
+            @Field("alto") String alto,
+
+            @Field("condicion") String condicion,
+            @Field("operativo") String operativo,
+            @Field("observacion") String observacion
     );
 }

@@ -5,12 +5,15 @@ import android.app.Dialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.design.widget.TextInputLayout;
 import android.support.v4.app.DialogFragment;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -18,7 +21,6 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
-import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.EditText;
@@ -27,23 +29,41 @@ import android.widget.Spinner;
 import android.widget.Toast;
 
 import com.youtube.sorcjc.redemnorte.R;
-import com.youtube.sorcjc.redemnorte.ui.MainActivity;
+import com.youtube.sorcjc.redemnorte.io.RedemnorteApiAdapter;
+import com.youtube.sorcjc.redemnorte.io.response.SimpleResponse;
+import com.youtube.sorcjc.redemnorte.ui.DetailsActivity;
 import com.youtube.sorcjc.redemnorte.ui.SimpleScannerActivity;
+
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 public class DetailDialogFragment extends DialogFragment implements View.OnClickListener, CompoundButton.OnCheckedChangeListener {
 
-    private EditText etQR, etPatrimonial,
+    private EditText etQR, etPatrimonial, etOldCode,
             etDescription, etColor, etBrand, etModel, etSeries,
             etDimLong, etDimWidth, etDimHigh,
             etObservation;
 
-    private Spinner spinnerPreservation;
+    private Spinner spinnerPreservation, spinnerOldYear;
     private CheckBox checkOperative, checkSurplus;
 
     private TextInputLayout tilQR, tilPatrimonial,
             tilDescription, tilColor, tilBrand, tilModel, tilSeries,
             tilDimLong, tilDimWidth, tilDimHigh,
             tilObservation;
+
+    private String hoja_id;
+
+    public static DetailDialogFragment newInstance(String hoja_id) {
+        DetailDialogFragment f = new DetailDialogFragment();
+
+        Bundle args = new Bundle();
+        args.putString("hoja_id", hoja_id);
+        f.setArguments(args);
+
+        return f;
+    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -64,6 +84,10 @@ public class DetailDialogFragment extends DialogFragment implements View.OnClick
 
         etQR = (EditText) view.findViewById(R.id.etQR);
         etPatrimonial = (EditText) view.findViewById(R.id.etPatrimonial);
+
+        etOldCode = (EditText) view.findViewById(R.id.etOldCode);
+        spinnerOldYear = (Spinner) view.findViewById(R.id.spinnerOldYear);
+
         etDescription = (EditText) view.findViewById(R.id.etDescription);
         etColor = (EditText) view.findViewById(R.id.etColor);
         etBrand = (EditText) view.findViewById(R.id.etBrand);
@@ -99,8 +123,14 @@ public class DetailDialogFragment extends DialogFragment implements View.OnClick
         return view;
     }
 
-    /** The system calls this only when creating the layout in a dialog. */
     @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        hoja_id = getArguments().getString("hoja_id");
+    }
+
+    @Override
+    @NonNull
     public Dialog onCreateDialog(Bundle savedInstanceState) {
         Dialog dialog = super.onCreateDialog(savedInstanceState);
         dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
@@ -144,7 +174,62 @@ public class DetailDialogFragment extends DialogFragment implements View.OnClick
             tilPatrimonial.setErrorEnabled(false);
         }
 
-        Toast.makeText(getContext(), "Realizar petición", Toast.LENGTH_SHORT).show();
+        performRegisterRequest();
+    }
+
+    private void performRegisterRequest() {
+        final String QR_code = etQR.getText().toString().trim();
+        final String patrimonial_code = etPatrimonial.getText().toString().trim();
+        final String old_code = etOldCode.getText().toString().trim();
+        final String old_year = spinnerOldYear.getSelectedItem().toString();
+
+        final String denominacion = etDescription.getText().toString().trim();
+        final String marca = etBrand.getText().toString().trim();
+        final String modelo = etModel.getText().toString().trim();
+        final String serie = etSeries.getText().toString().trim();
+        final String color = etColor.getText().toString().trim();
+
+        final String largo = etDimLong.getText().toString().trim();
+        final String ancho = etDimWidth.getText().toString().trim();
+        final String alto = etDimHigh.getText().toString().trim();
+
+        final String condicion = spinnerPreservation.getSelectedItem().toString();
+        final String operativo = checkOperative.isChecked() ? "S" : "N";
+        final String observacion = etObservation.getText().toString().trim();
+
+        Call<SimpleResponse> call = RedemnorteApiAdapter.getApiService().postRegistrarBien(
+                hoja_id, QR_code, patrimonial_code, old_code, old_year,
+                denominacion, marca, modelo, serie, color,
+                largo, ancho, alto,
+                condicion, operativo, observacion
+        );
+        call.enqueue(new RegistrarBienCallback());
+    }
+
+    class RegistrarBienCallback implements Callback<SimpleResponse> {
+
+        @Override
+        public void onResponse(Call<SimpleResponse> call, Response<SimpleResponse> response) {
+            if (response.isSuccessful()) {
+                if (response.body().isError()) {
+                    Toast.makeText(getContext(), response.body().getMessage(), Toast.LENGTH_SHORT).show();
+                } else {
+                    Toast.makeText(getContext(), "Se ha registrado un nuevo bien", Toast.LENGTH_SHORT).show();
+
+                    // Re-load the recyclerView
+                    ((DetailsActivity) getActivity()).cargarBienes();
+                    // and then dismiss this dialog
+                    dismiss();
+                }
+            } else {
+                Toast.makeText(getContext(), "Error en el formato de respuesta", Toast.LENGTH_SHORT).show();
+            }
+        }
+
+        @Override
+        public void onFailure(Call<SimpleResponse> call, Throwable t) {
+            Toast.makeText(getContext(), t.getLocalizedMessage(), Toast.LENGTH_SHORT).show();
+        }
     }
 
     private boolean validateEditText(EditText editText, TextInputLayout textInputLayout, int errorString) {
