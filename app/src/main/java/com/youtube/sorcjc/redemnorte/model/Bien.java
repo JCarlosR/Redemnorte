@@ -44,7 +44,7 @@ public class Bien {
     @SerializedName("condicion")
     private String preservation;
     @SerializedName("operativo")
-    private boolean operative;
+    private String operative;
     @SerializedName("observacion")
     private String observation;
 
@@ -134,11 +134,11 @@ public class Bien {
         this.preservation = preservation;
     }
 
-    public boolean isOperative() {
+    public String isOperative() {
         return operative;
     }
 
-    public void setOperative(boolean operative) {
+    public void setOperative(String operative) {
         this.operative = operative;
     }
 

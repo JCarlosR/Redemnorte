@@ -17,7 +17,6 @@ import android.widget.Toast;
 import com.youtube.sorcjc.redemnorte.R;
 import com.youtube.sorcjc.redemnorte.io.RedemnorteApiAdapter;
 import com.youtube.sorcjc.redemnorte.io.response.BienesResponse;
-import com.youtube.sorcjc.redemnorte.io.response.HojasResponse;
 import com.youtube.sorcjc.redemnorte.model.Bien;
 import com.youtube.sorcjc.redemnorte.ui.adapter.DetailAdapter;
 import com.youtube.sorcjc.redemnorte.ui.fragment.DetailDialogFragment;
@@ -51,7 +50,7 @@ public class DetailsActivity extends AppCompatActivity implements View.OnClickLi
 
         ArrayList<Bien> myDataSet = new ArrayList<>();
 
-        detailAdapter = new DetailAdapter(myDataSet);
+        detailAdapter = new DetailAdapter(myDataSet, headerCode);
         recyclerView.setAdapter(detailAdapter);
 
         cargarBienes();

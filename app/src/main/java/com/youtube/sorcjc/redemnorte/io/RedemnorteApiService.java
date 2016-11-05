@@ -1,5 +1,6 @@
 package com.youtube.sorcjc.redemnorte.io;
 
+import com.youtube.sorcjc.redemnorte.io.response.BienResponse;
 import com.youtube.sorcjc.redemnorte.io.response.BienesResponse;
 import com.youtube.sorcjc.redemnorte.io.response.HojasResponse;
 import com.youtube.sorcjc.redemnorte.io.response.SimpleResponse;
@@ -7,7 +8,9 @@ import com.youtube.sorcjc.redemnorte.io.response.SimpleResponse;
 import retrofit2.Call;
 import retrofit2.http.Field;
 import retrofit2.http.FormUrlEncoded;
+import retrofit2.http.GET;
 import retrofit2.http.POST;
+import retrofit2.http.Query;
 
 public interface RedemnorteApiService {
 
@@ -18,6 +21,9 @@ public interface RedemnorteApiService {
     @FormUrlEncoded
     @POST("bienes.php")
     Call<BienesResponse> getBienes(@Field("hoja_id") String hoja_id);
+
+    @GET("bien.php")
+    Call<BienResponse> getBien(@Query("hoja_id") String hoja_id, @Query("QR_code") String QR_code);
 
     @FormUrlEncoded
     @POST("login.php")

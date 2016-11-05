@@ -35,6 +35,8 @@
     <string name="hint_operative">Operativo?</string>
     <string name="hint_observation">Observación</string>
 
+    <string name="hint_preservation">Estado de conservación</string>
+
     <!-- New detail preservation options -->
     <string-array name="preservation_options">
         <item>Nuevo</item>
