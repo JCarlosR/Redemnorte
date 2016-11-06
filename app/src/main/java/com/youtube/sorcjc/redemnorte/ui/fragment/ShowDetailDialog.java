@@ -2,29 +2,27 @@ package com.youtube.sorcjc.redemnorte.ui.fragment;
 
 import android.app.Activity;
 import android.app.Dialog;
-import android.content.DialogInterface;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.net.Uri;
 import android.os.Bundle;
+import android.os.Environment;
+import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.support.design.widget.TextInputLayout;
 import android.support.v4.app.DialogFragment;
 import android.support.v7.app.ActionBar;
-import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.LayoutInflater;
-import android.view.Menu;
-import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
+import android.widget.Button;
 import android.widget.CheckBox;
-import android.widget.CompoundButton;
 import android.widget.EditText;
-import android.widget.ImageButton;
 import android.widget.Spinner;
 import android.widget.Toast;
 
@@ -34,14 +32,21 @@ import com.youtube.sorcjc.redemnorte.io.RedemnorteApiAdapter;
 import com.youtube.sorcjc.redemnorte.io.response.BienResponse;
 import com.youtube.sorcjc.redemnorte.io.response.SimpleResponse;
 import com.youtube.sorcjc.redemnorte.model.Bien;
-import com.youtube.sorcjc.redemnorte.ui.DetailsActivity;
-import com.youtube.sorcjc.redemnorte.ui.SimpleScannerActivity;
+
+import java.io.File;
+import java.io.IOException;
 
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-public class ShowDetailDialog extends DialogFragment implements Callback<BienResponse> {
+public class ShowDetailDialog extends DialogFragment implements Callback<BienResponse>, View.OnClickListener {
+
+    private static final int REQUEST_CODE_CAMERA = 10101;
+    private final String DEFAULT_PHOTO_EXTENSION = "jpg";
+
+    // Location of the last photo taken
+    private String currentPhotoPath;
 
     private EditText etQR, etPatrimonial, etOldCode,
             etDescription, etColor, etBrand, etModel, etSeries,
@@ -101,7 +106,9 @@ public class ShowDetailDialog extends DialogFragment implements Callback<BienRes
         etPreservation = (EditText) view.findViewById(R.id.etPreservation);
         checkOperative = (CheckBox) view.findViewById(R.id.checkOperative);
         checkSurplus = (CheckBox) view.findViewById(R.id.checkSurplus);
-        // checkSurplus.setOnCheckedChangeListener(this);
+
+        Button btnCapturePhoto = (Button) view.findViewById(R.id.btnCapturePhoto);
+        btnCapturePhoto.setOnClickListener(this);
 
         getProductDataByQrCode();
 
@@ -176,5 +183,90 @@ public class ShowDetailDialog extends DialogFragment implements Callback<BienRes
     @Override
     public void onFailure(Call<BienResponse> call, Throwable t) {
         Toast.makeText(getContext(), t.getLocalizedMessage(), Toast.LENGTH_SHORT).show();
+    }
+
+    @Override
+    public void onClick(View view) {
+        switch (view.getId()) {
+            case R.id.btnCapturePhoto:
+                capturePhoto();
+                break;
+        }
+    }
+
+    private void capturePhoto() {
+        // Create the File where the photo should go
+        File photoFile = null;
+        try {
+            photoFile = createDestinationFile();
+        } catch (IOException ex) {
+            return;
+        }
+
+        // Continue only if the File was successfully created
+        if (photoFile != null) {
+            Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+            takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, Uri.fromFile(photoFile));
+            startActivityForResult(takePictureIntent, REQUEST_CODE_CAMERA);
+        }
+    }
+
+    private File createDestinationFile() throws IOException {
+        // Path for the temporary image and its name
+        final File storageDirectory = Environment.getExternalStoragePublicDirectory(
+                Environment.DIRECTORY_PICTURES);
+        final String imageFileName = "" + System.currentTimeMillis();
+
+        File image = File.createTempFile(
+                imageFileName,          // prefix
+                "." + DEFAULT_PHOTO_EXTENSION, // suffix
+                storageDirectory              // directory
+        );
+
+        // Save a the file path
+        currentPhotoPath = image.getAbsolutePath();
+        return image;
+    }
+
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (resultCode == Activity.RESULT_OK) {
+            if (requestCode == REQUEST_CODE_CAMERA)
+                onCaptureImageResult(data);
+        }
+    }
+
+    private void onCaptureImageResult(Intent data) {
+        Bitmap bitmap = BitmapFactory.decodeFile(currentPhotoPath);
+        postPicture(bitmap, DEFAULT_PHOTO_EXTENSION);
+        boolean deleted = new File(currentPhotoPath).delete();
+        if (! deleted) {
+            Toast.makeText(getContext(), "Si desea luego puede eliminar la foto del celular", Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    private void postPicture(Bitmap bitmap, final String extension) {
+        final String base64 = Global.getBase64FromBitmap(bitmap);
+
+        Call<SimpleResponse> call = RedemnorteApiAdapter.getApiService()
+                .postPhoto(base64, extension, hoja_id, qr_code);
+
+        call.enqueue(new Callback<SimpleResponse>() {
+            @Override
+            public void onResponse(Call<SimpleResponse> call, Response<SimpleResponse> response) {
+                if (response.isSuccessful()) {
+                    Toast.makeText(getContext(), "La foto se ha subido correctamente", Toast.LENGTH_SHORT).show();
+                } else {
+                    Toast.makeText(getActivity(), "Ocurrió un problema al enviar la imagen", Toast.LENGTH_SHORT).show();
+                }
+            }
+
+            @Override
+            public void onFailure(Call<SimpleResponse> call, Throwable t) {
+                Toast.makeText(getContext(), t.getLocalizedMessage(), Toast.LENGTH_SHORT).show();
+            }
+        });
     }
 }

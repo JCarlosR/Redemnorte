@@ -3,7 +3,11 @@ package com.youtube.sorcjc.redemnorte;
 import android.app.Activity;
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.graphics.Bitmap;
+import android.util.Base64;
 import android.widget.Spinner;
+
+import java.io.ByteArrayOutputStream;
 
 public class Global {
 
@@ -30,6 +34,14 @@ public class Global {
             }
 
         return index;
+    }
+
+    public static String getBase64FromBitmap(Bitmap bitmap) {
+        ByteArrayOutputStream stream = new ByteArrayOutputStream();
+        bitmap.compress(Bitmap.CompressFormat.JPEG, 70, stream);
+        byte[] byteFormat = stream.toByteArray();
+        // Get the base 64 string
+        return Base64.encodeToString(byteFormat, Base64.NO_WRAP);
     }
 
 }

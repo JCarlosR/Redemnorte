@@ -36,6 +36,12 @@
             android:paddingRight="@dimen/activity_horizontal_margin"
             android:paddingTop="@dimen/activity_vertical_margin">
 
+            <Button
+                android:id="@+id/btnCapturePhoto"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Capturar foto" />
+
             <android.support.design.widget.TextInputLayout
                 android:id="@+id/tilQR"
                 android:layout_width="match_parent"

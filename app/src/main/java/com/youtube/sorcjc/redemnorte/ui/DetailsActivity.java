@@ -101,10 +101,6 @@ public class DetailsActivity extends AppCompatActivity implements View.OnClickLi
             case R.id.fab:
                 showCreateDetailDialog();
                 break;
-            case R.id.btnShowProduct:
-                break;
-            case R.id.btnEditProduct:
-                break;
         }
     }
 

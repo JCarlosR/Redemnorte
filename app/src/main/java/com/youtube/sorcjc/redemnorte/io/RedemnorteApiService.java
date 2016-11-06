@@ -13,7 +13,13 @@ import retrofit2.http.GET;
 import retrofit2.http.POST;
 import retrofit2.http.Query;
 
-interface RedemnorteApiService {
+public interface RedemnorteApiService {
+
+    @FormUrlEncoded
+    @POST("registrar-foto.php")
+    Call<SimpleResponse> postPhoto(
+            @Field("image") String base64, @Field("extension") String extension,
+            @Field("hoja_id") String hoja_id, @Field("QR_code") String QR_code);
 
     @FormUrlEncoded
     @POST("hojas.php")
