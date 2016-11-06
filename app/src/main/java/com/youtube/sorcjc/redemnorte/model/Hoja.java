@@ -4,11 +4,11 @@ public class Hoja {
 
     private String id;
     private String fecha;
-    private String llocal;
+    private String local;
     private String ubicacion;
     private String responsable;
     private String cargo;
-    private String dependencia;
+    private String oficina;
     private String ambiente;
     private String area;
     private String inventariador;
@@ -29,12 +29,12 @@ public class Hoja {
         this.fecha = fecha;
     }
 
-    public String getLlocal() {
-        return llocal;
+    public String getLocal() {
+        return local;
     }
 
-    public void setLlocal(String llocal) {
-        this.llocal = llocal;
+    public void setLocal(String local) {
+        this.local = local;
     }
 
     public String getUbicacion() {
@@ -61,12 +61,12 @@ public class Hoja {
         this.cargo = cargo;
     }
 
-    public String getDependencia() {
-        return dependencia;
+    public String getOficina() {
+        return oficina;
     }
 
-    public void setDependencia(String dependencia) {
-        this.dependencia = dependencia;
+    public void setOficina(String oficina) {
+        this.oficina = oficina;
     }
 
     public String getAmbiente() {

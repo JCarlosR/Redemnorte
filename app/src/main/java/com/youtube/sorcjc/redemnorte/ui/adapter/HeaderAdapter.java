@@ -2,6 +2,8 @@ package com.youtube.sorcjc.redemnorte.ui.adapter;
 
 import android.content.Context;
 import android.content.Intent;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -12,6 +14,8 @@ import android.widget.TextView;
 import com.youtube.sorcjc.redemnorte.R;
 import com.youtube.sorcjc.redemnorte.model.Hoja;
 import com.youtube.sorcjc.redemnorte.ui.DetailsActivity;
+import com.youtube.sorcjc.redemnorte.ui.PanelActivity;
+import com.youtube.sorcjc.redemnorte.ui.fragment.HeaderDialogFragment;
 
 import java.util.ArrayList;
 
@@ -58,8 +62,21 @@ public class HeaderAdapter extends RecyclerView.Adapter<HeaderAdapter.ViewHolder
                     context.startActivity(intent);
                     break;
                 case R.id.btnEditHeader:
+                    showEditHeaderDialog(headerCode.getText().toString());
                     break;
             }
+        }
+
+        private void showEditHeaderDialog(final String hoja_id) {
+            FragmentManager fragmentManager = ((PanelActivity) context).getSupportFragmentManager();
+
+            // hoja_id is required to => edit a specific header
+            HeaderDialogFragment newFragment = HeaderDialogFragment.newInstance(hoja_id);
+
+            FragmentTransaction transaction = fragmentManager.beginTransaction();
+            transaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN);
+            transaction.add(android.R.id.content, newFragment)
+                    .addToBackStack(null).commit();
         }
     }
 
@@ -73,7 +90,6 @@ public class HeaderAdapter extends RecyclerView.Adapter<HeaderAdapter.ViewHolder
         notifyDataSetChanged();
     }
 
-    // Create new views (invoked by the layout manager)
     @Override
     public HeaderAdapter.ViewHolder onCreateViewHolder(ViewGroup parent,
                                                    int viewType) {
@@ -97,7 +113,6 @@ public class HeaderAdapter extends RecyclerView.Adapter<HeaderAdapter.ViewHolder
         holder.setOnClickListeners();
     }
 
-    // Return the size of your dataset (invoked by the layout manager)
     @Override
     public int getItemCount() {
         return dataSet.size();

@@ -66,6 +66,12 @@ public class DetailDialogFragment extends DialogFragment implements View.OnClick
     }
 
     @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        hoja_id = getArguments().getString("hoja_id");
+    }
+
+    @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.dialog_new_detail, container, false);
@@ -121,12 +127,6 @@ public class DetailDialogFragment extends DialogFragment implements View.OnClick
         btnCapturePatrimonial.setOnClickListener(this);
 
         return view;
-    }
-
-    @Override
-    public void onCreate(@Nullable Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        hoja_id = getArguments().getString("hoja_id");
     }
 
     @Override

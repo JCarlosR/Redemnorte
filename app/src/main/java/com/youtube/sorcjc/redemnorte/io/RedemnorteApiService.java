@@ -2,6 +2,7 @@ package com.youtube.sorcjc.redemnorte.io;
 
 import com.youtube.sorcjc.redemnorte.io.response.BienResponse;
 import com.youtube.sorcjc.redemnorte.io.response.BienesResponse;
+import com.youtube.sorcjc.redemnorte.io.response.HojaResponse;
 import com.youtube.sorcjc.redemnorte.io.response.HojasResponse;
 import com.youtube.sorcjc.redemnorte.io.response.SimpleResponse;
 
@@ -12,11 +13,14 @@ import retrofit2.http.GET;
 import retrofit2.http.POST;
 import retrofit2.http.Query;
 
-public interface RedemnorteApiService {
+interface RedemnorteApiService {
 
     @FormUrlEncoded
     @POST("hojas.php")
     Call<HojasResponse> getHojas(@Field("dni") String dni);
+
+    @GET("hoja.php")
+    Call<HojaResponse> getHoja(@Query("hoja_id") String hoja_id);
 
     @FormUrlEncoded
     @POST("bienes.php")
@@ -32,14 +36,28 @@ public interface RedemnorteApiService {
     @FormUrlEncoded
     @POST("registrar-hoja.php")
     Call<SimpleResponse> postRegistrarHoja(
+            @Field("id") String id,
             @Field("local") String local,
             @Field("ubicacion") String ubicacion,
             @Field("responsable") String responsable,
             @Field("cargo") String cargo,
-            @Field("dependencia") String dependencia,
+            @Field("oficina") String oficina,
             @Field("ambiente") String ambiente,
             @Field("area") String area,
             @Field("inventariador") String inventariador
+    );
+
+    @FormUrlEncoded
+    @POST("editar-hoja.php")
+    Call<SimpleResponse> postEditarHoja(
+            @Field("id") String id,
+            @Field("local") String local,
+            @Field("ubicacion") String ubicacion,
+            @Field("responsable") String responsable,
+            @Field("cargo") String cargo,
+            @Field("oficina") String oficina,
+            @Field("ambiente") String ambiente,
+            @Field("area") String area
     );
 
     @FormUrlEncoded

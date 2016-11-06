@@ -1,10 +1,9 @@
 package com.youtube.sorcjc.redemnorte.ui.fragment;
 
 import android.app.Dialog;
-import android.content.Context;
-import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.design.widget.TextInputLayout;
 import android.support.v4.app.DialogFragment;
 import android.support.v7.app.ActionBar;
@@ -25,10 +24,10 @@ import android.widget.Toast;
 import com.youtube.sorcjc.redemnorte.Global;
 import com.youtube.sorcjc.redemnorte.R;
 import com.youtube.sorcjc.redemnorte.io.RedemnorteApiAdapter;
+import com.youtube.sorcjc.redemnorte.io.response.HojaResponse;
 import com.youtube.sorcjc.redemnorte.io.response.SimpleResponse;
+import com.youtube.sorcjc.redemnorte.model.Hoja;
 import com.youtube.sorcjc.redemnorte.ui.PanelActivity;
-
-import org.w3c.dom.Text;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -40,19 +39,46 @@ import retrofit2.Response;
 public class HeaderDialogFragment extends DialogFragment {
 
     private Spinner spinnerResponsible;
-    private EditText etLocal, etUbicacion, etCargo, etDependencia, etAmbiente, etArea;
-    private TextInputLayout tilLocal, tilUbicacion, tilCargo, tilDependencia, tilAmbiente, tilArea;
+    private EditText etId, etLocal, etUbicacion, etCargo, etOficina, etAmbiente, etArea;
+    private TextInputLayout tilId, tilLocal, tilUbicacion, tilCargo, tilOficina, tilAmbiente, tilArea;
+
+    private String hoja_id;
+
+    public static HeaderDialogFragment newInstance(String hoja_id) {
+        HeaderDialogFragment f = new HeaderDialogFragment();
+
+        Bundle args = new Bundle();
+        args.putString("hoja_id", hoja_id);
+        f.setArguments(args);
+
+        return f;
+    }
+
+    @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        hoja_id = getArguments().getString("hoja_id");
+    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        // Inflate the layout to use as dialog or embedded fragment
-
-
         View view = inflater.inflate(R.layout.dialog_new_header, container, false);
 
+        etId = (EditText) view.findViewById(R.id.etId);
+
+        String title;
+        if (hoja_id.isEmpty())
+            title = "Registrar nueva hoja";
+        else {
+            title = "Editar hoja";
+            fetchHeaderDataFromServer();
+            etId.setText(hoja_id);
+            etId.setEnabled(false);
+        }
+
         Toolbar toolbar = (Toolbar) view.findViewById(R.id.toolbar);
-        toolbar.setTitle("Registrar nueva hoja");
+        toolbar.setTitle(title);
         ((AppCompatActivity) getActivity()).setSupportActionBar(toolbar);
 
         ActionBar actionBar = ((AppCompatActivity) getActivity()).getSupportActionBar();
@@ -66,14 +92,15 @@ public class HeaderDialogFragment extends DialogFragment {
         etLocal = (EditText) view.findViewById(R.id.etLocal);
         etUbicacion = (EditText) view.findViewById(R.id.etUbicacion);
         etCargo = (EditText) view.findViewById(R.id.etCargo);
-        etDependencia = (EditText) view.findViewById(R.id.etDependencia);
+        etOficina = (EditText) view.findViewById(R.id.etOficina);
         etAmbiente = (EditText) view.findViewById(R.id.etAmbiente);
         etArea = (EditText) view.findViewById(R.id.etArea);
 
+        tilId = (TextInputLayout) view.findViewById(R.id.tilId);
         tilLocal = (TextInputLayout) view.findViewById(R.id.tilLocal);
         tilUbicacion = (TextInputLayout) view.findViewById(R.id.tilUbicacion);
         tilCargo = (TextInputLayout) view.findViewById(R.id.tilCargo);
-        tilDependencia = (TextInputLayout) view.findViewById(R.id.tilDependencia);
+        tilOficina = (TextInputLayout) view.findViewById(R.id.tilOficina);
         tilAmbiente = (TextInputLayout) view.findViewById(R.id.tilAmbiente);
         tilArea = (TextInputLayout) view.findViewById(R.id.tilArea);
 
@@ -93,8 +120,6 @@ public class HeaderDialogFragment extends DialogFragment {
     @NonNull
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
-        // The only reason you might override this method when using onCreateView() is
-        // to modify any dialog characteristics.
         Dialog dialog = super.onCreateDialog(savedInstanceState);
         dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
         return dialog;
@@ -122,6 +147,10 @@ public class HeaderDialogFragment extends DialogFragment {
     }
 
     private void validateForm() {
+        if (!validateEditText(etId, tilId, R.string.error_hoja_id)) {
+            return;
+        }
+
         if (!validateEditText(etLocal, tilLocal, R.string.error_local)) {
             return;
         }
@@ -134,7 +163,7 @@ public class HeaderDialogFragment extends DialogFragment {
             return;
         }
 
-        if (!validateEditText(etDependencia, tilDependencia, R.string.error_dependencia)) {
+        if (!validateEditText(etOficina, tilOficina, R.string.error_oficina)) {
             return;
         }
 
@@ -146,20 +175,31 @@ public class HeaderDialogFragment extends DialogFragment {
             return;
         }
 
+        final String id = etId.getText().toString().trim();
         final String local = etLocal.getText().toString().trim();
         final String ubicacion = etUbicacion.getText().toString().trim();
         final String responsable = spinnerResponsible.getSelectedItem().toString();
         final String cargo = etCargo.getText().toString().trim();
-        final String dependencia = etDependencia.getText().toString().trim();
+        final String oficina = etOficina.getText().toString().trim();
         final String ambiente = etAmbiente.getText().toString().trim();
         final String area = etArea.getText().toString().trim();
-        final String inventariador = Global.getFromSharedPreferences(getActivity(), "username");
 
-        Call<SimpleResponse> call = RedemnorteApiAdapter.getApiService().postRegistrarHoja(
-                local, ubicacion, responsable, cargo, dependencia,
-                ambiente, area, inventariador
-        );
-        call.enqueue(new RegistrarHojaCallback());
+        // If we have received an ID, we have to edit the data, else, we have to create a new record
+        if (hoja_id.isEmpty()) {
+            final String inventariador = Global.getFromSharedPreferences(getActivity(), "username");
+
+            Call<SimpleResponse> call = RedemnorteApiAdapter.getApiService().postRegistrarHoja(
+                    id, local, ubicacion, responsable, cargo, oficina,
+                    ambiente, area, inventariador
+            );
+            call.enqueue(new RegistrarHojaCallback());
+        } else {
+            Call<SimpleResponse> call = RedemnorteApiAdapter.getApiService().postEditarHoja(
+                    id, local, ubicacion, responsable, cargo, oficina,
+                    ambiente, area
+            );
+            call.enqueue(new EditarHojaCallback());
+        }
     }
 
     class RegistrarHojaCallback implements Callback<SimpleResponse> {
@@ -167,11 +207,45 @@ public class HeaderDialogFragment extends DialogFragment {
         @Override
         public void onResponse(Call<SimpleResponse> call, Response<SimpleResponse> response) {
             if (response.isSuccessful()) {
-                Toast.makeText(getContext(), "Se ha registrado una nueva hoja", Toast.LENGTH_SHORT).show();
-                // Re-load the sheets
-                ((PanelActivity) getActivity()).cargarHojas();
-                // and then dismiss this dialog
-                dismiss();
+                SimpleResponse simpleResponse = response.body();
+                if (simpleResponse.isError()) {
+                    // Log.d("HeaderDialog", "messageError => " + simpleResponse.getMessage());
+                    Toast.makeText(getContext(), simpleResponse.getMessage(), Toast.LENGTH_SHORT).show();
+                }
+                else {
+                    Toast.makeText(getContext(), "Se ha registrado una nueva hoja", Toast.LENGTH_SHORT).show();
+
+                    // Re-load the sheets
+                    ((PanelActivity) getActivity()).cargarHojas();
+                    dismiss();
+                }
+            } else {
+                Toast.makeText(getContext(), "Error en el formato de respuesta", Toast.LENGTH_SHORT).show();
+            }
+        }
+
+        @Override
+        public void onFailure(Call<SimpleResponse> call, Throwable t) {
+            Toast.makeText(getContext(), t.getLocalizedMessage(), Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    class EditarHojaCallback implements Callback<SimpleResponse> {
+
+        @Override
+        public void onResponse(Call<SimpleResponse> call, Response<SimpleResponse> response) {
+            if (response.isSuccessful()) {
+                SimpleResponse simpleResponse = response.body();
+                if (simpleResponse.isError()) {
+                    Toast.makeText(getContext(), simpleResponse.getMessage(), Toast.LENGTH_SHORT).show();
+                }
+                else {
+                    Toast.makeText(getContext(), "Se ha editado correctamente la hoja", Toast.LENGTH_SHORT).show();
+
+                    // Re-load the sheets
+                    ((PanelActivity) getActivity()).cargarHojas();
+                    dismiss();
+                }
             } else {
                 Toast.makeText(getContext(), "Error en el formato de respuesta", Toast.LENGTH_SHORT).show();
             }
@@ -192,6 +266,45 @@ public class HeaderDialogFragment extends DialogFragment {
         }
 
         return true;
+    }
+
+    private void fetchHeaderDataFromServer() {
+        Call<HojaResponse> call = RedemnorteApiAdapter.getApiService().getHoja(hoja_id);
+        call.enqueue(new ShowHeaderDataCallback());
+    }
+
+    class ShowHeaderDataCallback implements Callback<HojaResponse> {
+
+        @Override
+        public void onResponse(Call<HojaResponse> call, Response<HojaResponse> response) {
+            if (response.isSuccessful()) {
+                HojaResponse hojaResponse = response.body();
+                if (hojaResponse.isError()) {
+                    Toast.makeText(getContext(), hojaResponse.getMessage(), Toast.LENGTH_SHORT).show();
+                }
+                else {
+                    showHeaderDataInFields(hojaResponse.getHoja());
+                }
+            } else {
+                Toast.makeText(getContext(), "Error en el formato de respuesta", Toast.LENGTH_SHORT).show();
+            }
+        }
+
+        @Override
+        public void onFailure(Call<HojaResponse> call, Throwable t) {
+            Toast.makeText(getContext(), t.getLocalizedMessage(), Toast.LENGTH_SHORT).show();
+        }
+
+        private void showHeaderDataInFields(Hoja hoja) {
+            etLocal.setText(hoja.getLocal());
+            etUbicacion.setText(hoja.getUbicacion());
+            etCargo.setText(hoja.getCargo());
+            etOficina.setText(hoja.getOficina());
+            etAmbiente.setText(hoja.getAmbiente());
+            etArea.setText(hoja.getArea());
+
+            spinnerResponsible.setSelection(Global.getSpinnerIndex(spinnerResponsible, hoja.getResponsable()));
+        }
     }
 
 }

@@ -94,14 +94,12 @@ public class PanelActivity extends AppCompatActivity implements View.OnClickList
 
     private void showCreateHeaderDialog() {
         FragmentManager fragmentManager = getSupportFragmentManager();
-        HeaderDialogFragment newFragment = new HeaderDialogFragment();
 
-        // The device is smaller, so show the fragment fullscreen
+        // Empty hoja_id => Register new header
+        HeaderDialogFragment newFragment = HeaderDialogFragment.newInstance("");
+
         FragmentTransaction transaction = fragmentManager.beginTransaction();
-        // For a little polish, specify a transition animation
         transaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN);
-        // To make it fullscreen, use the 'content' root view as the container
-        // for the fragment, which is always the root view for the activity
         transaction.add(android.R.id.content, newFragment)
                 .addToBackStack(null).commit();
     }

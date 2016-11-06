@@ -8,18 +8,20 @@
     <string name="password">Contraseña</string>
 
     <!-- Dialog new header hints -->
+    <string name="hint_hoja_id">NRO DE HOJA</string>
     <string name="hint_local">LOCAL (Sapitos, El Porvenir, La Esperanza)</string>
     <string name="hint_ubicacion">UBICACIÓN (Módulo A, Módulo B)</string>
     <string name="hint_cargo">CARGO (Gerente, Asistente)</string>
-    <string name="hint_dependencia">DEPENDENCIA (Gerencia, Subgerencia)</string>
+    <string name="hint_oficina">OFICINA (Gerencia, Subgerencia)</string>
     <string name="hint_ambiente">AMBIENTE (Primer piso, Taller)</string>
     <string name="hint_area">ÁREA (Contabilidad, Logística)</string>
 
     <!-- Dialog new header errors -->
+    <string name="error_hoja_id">Es necesario ingresar el nro de hoja</string>
     <string name="error_local">Es necesario ingresar un local</string>
     <string name="error_ubicacion">Es necesario ingresar una ubicación</string>
     <string name="error_cargo">Es necesario ingresar un cargo</string>
-    <string name="error_dependencia">Es necesario ingresar una dependencia</string>
+    <string name="error_oficina">Es necesario ingresar una oficina</string>
     <string name="error_ambiente">Es necesario ingresar un ambiente</string>
     <string name="error_area">Es necesario ingresar un área</string>
 
