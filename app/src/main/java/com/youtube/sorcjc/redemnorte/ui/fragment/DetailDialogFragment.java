@@ -30,6 +30,7 @@ import android.widget.Toast;
 
 import com.youtube.sorcjc.redemnorte.R;
 import com.youtube.sorcjc.redemnorte.io.RedemnorteApiAdapter;
+import com.youtube.sorcjc.redemnorte.io.RedemnorteApiService;
 import com.youtube.sorcjc.redemnorte.io.response.SimpleResponse;
 import com.youtube.sorcjc.redemnorte.ui.DetailsActivity;
 import com.youtube.sorcjc.redemnorte.ui.SimpleScannerActivity;
@@ -121,10 +122,15 @@ public class DetailDialogFragment extends DialogFragment implements View.OnClick
         tilDimHigh = (TextInputLayout) view.findViewById(R.id.tilDimHigh);
         tilObservation = (TextInputLayout) view.findViewById(R.id.tilObservation);
 
+        // Capture QR and Barcode
         ImageButton btnCaptureQR = (ImageButton) view.findViewById(R.id.btnCaptureQR);
         btnCaptureQR.setOnClickListener(this);
         ImageButton btnCapturePatrimonial = (ImageButton) view.findViewById(R.id.btnCapturePatrimonial);
         btnCapturePatrimonial.setOnClickListener(this);
+
+        // Check if QR is available
+        ImageButton btnCheckQR = (ImageButton) view.findViewById(R.id.btnCheckQR);
+        btnCheckQR.setOnClickListener(this);
 
         return view;
     }
@@ -254,6 +260,30 @@ public class DetailDialogFragment extends DialogFragment implements View.OnClick
                 Intent intentPatrimonial = new Intent(getContext(), SimpleScannerActivity.class);
                 startActivityForResult(intentPatrimonial, 2);
                 break;
+
+            case R.id.btnCheckQR:
+                performCheckQrRequest();
+                break;
+        }
+    }
+
+    private void performCheckQrRequest() {
+        Call<SimpleResponse> call = RedemnorteApiAdapter.getApiService().getCheckQr(etQR.getText().toString().trim());
+        call.enqueue(new CheckRequestCallback());
+    }
+
+    class CheckRequestCallback implements Callback<SimpleResponse> {
+
+        @Override
+        public void onResponse(Call<SimpleResponse> call, Response<SimpleResponse> response) {
+            if (response.isSuccessful()) {
+                Toast.makeText(getContext(), response.body().getMessage(), Toast.LENGTH_LONG).show();
+            }
+        }
+
+        @Override
+        public void onFailure(Call<SimpleResponse> call, Throwable t) {
+            Toast.makeText(getContext(), t.getLocalizedMessage(), Toast.LENGTH_SHORT).show();
         }
     }
 

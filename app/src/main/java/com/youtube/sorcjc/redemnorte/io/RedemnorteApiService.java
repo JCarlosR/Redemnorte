@@ -35,9 +35,8 @@ public interface RedemnorteApiService {
     @GET("bien.php")
     Call<BienResponse> getBien(@Query("hoja_id") String hoja_id, @Query("QR_code") String QR_code);
 
-    @FormUrlEncoded
-    @POST("login.php")
-    Call<SimpleResponse> getLogin(@Field("username") String username, @Field("password") String password);
+    @GET("login.php")
+    Call<SimpleResponse> getLogin(@Query("username") String username, @Query("password") String password);
 
     @FormUrlEncoded
     @POST("registrar-hoja.php")
@@ -65,6 +64,9 @@ public interface RedemnorteApiService {
             @Field("ambiente") String ambiente,
             @Field("area") String area
     );
+
+    @GET("check-qer.php")
+    Call<SimpleResponse> getCheckQr(@Query("QR_code") String QR_code);
 
     @FormUrlEncoded
     @POST("registrar-bien.php")

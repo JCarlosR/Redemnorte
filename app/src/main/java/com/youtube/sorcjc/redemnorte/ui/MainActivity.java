@@ -12,8 +12,14 @@ import android.widget.Toast;
 
 import com.youtube.sorcjc.redemnorte.Global;
 import com.youtube.sorcjc.redemnorte.R;
+import com.youtube.sorcjc.redemnorte.io.RedemnorteApiAdapter;
+import com.youtube.sorcjc.redemnorte.io.response.SimpleResponse;
 
-public class MainActivity extends AppCompatActivity implements View.OnClickListener {
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
+
+public class MainActivity extends AppCompatActivity implements View.OnClickListener, Callback<SimpleResponse> {
 
     private EditText etUsername, etPassword;
 
@@ -45,15 +51,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 final String username = etUsername.getText().toString();
                 final String password = etPassword.getText().toString();
 
-                if (username.equals("76474871") && password.equals("123123")) {
-                    Global.saveInSharedPreferences(this, "username", username);
+                Call<SimpleResponse> call = RedemnorteApiAdapter.getApiService().getLogin(username, password);
+                call.enqueue(this);
 
-                    Intent intentPanel = new Intent(this, PanelActivity.class);
-                    startActivity(intentPanel);
-                } else {
-                    Toast.makeText(this, R.string.error_login, Toast.LENGTH_SHORT).show();
-                }
-
+                Global.saveInSharedPreferences(this, "username", username);
                 break;
             case R.id.btnCall:
                 Toast.makeText(this, "Are you serious?", Toast.LENGTH_SHORT).show();
@@ -62,4 +63,23 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     }
 
 
+    @Override
+    public void onResponse(Call<SimpleResponse> call, Response<SimpleResponse> response) {
+        if (response.isSuccessful()) {
+            SimpleResponse simpleResponse = response.body();
+
+            if (! simpleResponse.isError()) {
+                Intent intentPanel = new Intent(this, PanelActivity.class);
+                startActivity(intentPanel);
+            }
+
+            // The same variable show a welcome message or error message
+            Toast.makeText(this, simpleResponse.getMessage(), Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    @Override
+    public void onFailure(Call<SimpleResponse> call, Throwable t) {
+        Toast.makeText(this, t.getLocalizedMessage(), Toast.LENGTH_SHORT).show();
+    }
 }

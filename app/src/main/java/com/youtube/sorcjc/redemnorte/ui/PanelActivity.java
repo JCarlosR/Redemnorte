@@ -11,6 +11,7 @@ import android.support.v7.widget.Toolbar;
 import android.view.View;
 import android.widget.Toast;
 
+import com.youtube.sorcjc.redemnorte.Global;
 import com.youtube.sorcjc.redemnorte.R;
 import com.youtube.sorcjc.redemnorte.io.RedemnorteApiAdapter;
 import com.youtube.sorcjc.redemnorte.io.response.HojasResponse;
@@ -79,7 +80,8 @@ public class PanelActivity extends AppCompatActivity implements View.OnClickList
     }
 
     public void cargarHojas() {
-        Call<HojasResponse> call = RedemnorteApiAdapter.getApiService().getHojas("76474871");
+        final String username = Global.getFromSharedPreferences(this, "username");
+        Call<HojasResponse> call = RedemnorteApiAdapter.getApiService().getHojas(username);
         call.enqueue(this);
     }
 
