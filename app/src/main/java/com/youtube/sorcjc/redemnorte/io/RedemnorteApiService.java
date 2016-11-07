@@ -2,6 +2,7 @@ package com.youtube.sorcjc.redemnorte.io;
 
 import com.youtube.sorcjc.redemnorte.io.response.BienResponse;
 import com.youtube.sorcjc.redemnorte.io.response.BienesResponse;
+import com.youtube.sorcjc.redemnorte.io.response.ByOldCodeResponse;
 import com.youtube.sorcjc.redemnorte.io.response.ByPatrimonialResponse;
 import com.youtube.sorcjc.redemnorte.io.response.HojaResponse;
 import com.youtube.sorcjc.redemnorte.io.response.HojasResponse;
@@ -71,6 +72,9 @@ public interface RedemnorteApiService {
 
     @GET("take-by-patrimonial.php")
     Call<ByPatrimonialResponse> getByPatrimonial(@Query("patrimonial") String patrimonial);
+
+    @GET("take-by-old-code.php")
+    Call<ByOldCodeResponse> getByOldCode(@Query("year") String year, @Query("code") String code);
 
     @FormUrlEncoded
     @POST("registrar-bien.php")

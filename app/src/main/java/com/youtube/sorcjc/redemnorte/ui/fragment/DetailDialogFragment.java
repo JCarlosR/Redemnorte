@@ -32,6 +32,7 @@ import com.youtube.sorcjc.redemnorte.Global;
 import com.youtube.sorcjc.redemnorte.R;
 import com.youtube.sorcjc.redemnorte.io.RedemnorteApiAdapter;
 import com.youtube.sorcjc.redemnorte.io.RedemnorteApiService;
+import com.youtube.sorcjc.redemnorte.io.response.ByOldCodeResponse;
 import com.youtube.sorcjc.redemnorte.io.response.ByPatrimonialResponse;
 import com.youtube.sorcjc.redemnorte.io.response.SimpleResponse;
 import com.youtube.sorcjc.redemnorte.model.BienConsolidado;
@@ -138,6 +139,9 @@ public class DetailDialogFragment extends DialogFragment implements View.OnClick
         // Take data by patrimonial code
         ImageButton btnTakeByPatrimonial = (ImageButton) view.findViewById(R.id.btnTakeByPatrimonial);
         btnTakeByPatrimonial.setOnClickListener(this);
+        // Take data by old code
+        ImageButton btnTakeByOldCode = (ImageButton) view.findViewById(R.id.btnTakeByOldCode);
+        btnTakeByOldCode.setOnClickListener(this);
 
         return view;
     }
@@ -275,7 +279,7 @@ public class DetailDialogFragment extends DialogFragment implements View.OnClick
             case R.id.btnTakeByPatrimonial:
                 performByPatrimonialRequest();
                 break;
-            case R.id.btnTakeByOld:
+            case R.id.btnTakeByOldCode:
                 performByOldCodeRequest();
         }
     }
@@ -350,7 +354,33 @@ public class DetailDialogFragment extends DialogFragment implements View.OnClick
     }
 
     private void performByOldCodeRequest() {
+        final String year = spinnerOldYear.getSelectedItem().toString();
+        final String code = etOldCode.getText().toString().trim();
+        Call<ByOldCodeResponse> call = RedemnorteApiAdapter.getApiService().getByOldCode(year, code);
+        call.enqueue(new TakeByOldCodeCallback());
     }
+
+    class TakeByOldCodeCallback implements Callback<ByOldCodeResponse> {
+        @Override
+        public void onResponse(Call<ByOldCodeResponse> call, Response<ByOldCodeResponse> response) {
+            if (response.isSuccessful()) {
+                ByOldCodeResponse byOldCodeResponse = response.body();
+                // The message is used for both, successful and error responses
+                if (byOldCodeResponse.isError()) {
+                    Toast.makeText(getContext(), byOldCodeResponse.getMessage(), Toast.LENGTH_LONG).show();
+                } else {
+                    etDescription.setText(byOldCodeResponse.getBien().getDescription());
+                    Toast.makeText(getContext(), byOldCodeResponse.getMessage(), Toast.LENGTH_LONG).show();
+                }
+            }
+        }
+
+        @Override
+        public void onFailure(Call<ByOldCodeResponse> call, Throwable t) {
+            Toast.makeText(getContext(), t.getLocalizedMessage(), Toast.LENGTH_SHORT).show();
+        }
+    }
+
 
     private void performCheckQrRequest() {
         Call<SimpleResponse> call = RedemnorteApiAdapter.getApiService().getCheckQr(etQR.getText().toString().trim());
