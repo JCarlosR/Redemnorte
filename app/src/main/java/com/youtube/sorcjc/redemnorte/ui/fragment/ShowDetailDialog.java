@@ -23,9 +23,11 @@ import android.view.Window;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.Spinner;
 import android.widget.Toast;
 
+import com.squareup.picasso.Picasso;
 import com.youtube.sorcjc.redemnorte.Global;
 import com.youtube.sorcjc.redemnorte.R;
 import com.youtube.sorcjc.redemnorte.io.RedemnorteApiAdapter;
@@ -58,6 +60,10 @@ public class ShowDetailDialog extends DialogFragment implements Callback<BienRes
 
     // Params required for the request
     private String hoja_id, qr_code;
+
+    // Photo
+    Button btnCapturePhoto;
+    private ImageView ivPhoto;
 
     public static ShowDetailDialog newInstance(String hoja_id, String qr_code) {
         ShowDetailDialog f = new ShowDetailDialog();
@@ -107,8 +113,10 @@ public class ShowDetailDialog extends DialogFragment implements Callback<BienRes
         checkOperative = (CheckBox) view.findViewById(R.id.checkOperative);
         checkSurplus = (CheckBox) view.findViewById(R.id.checkSurplus);
 
-        Button btnCapturePhoto = (Button) view.findViewById(R.id.btnCapturePhoto);
+        btnCapturePhoto = (Button) view.findViewById(R.id.btnCapturePhoto);
         btnCapturePhoto.setOnClickListener(this);
+
+        ivPhoto = (ImageView) view.findViewById(R.id.ivPhoto);
 
         getProductDataByQrCode();
 
@@ -168,6 +176,11 @@ public class ShowDetailDialog extends DialogFragment implements Callback<BienRes
         etDimWidth.setText(bien.getDimWidth());
         etDimHigh.setText(bien.getDimHigh());
         etObservation.setText(bien.getObservation());
+
+        final String extension = bien.getPhoto_extension();
+        if (extension!=null && !extension.isEmpty()) {
+            loadDetailPhoto(extension);
+        }
     }
 
     @Override
@@ -258,6 +271,7 @@ public class ShowDetailDialog extends DialogFragment implements Callback<BienRes
             public void onResponse(Call<SimpleResponse> call, Response<SimpleResponse> response) {
                 if (response.isSuccessful()) {
                     Toast.makeText(getContext(), "La foto se ha subido correctamente", Toast.LENGTH_SHORT).show();
+                    loadDetailPhoto(DEFAULT_PHOTO_EXTENSION);
                 } else {
                     Toast.makeText(getActivity(), "Ocurrió un problema al enviar la imagen", Toast.LENGTH_SHORT).show();
                 }
@@ -268,5 +282,11 @@ public class ShowDetailDialog extends DialogFragment implements Callback<BienRes
                 Toast.makeText(getContext(), t.getLocalizedMessage(), Toast.LENGTH_SHORT).show();
             }
         });
+    }
+
+    private void loadDetailPhoto(final String extension) {
+        final String imageUrl = Global.getProductPhotoUrl(hoja_id, qr_code, extension);
+        Picasso.with(getContext()).load(imageUrl).fit().centerCrop().into(ivPhoto);
+        btnCapturePhoto.setText("Reemplazar foto");
     }
 }

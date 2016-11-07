@@ -42,6 +42,20 @@
                 android:layout_height="wrap_content"
                 android:text="Capturar foto" />
 
+            <ImageView
+                android:id="@+id/ivPhoto"
+                android:contentDescription="Foto del bien"
+                android:scaleType="center"
+                android:layout_width="match_parent"
+                android:layout_height="250dp" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Datos del bien"
+                android:layout_marginTop="6dp"
+                android:textSize="20sp" />
+
             <android.support.design.widget.TextInputLayout
                 android:id="@+id/tilQR"
                 android:layout_width="match_parent"

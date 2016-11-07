@@ -44,4 +44,7 @@ public class Global {
         return Base64.encodeToString(byteFormat, Base64.NO_WRAP);
     }
 
+    public static String getProductPhotoUrl(String hoja_id, String qr_code, String extension) {
+        return "http://redemnorte.pe/SistemaInventarios/images/2016/"+hoja_id+"-"+qr_code+"."+extension;
+    }
 }

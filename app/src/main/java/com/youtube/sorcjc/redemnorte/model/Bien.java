@@ -48,6 +48,10 @@ public class Bien {
     @SerializedName("observacion")
     private String observation;
 
+    // Photo
+    @SerializedName("photo_extension")
+    private String photo_extension;
+
     public Bien(String qr, String patrimonial, String description) {
         this.qr = qr;
         this.patrimonial = patrimonial;
@@ -180,5 +184,13 @@ public class Bien {
 
     public void setOld_code(String old_code) {
         this.old_code = old_code;
+    }
+
+    public String getPhoto_extension() {
+        return photo_extension;
+    }
+
+    public void setPhoto_extension(String photo_extension) {
+        this.photo_extension = photo_extension;
     }
 }
