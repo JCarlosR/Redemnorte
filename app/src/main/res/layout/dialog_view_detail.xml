@@ -44,7 +44,7 @@
 
             <ImageView
                 android:id="@+id/ivPhoto"
-                android:contentDescription="Foto del bien"
+                android:contentDescription="Foto del bienConsolidado"
                 android:scaleType="center"
                 android:layout_width="match_parent"
                 android:layout_height="250dp" />
@@ -123,7 +123,7 @@
                 android:id="@+id/checkSurplus"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Este es un bien sobrante" />
+                android:text="Este es un bienConsolidado sobrante" />
 
             <android.support.design.widget.TextInputLayout
                 android:id="@+id/tilDescription"

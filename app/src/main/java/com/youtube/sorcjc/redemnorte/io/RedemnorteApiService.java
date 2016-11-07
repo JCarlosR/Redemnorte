@@ -2,6 +2,7 @@ package com.youtube.sorcjc.redemnorte.io;
 
 import com.youtube.sorcjc.redemnorte.io.response.BienResponse;
 import com.youtube.sorcjc.redemnorte.io.response.BienesResponse;
+import com.youtube.sorcjc.redemnorte.io.response.ByPatrimonialResponse;
 import com.youtube.sorcjc.redemnorte.io.response.HojaResponse;
 import com.youtube.sorcjc.redemnorte.io.response.HojasResponse;
 import com.youtube.sorcjc.redemnorte.io.response.SimpleResponse;
@@ -65,8 +66,11 @@ public interface RedemnorteApiService {
             @Field("area") String area
     );
 
-    @GET("check-qer.php")
-    Call<SimpleResponse> getCheckQr(@Query("QR_code") String QR_code);
+    @GET("check-qr.php")
+    Call<SimpleResponse> getCheckQr(@Query("qr_code") String QR_code);
+
+    @GET("take-by-patrimonial.php")
+    Call<ByPatrimonialResponse> getByPatrimonial(@Query("patrimonial") String patrimonial);
 
     @FormUrlEncoded
     @POST("registrar-bien.php")

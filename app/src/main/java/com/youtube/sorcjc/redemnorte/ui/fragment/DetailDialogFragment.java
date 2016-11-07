@@ -28,10 +28,13 @@ import android.widget.ImageButton;
 import android.widget.Spinner;
 import android.widget.Toast;
 
+import com.youtube.sorcjc.redemnorte.Global;
 import com.youtube.sorcjc.redemnorte.R;
 import com.youtube.sorcjc.redemnorte.io.RedemnorteApiAdapter;
 import com.youtube.sorcjc.redemnorte.io.RedemnorteApiService;
+import com.youtube.sorcjc.redemnorte.io.response.ByPatrimonialResponse;
 import com.youtube.sorcjc.redemnorte.io.response.SimpleResponse;
+import com.youtube.sorcjc.redemnorte.model.BienConsolidado;
 import com.youtube.sorcjc.redemnorte.ui.DetailsActivity;
 import com.youtube.sorcjc.redemnorte.ui.SimpleScannerActivity;
 
@@ -131,6 +134,10 @@ public class DetailDialogFragment extends DialogFragment implements View.OnClick
         // Check if QR is available
         ImageButton btnCheckQR = (ImageButton) view.findViewById(R.id.btnCheckQR);
         btnCheckQR.setOnClickListener(this);
+
+        // Take data by patrimonial code
+        ImageButton btnTakeByPatrimonial = (ImageButton) view.findViewById(R.id.btnTakeByPatrimonial);
+        btnTakeByPatrimonial.setOnClickListener(this);
 
         return view;
     }
@@ -264,7 +271,85 @@ public class DetailDialogFragment extends DialogFragment implements View.OnClick
             case R.id.btnCheckQR:
                 performCheckQrRequest();
                 break;
+
+            case R.id.btnTakeByPatrimonial:
+                performByPatrimonialRequest();
+                break;
+            case R.id.btnTakeByOld:
+                performByOldCodeRequest();
         }
+    }
+
+    private void performByPatrimonialRequest() {
+        Call<ByPatrimonialResponse> call = RedemnorteApiAdapter.getApiService().getByPatrimonial(etPatrimonial.getText().toString().trim());
+        call.enqueue(new TakeByPatrimonialCallback());
+    }
+
+    class TakeByPatrimonialCallback implements Callback<ByPatrimonialResponse> {
+        @Override
+        public void onResponse(Call<ByPatrimonialResponse> call, Response<ByPatrimonialResponse> response) {
+            if (response.isSuccessful()) {
+                ByPatrimonialResponse byPatrimonialResponse = response.body();
+                // The message is used for both, successful and error responses
+                if (byPatrimonialResponse.isError()) {
+                    Toast.makeText(getContext(), byPatrimonialResponse.getMessage(), Toast.LENGTH_LONG).show();
+                } else {
+                    setBienConsolidadoInViews(byPatrimonialResponse.getBienConsolidado());
+                    Toast.makeText(getContext(), byPatrimonialResponse.getMessage(), Toast.LENGTH_LONG).show();
+                }
+
+            }
+        }
+
+        @Override
+        public void onFailure(Call<ByPatrimonialResponse> call, Throwable t) {
+            Toast.makeText(getContext(), t.getLocalizedMessage(), Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    private void setBienConsolidadoInViews(BienConsolidado bienConsolidado) {
+        final String description = bienConsolidado.getDescription().trim();
+        final String brand = bienConsolidado.getBrand().trim();
+        final String model = bienConsolidado.getModel().trim();
+        final String series = bienConsolidado.getSeries().trim();
+        final String estado = bienConsolidado.getEstado();
+        // final String empleado = bienConsolidado.getEmpleado();
+        // final String ubicacion = bienConsolidado.getUbicacion();
+        // final String local = bienConsolidado.getLocal();
+
+        etDescription.setText(description);
+        etBrand.setText(brand);
+        etModel.setText(model);
+        etSeries.setText(series);
+
+        String preservation = "";
+        switch (estado) {
+            case "BU":
+                preservation = "Bueno";
+                break;
+            case "SE": // Sin estado
+                preservation = "Bueno";
+                break;
+            case "RE":
+                preservation = "Regular";
+                break;
+            case "MA":
+                preservation = "Malo";
+                break;
+            case "PB": // Para baja
+                preservation = "Malo";
+                break;
+            case "ER": // En reparación
+                preservation = "Malo";
+                break;
+            case "IN":
+                preservation = "Malo";
+                break;
+        }
+        spinnerPreservation.setSelection(Global.getSpinnerIndex(spinnerPreservation, preservation));
+    }
+
+    private void performByOldCodeRequest() {
     }
 
     private void performCheckQrRequest() {
