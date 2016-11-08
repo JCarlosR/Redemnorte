@@ -66,12 +66,17 @@ public class DetailDialogFragment extends DialogFragment implements View.OnClick
     // The next param only is provided when the fragment is opened in edit mode
     private String qr_code_param;
 
-    public static DetailDialogFragment newInstance(String hoja_id, String qr_code) {
+    // Responsible associated with the header, so we can check if the detail is assigned to it
+    // in old databases
+    private String responsable;
+
+    public static DetailDialogFragment newInstance(String hoja_id, String qr_code, String responsable) {
         DetailDialogFragment f = new DetailDialogFragment();
 
         Bundle args = new Bundle();
         args.putString("hoja_id", hoja_id);
         args.putString("qr_code", qr_code);
+        args.putString("responsable", responsable);
         f.setArguments(args);
 
         return f;
@@ -82,6 +87,7 @@ public class DetailDialogFragment extends DialogFragment implements View.OnClick
         super.onCreate(savedInstanceState);
         hoja_id = getArguments().getString("hoja_id");
         qr_code_param = getArguments().getString("qr_code");
+        responsable = getArguments().getString("responsable");
     }
 
     @Override
@@ -401,12 +407,14 @@ public class DetailDialogFragment extends DialogFragment implements View.OnClick
     }
 
     private void setBienConsolidadoInViews(BienConsolidado bienConsolidado) {
+        if (bienConsolidado == null) return;
+
         final String description = bienConsolidado.getDescription().trim();
         final String brand = bienConsolidado.getBrand().trim();
         final String model = bienConsolidado.getModel().trim();
         final String series = bienConsolidado.getSeries().trim();
         final String estado = bienConsolidado.getEstado();
-        // final String empleado = bienConsolidado.getEmpleado();
+
         // final String ubicacion = bienConsolidado.getUbicacion();
         // final String local = bienConsolidado.getLocal();
 
@@ -440,6 +448,14 @@ public class DetailDialogFragment extends DialogFragment implements View.OnClick
                 break;
         }
         spinnerPreservation.setSelection(Global.getSpinnerIndex(spinnerPreservation, preservation));
+
+        final String empleado = bienConsolidado.getEmpleado().trim();
+        if (! empleado.equals(responsable)) {
+            String message = "Este bien le pertenece al usuario " + empleado + ".\n";
+            message += "Verifica si el responsable de esta hoja " + responsable + " se hará cargo.\n";
+            message += "De caso contrario, crea una nueva hoja, márcala con el estado pendiente y registra allí el bien.";
+            Global.showInformationDialog(getContext(), "Importante", message);
+        }
     }
 
     private void performByOldCodeRequest() {
@@ -520,16 +536,7 @@ public class DetailDialogFragment extends DialogFragment implements View.OnClick
     public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
         // checkSurplus
         if (b) {
-            AlertDialog alertDialog = new AlertDialog.Builder(getContext()).create();
-            alertDialog.setTitle("Importante");
-            alertDialog.setMessage("Un bien sobrante es aquel que no tiene código patrimonial asignado. Si no estás seguro, comunícate con tu superior.");
-            alertDialog.setButton(AlertDialog.BUTTON_POSITIVE, "Ok",
-                    new DialogInterface.OnClickListener() {
-                        public void onClick(DialogInterface dialog, int which) {
-                            dialog.dismiss();
-                        }
-                    });
-            alertDialog.show();
+            Global.showInformationDialog(getContext(), "Importante", "Un bien sobrante es aquel que no tiene código patrimonial asignado. Si no estás seguro, comunícate con tu superior.");
         }
     }
 }

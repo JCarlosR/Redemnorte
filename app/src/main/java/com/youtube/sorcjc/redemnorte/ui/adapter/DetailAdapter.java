@@ -21,7 +21,7 @@ import java.util.ArrayList;
 public class DetailAdapter extends RecyclerView.Adapter<DetailAdapter.ViewHolder> {
 
     private ArrayList<Bien> dataSet;
-    private static String hoja_id;
+    private static String hoja_id, responsable;
 
     // Provide a reference to the views for each data item
     static class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
@@ -34,7 +34,7 @@ public class DetailAdapter extends RecyclerView.Adapter<DetailAdapter.ViewHolder
         // buttons
         Button btnShowProduct;
         Button btnEditProduct;
-        // main id
+        // id
         String qr_code;
 
         ViewHolder(View v) {
@@ -78,7 +78,7 @@ public class DetailAdapter extends RecyclerView.Adapter<DetailAdapter.ViewHolder
 
         private void editProductDialog() {
             FragmentManager fragmentManager = ((DetailsActivity) context).getSupportFragmentManager();
-            DetailDialogFragment newFragment = DetailDialogFragment.newInstance(hoja_id, qr_code);
+            DetailDialogFragment newFragment = DetailDialogFragment.newInstance(hoja_id, qr_code, responsable);
 
             FragmentTransaction transaction = fragmentManager.beginTransaction();
             transaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
@@ -88,9 +88,10 @@ public class DetailAdapter extends RecyclerView.Adapter<DetailAdapter.ViewHolder
     }
 
     // Provide a suitable constructor
-    public DetailAdapter(ArrayList<Bien> myDataSet, String headerCode) {
+    public DetailAdapter(ArrayList<Bien> myDataSet, String _hoja_id, String _responsable) {
         dataSet = myDataSet;
-        hoja_id = headerCode;
+        hoja_id = _hoja_id;
+        responsable = _responsable;
     }
 
     public void setDataSet(ArrayList<Bien> dataSet) {
@@ -114,10 +115,11 @@ public class DetailAdapter extends RecyclerView.Adapter<DetailAdapter.ViewHolder
     public void onBindViewHolder(ViewHolder holder, int position) {
         // get element from your data-set at this position
         // replace the contents of the view with that element
-        holder.qr_code = dataSet.get(position).getQr();
-        holder.tvDetailQR.setText("QR: " + dataSet.get(position).getQr());
-        holder.tvDescription.setText(dataSet.get(position).getDescription());
-        holder.tvPatrimonial.setText("Cód Patrimonial: " + dataSet.get(position).getPatrimonial());
+        Bien bien = dataSet.get(position);
+        holder.qr_code = bien.getQr();
+        holder.tvDetailQR.setText("QR: " + bien.getQr());
+        holder.tvDescription.setText(bien.getDescription());
+        holder.tvPatrimonial.setText("Cód Patrimonial: " + bien.getPatrimonial());
 
         // set events
         holder.setOnClickListeners();

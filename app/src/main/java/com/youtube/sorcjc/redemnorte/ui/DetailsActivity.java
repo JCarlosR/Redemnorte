@@ -32,7 +32,7 @@ import retrofit2.Response;
 public class DetailsActivity extends AppCompatActivity implements View.OnClickListener, Callback<BienesResponse> {
 
     private DetailAdapter detailAdapter;
-    private String headerCode;
+    private String hoja_id, responsable;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -41,7 +41,8 @@ public class DetailsActivity extends AppCompatActivity implements View.OnClickLi
 
         Bundle extras = getIntent().getExtras();
         if (extras != null) {
-             headerCode = extras.getString("headerCode");
+            hoja_id = extras.getString("hoja_id");
+            responsable = extras.getString("responsable");
         }
 
         RecyclerView recyclerView = (RecyclerView) findViewById(R.id.recyclerView);
@@ -50,13 +51,13 @@ public class DetailsActivity extends AppCompatActivity implements View.OnClickLi
 
         ArrayList<Bien> myDataSet = new ArrayList<>();
 
-        detailAdapter = new DetailAdapter(myDataSet, headerCode);
+        detailAdapter = new DetailAdapter(myDataSet, hoja_id, responsable);
         recyclerView.setAdapter(detailAdapter);
 
         cargarBienes();
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-        toolbar.setTitle("Hoja " + headerCode);
+        toolbar.setTitle("Hoja " + hoja_id);
         setSupportActionBar(toolbar);
 
         ActionBar actionBar = getSupportActionBar();
@@ -72,18 +73,14 @@ public class DetailsActivity extends AppCompatActivity implements View.OnClickLi
             public void onScrolled(RecyclerView recyclerView, int dx, int dy)
             {
                 if (dy > 0 || dy < 0 && fab.isShown())
-                {
                     fab.hide();
-                }
             }
 
             @Override
             public void onScrollStateChanged(RecyclerView recyclerView, int newState)
             {
                 if (newState == RecyclerView.SCROLL_STATE_IDLE)
-                {
                     fab.show();
-                }
 
                 super.onScrollStateChanged(recyclerView, newState);
             }
@@ -91,7 +88,7 @@ public class DetailsActivity extends AppCompatActivity implements View.OnClickLi
     }
 
     public void cargarBienes() {
-        Call<BienesResponse> call = RedemnorteApiAdapter.getApiService().getBienes(headerCode);
+        Call<BienesResponse> call = RedemnorteApiAdapter.getApiService().getBienes(hoja_id);
         call.enqueue(this);
     }
 
@@ -118,7 +115,7 @@ public class DetailsActivity extends AppCompatActivity implements View.OnClickLi
 
     private void showCreateDetailDialog() {
         FragmentManager fragmentManager = getSupportFragmentManager();
-        DetailDialogFragment newFragment = DetailDialogFragment.newInstance(headerCode, "");
+        DetailDialogFragment newFragment = DetailDialogFragment.newInstance(hoja_id, "", responsable);
 
         FragmentTransaction transaction = fragmentManager.beginTransaction();
         transaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);

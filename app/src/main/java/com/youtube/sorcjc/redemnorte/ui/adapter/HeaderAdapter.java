@@ -35,6 +35,8 @@ public class HeaderAdapter extends RecyclerView.Adapter<HeaderAdapter.ViewHolder
         // buttons
         Button btnDetails;
         Button btnEditHeader;
+        // params
+        String hoja_id, responsable;
 
         ViewHolder(View v) {
             super(v);
@@ -58,11 +60,12 @@ public class HeaderAdapter extends RecyclerView.Adapter<HeaderAdapter.ViewHolder
             switch (view.getId()) {
                 case R.id.btnDetails:
                     Intent intent = new Intent(context, DetailsActivity.class);
-                    intent.putExtra("headerCode", headerCode.getText());
+                    intent.putExtra("hoja_id", hoja_id);
+                    intent.putExtra("responsable", responsable);
                     context.startActivity(intent);
                     break;
                 case R.id.btnEditHeader:
-                    showEditHeaderDialog(headerCode.getText().toString());
+                    showEditHeaderDialog(hoja_id);
                     break;
             }
         }
@@ -105,12 +108,18 @@ public class HeaderAdapter extends RecyclerView.Adapter<HeaderAdapter.ViewHolder
     public void onBindViewHolder(ViewHolder holder, int position) {
         // get element from your dataSet-set at this position
         // replace the contents of the view with that element
-        holder.headerCode.setText(dataSet.get(position).getId());
-        holder.responsibleName.setText(dataSet.get(position).getResponsable());
-        holder.headerDate.setText(dataSet.get(position).getFecha());
+        Hoja currentHeader = dataSet.get(position);
+
+        holder.headerCode.setText(currentHeader.getId());
+        holder.responsibleName.setText(currentHeader.getResponsable());
+        holder.headerDate.setText(currentHeader.getFecha());
 
         // set events
         holder.setOnClickListeners();
+
+        // params needed to show the details
+        holder.hoja_id = currentHeader.getId();
+        holder.responsable = currentHeader.getResponsable().trim();
     }
 
     @Override
