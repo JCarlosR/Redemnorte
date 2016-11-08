@@ -55,6 +55,7 @@ public interface RedemnorteApiService {
             @Field("oficina") String oficina,
             @Field("ambiente") String ambiente,
             @Field("area") String area,
+            @Field("activo") String activo,
             @Field("inventariador") String inventariador
     );
 
@@ -68,7 +69,8 @@ public interface RedemnorteApiService {
             @Field("cargo") String cargo,
             @Field("oficina") String oficina,
             @Field("ambiente") String ambiente,
-            @Field("area") String area
+            @Field("area") String area,
+            @Field("activo") String activo
     );
 
     @GET("check-qr.php")

@@ -133,6 +133,12 @@
                     android:hint="@string/hint_area"
                     android:layout_height="wrap_content" />
             </android.support.design.widget.TextInputLayout>
+
+            <CheckBox
+                android:id="@+id/checkPendiente"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Marcar como hoja pendiente de revisión" />
         </LinearLayout>
 
     </android.support.v4.widget.NestedScrollView>

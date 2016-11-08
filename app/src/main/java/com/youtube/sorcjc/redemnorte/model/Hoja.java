@@ -12,6 +12,7 @@ public class Hoja {
     private String ambiente;
     private String area;
     private String inventariador;
+    private String activo;
 
     public String getId() {
         return id;
@@ -91,5 +92,13 @@ public class Hoja {
 
     public void setInventariador(String inventariador) {
         this.inventariador = inventariador;
+    }
+
+    public String getActivo() {
+        return activo;
+    }
+
+    public void setActivo(String activo) {
+        this.activo = activo;
     }
 }

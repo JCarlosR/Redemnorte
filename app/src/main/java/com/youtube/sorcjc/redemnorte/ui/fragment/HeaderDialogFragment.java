@@ -17,6 +17,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
 import android.widget.ArrayAdapter;
+import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.Toast;
@@ -43,6 +44,7 @@ public class HeaderDialogFragment extends DialogFragment {
     private Spinner spinnerResponsible;
     private EditText etId, etLocal, etUbicacion, etCargo, etOficina, etAmbiente, etArea;
     private TextInputLayout tilId, tilLocal, tilUbicacion, tilCargo, tilOficina, tilAmbiente, tilArea;
+    private CheckBox checkPendiente;
 
     private String hoja_id;
 
@@ -109,6 +111,7 @@ public class HeaderDialogFragment extends DialogFragment {
         obtenerDatosResponsables();
 
         spinnerResponsible = (Spinner) view.findViewById(R.id.spinnerResponsible);
+        checkPendiente = (CheckBox) view.findViewById(R.id.checkPendiente);
 
         return view;
     }
@@ -215,6 +218,7 @@ public class HeaderDialogFragment extends DialogFragment {
         final String oficina = etOficina.getText().toString().trim();
         final String ambiente = etAmbiente.getText().toString().trim();
         final String area = etArea.getText().toString().trim();
+        final String activo = checkPendiente.isChecked() ? "0" : "1";
 
         // If we have received an ID, we have to edit the data, else, we have to create a new record
         if (hoja_id.isEmpty()) {
@@ -222,13 +226,13 @@ public class HeaderDialogFragment extends DialogFragment {
 
             Call<SimpleResponse> call = RedemnorteApiAdapter.getApiService().postRegistrarHoja(
                     id, local, ubicacion, responsable, cargo, oficina,
-                    ambiente, area, inventariador
+                    ambiente, area, activo, inventariador
             );
             call.enqueue(new RegistrarHojaCallback());
         } else {
             Call<SimpleResponse> call = RedemnorteApiAdapter.getApiService().postEditarHoja(
                     id, local, ubicacion, responsable, cargo, oficina,
-                    ambiente, area
+                    ambiente, area, activo
             );
             call.enqueue(new EditarHojaCallback());
         }
@@ -336,6 +340,9 @@ public class HeaderDialogFragment extends DialogFragment {
             etArea.setText(hoja.getArea());
 
             spinnerResponsible.setSelection(Global.getSpinnerIndex(spinnerResponsible, hoja.getResponsable()));
+
+            if ( hoja.getActivo().equals("0") ) // si la hoja no está activa, está pendiente
+                checkPendiente.setChecked(true);
         }
     }
 
