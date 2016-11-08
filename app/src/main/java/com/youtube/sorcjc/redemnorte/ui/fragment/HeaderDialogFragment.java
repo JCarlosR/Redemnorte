@@ -25,8 +25,10 @@ import com.youtube.sorcjc.redemnorte.Global;
 import com.youtube.sorcjc.redemnorte.R;
 import com.youtube.sorcjc.redemnorte.io.RedemnorteApiAdapter;
 import com.youtube.sorcjc.redemnorte.io.response.HojaResponse;
+import com.youtube.sorcjc.redemnorte.io.response.ResponsableResponse;
 import com.youtube.sorcjc.redemnorte.io.response.SimpleResponse;
 import com.youtube.sorcjc.redemnorte.model.Hoja;
+import com.youtube.sorcjc.redemnorte.model.Responsable;
 import com.youtube.sorcjc.redemnorte.ui.PanelActivity;
 
 import java.util.ArrayList;
@@ -104,17 +106,47 @@ public class HeaderDialogFragment extends DialogFragment {
         tilAmbiente = (TextInputLayout) view.findViewById(R.id.tilAmbiente);
         tilArea = (TextInputLayout) view.findViewById(R.id.tilArea);
 
+        obtenerDatosResponsables();
+
         spinnerResponsible = (Spinner) view.findViewById(R.id.spinnerResponsible);
+
+        return view;
+    }
+
+    private void poblarSpinnerResponsables(ArrayList<Responsable> responsables) {
         List<String> list = new ArrayList<String>();
-        list.add("Usuario A");
-        list.add("Usuario B");
-        list.add("Usuario C");
+        for (Responsable r : responsables) {
+            list.add(r.getNombre());
+        }
 
         ArrayAdapter<String> spinnerArrayAdapter = new ArrayAdapter<String>(getContext(), android.R.layout.simple_spinner_item, list);
         spinnerArrayAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         spinnerResponsible.setAdapter(spinnerArrayAdapter);
+    }
 
-        return view;
+    private void obtenerDatosResponsables() {
+        Call<ResponsableResponse> call = RedemnorteApiAdapter.getApiService().getResponsables();
+        call.enqueue(new ResponsablesCallback());
+    }
+
+    class ResponsablesCallback implements Callback<ResponsableResponse> {
+
+        @Override
+        public void onResponse(Call<ResponsableResponse> call, Response<ResponsableResponse> response) {
+            if (response.isSuccessful()) {
+                ResponsableResponse responsableResponse = response.body();
+                if (! responsableResponse.isError()) {
+                    poblarSpinnerResponsables(responsableResponse.getResponsables());
+                }
+            } else {
+                Toast.makeText(getContext(), "Error en el formato de respuesta", Toast.LENGTH_SHORT).show();
+            }
+        }
+
+        @Override
+        public void onFailure(Call<ResponsableResponse> call, Throwable t) {
+            Toast.makeText(getContext(), t.getLocalizedMessage(), Toast.LENGTH_SHORT).show();
+        }
     }
 
     @NonNull

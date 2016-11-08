@@ -6,6 +6,7 @@ import com.youtube.sorcjc.redemnorte.io.response.ByOldCodeResponse;
 import com.youtube.sorcjc.redemnorte.io.response.ByPatrimonialResponse;
 import com.youtube.sorcjc.redemnorte.io.response.HojaResponse;
 import com.youtube.sorcjc.redemnorte.io.response.HojasResponse;
+import com.youtube.sorcjc.redemnorte.io.response.ResponsableResponse;
 import com.youtube.sorcjc.redemnorte.io.response.SimpleResponse;
 
 import retrofit2.Call;
@@ -16,6 +17,9 @@ import retrofit2.http.POST;
 import retrofit2.http.Query;
 
 public interface RedemnorteApiService {
+
+    @GET("responsables.php")
+    Call<ResponsableResponse> getResponsables();
 
     @FormUrlEncoded
     @POST("registrar-foto.php")
