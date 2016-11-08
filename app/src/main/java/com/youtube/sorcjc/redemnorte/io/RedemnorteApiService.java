@@ -99,4 +99,28 @@ public interface RedemnorteApiService {
             @Field("operativo") String operativo,
             @Field("observacion") String observacion
     );
+
+    @FormUrlEncoded
+    @POST("editar-bien.php")
+    Call<SimpleResponse> postEditarBien(
+            @Field("hoja_id") String hoja_id,
+            @Field("QR_code") String QR_code,
+            @Field("patrimonial_code") String patrimonial_code,
+            @Field("old_code") String old_code,
+            @Field("old_year") String old_year,
+
+            @Field("denominacion") String denominacion,
+            @Field("marca") String marca,
+            @Field("modelo") String modelo,
+            @Field("serie") String serie,
+            @Field("color") String color,
+
+            @Field("largo") String largo,
+            @Field("ancho") String ancho,
+            @Field("alto") String alto,
+
+            @Field("condicion") String condicion,
+            @Field("operativo") String operativo,
+            @Field("observacion") String observacion
+    );
 }

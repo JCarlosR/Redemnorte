@@ -13,7 +13,6 @@ import android.support.v7.app.ActionBar;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -31,10 +30,11 @@ import android.widget.Toast;
 import com.youtube.sorcjc.redemnorte.Global;
 import com.youtube.sorcjc.redemnorte.R;
 import com.youtube.sorcjc.redemnorte.io.RedemnorteApiAdapter;
-import com.youtube.sorcjc.redemnorte.io.RedemnorteApiService;
+import com.youtube.sorcjc.redemnorte.io.response.BienResponse;
 import com.youtube.sorcjc.redemnorte.io.response.ByOldCodeResponse;
 import com.youtube.sorcjc.redemnorte.io.response.ByPatrimonialResponse;
 import com.youtube.sorcjc.redemnorte.io.response.SimpleResponse;
+import com.youtube.sorcjc.redemnorte.model.Bien;
 import com.youtube.sorcjc.redemnorte.model.BienConsolidado;
 import com.youtube.sorcjc.redemnorte.ui.DetailsActivity;
 import com.youtube.sorcjc.redemnorte.ui.SimpleScannerActivity;
@@ -58,13 +58,20 @@ public class DetailDialogFragment extends DialogFragment implements View.OnClick
             tilDimLong, tilDimWidth, tilDimHigh,
             tilObservation;
 
+    private ImageButton btnCaptureQR, btnCheckQR;
+
+    // Param that contains the ID of the parent header
     private String hoja_id;
 
-    public static DetailDialogFragment newInstance(String hoja_id) {
+    // The next param only is provided when the fragment is opened in edit mode
+    private String qr_code_param;
+
+    public static DetailDialogFragment newInstance(String hoja_id, String qr_code) {
         DetailDialogFragment f = new DetailDialogFragment();
 
         Bundle args = new Bundle();
         args.putString("hoja_id", hoja_id);
+        args.putString("qr_code", qr_code);
         f.setArguments(args);
 
         return f;
@@ -74,6 +81,7 @@ public class DetailDialogFragment extends DialogFragment implements View.OnClick
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         hoja_id = getArguments().getString("hoja_id");
+        qr_code_param = getArguments().getString("qr_code");
     }
 
     @Override
@@ -82,7 +90,10 @@ public class DetailDialogFragment extends DialogFragment implements View.OnClick
         View view = inflater.inflate(R.layout.dialog_new_detail, container, false);
 
         Toolbar toolbar = (Toolbar) view.findViewById(R.id.toolbar);
-        toolbar.setTitle("Registrar nuevo bien");
+        String title = "Registrar nuevo bien";
+        if (qr_code_param!=null && !qr_code_param.isEmpty())
+            title = "Editar bien seleccionado";
+        toolbar.setTitle(title);
         ((AppCompatActivity) getActivity()).setSupportActionBar(toolbar);
 
         ActionBar actionBar = ((AppCompatActivity) getActivity()).getSupportActionBar();
@@ -93,6 +104,33 @@ public class DetailDialogFragment extends DialogFragment implements View.OnClick
         }
         setHasOptionsMenu(true);
 
+        getViewReferences(view);
+
+        // Capture QR, Patrimonial Barcode & Old code
+        btnCaptureQR = (ImageButton) view.findViewById(R.id.btnCaptureQR);
+        btnCaptureQR.setOnClickListener(this);
+        ImageButton btnCapturePatrimonial = (ImageButton) view.findViewById(R.id.btnCapturePatrimonial);
+        btnCapturePatrimonial.setOnClickListener(this);
+        ImageButton btnCaptureOldCode = (ImageButton) view.findViewById(R.id.btnCaptureOldCode);
+        btnCaptureOldCode.setOnClickListener(this);
+
+        // Check if QR is available
+        btnCheckQR = (ImageButton) view.findViewById(R.id.btnCheckQR);
+        btnCheckQR.setOnClickListener(this);
+
+        // Take data by patrimonial code
+        ImageButton btnTakeByPatrimonial = (ImageButton) view.findViewById(R.id.btnTakeByPatrimonial);
+        btnTakeByPatrimonial.setOnClickListener(this);
+        // Take data by old code
+        ImageButton btnTakeByOldCode = (ImageButton) view.findViewById(R.id.btnTakeByOldCode);
+        btnTakeByOldCode.setOnClickListener(this);
+
+        setupEditMode();
+
+        return view;
+    }
+
+    private void getViewReferences(View view) {
         etQR = (EditText) view.findViewById(R.id.etQR);
         etPatrimonial = (EditText) view.findViewById(R.id.etPatrimonial);
 
@@ -125,25 +163,58 @@ public class DetailDialogFragment extends DialogFragment implements View.OnClick
         tilDimWidth = (TextInputLayout) view.findViewById(R.id.tilDimWidth);
         tilDimHigh = (TextInputLayout) view.findViewById(R.id.tilDimHigh);
         tilObservation = (TextInputLayout) view.findViewById(R.id.tilObservation);
+    }
 
-        // Capture QR and Barcode
-        ImageButton btnCaptureQR = (ImageButton) view.findViewById(R.id.btnCaptureQR);
-        btnCaptureQR.setOnClickListener(this);
-        ImageButton btnCapturePatrimonial = (ImageButton) view.findViewById(R.id.btnCapturePatrimonial);
-        btnCapturePatrimonial.setOnClickListener(this);
+    private void setupEditMode() {
+        // qr_code_param provided => edit mode
+        if (! qr_code_param.isEmpty()) {
+            etQR.setEnabled(false);
+            btnCaptureQR.setVisibility(View.GONE);
+            btnCheckQR.setVisibility(View.GONE);
 
-        // Check if QR is available
-        ImageButton btnCheckQR = (ImageButton) view.findViewById(R.id.btnCheckQR);
-        btnCheckQR.setOnClickListener(this);
+            Call<BienResponse> call = RedemnorteApiAdapter.getApiService().getBien(hoja_id, qr_code_param);
+            call.enqueue(new GetPreviousDataCallback());
+        }
+    }
 
-        // Take data by patrimonial code
-        ImageButton btnTakeByPatrimonial = (ImageButton) view.findViewById(R.id.btnTakeByPatrimonial);
-        btnTakeByPatrimonial.setOnClickListener(this);
-        // Take data by old code
-        ImageButton btnTakeByOldCode = (ImageButton) view.findViewById(R.id.btnTakeByOldCode);
-        btnTakeByOldCode.setOnClickListener(this);
+    class GetPreviousDataCallback implements Callback<BienResponse> {
 
-        return view;
+        @Override
+        public void onResponse(Call<BienResponse> call, Response<BienResponse> response) {
+            if (response.isSuccessful()) {
+                Bien bien = response.body().getBien();
+                setProductDataToViews(bien);
+            } else {
+                Toast.makeText(getContext(), "Formato de respuesta incorrecto", Toast.LENGTH_SHORT).show();
+            }
+        }
+
+        @Override
+        public void onFailure(Call<BienResponse> call, Throwable t) {
+            Toast.makeText(getContext(), t.getLocalizedMessage(), Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    private void setProductDataToViews(Bien bien) {
+        etQR.setText(bien.getQr());
+        etPatrimonial.setText(bien.getPatrimonial());
+        etOldCode.setText(bien.getOld_code());
+
+        spinnerOldYear.setSelection(Global.getSpinnerIndex(spinnerOldYear, bien.getOld_year()));
+        spinnerPreservation.setSelection(Global.getSpinnerIndex(spinnerPreservation, bien.getPreservation()));
+
+        checkOperative.setSelected( bien.isOperative().equals("S") );
+        checkSurplus.setSelected( bien.getPatrimonial().trim().isEmpty() );
+
+        etDescription.setText(bien.getDescription());
+        etColor.setText(bien.getColor());
+        etBrand.setText(bien.getBrand());
+        etModel.setText(bien.getModel());
+        etSeries.setText(bien.getSeries());
+        etDimLong.setText(bien.getDimLong());
+        etDimWidth.setText(bien.getDimWidth());
+        etDimHigh.setText(bien.getDimHigh());
+        etObservation.setText(bien.getObservation());
     }
 
     @Override
@@ -214,12 +285,24 @@ public class DetailDialogFragment extends DialogFragment implements View.OnClick
         final String operativo = checkOperative.isChecked() ? "S" : "N";
         final String observacion = etObservation.getText().toString().trim();
 
-        Call<SimpleResponse> call = RedemnorteApiAdapter.getApiService().postRegistrarBien(
-                hoja_id, QR_code, patrimonial_code, old_code, old_year,
-                denominacion, marca, modelo, serie, color,
-                largo, ancho, alto,
-                condicion, operativo, observacion
-        );
+        Call<SimpleResponse> call;
+        if (qr_code_param!=null && !qr_code_param.isEmpty()) {
+            // Qr code provided => edit mode
+             call = RedemnorteApiAdapter.getApiService().postEditarBien(
+                    hoja_id, QR_code, patrimonial_code, old_code, old_year,
+                    denominacion, marca, modelo, serie, color,
+                    largo, ancho, alto,
+                    condicion, operativo, observacion
+            );
+        } else {
+            // Qr code assigned => register new detail
+            call = RedemnorteApiAdapter.getApiService().postRegistrarBien(
+                    hoja_id, QR_code, patrimonial_code, old_code, old_year,
+                    denominacion, marca, modelo, serie, color,
+                    largo, ancho, alto,
+                    condicion, operativo, observacion
+            );
+        }
         call.enqueue(new RegistrarBienCallback());
     }
 
@@ -229,13 +312,15 @@ public class DetailDialogFragment extends DialogFragment implements View.OnClick
         public void onResponse(Call<SimpleResponse> call, Response<SimpleResponse> response) {
             if (response.isSuccessful()) {
                 if (response.body().isError()) {
+                    // Just show an error message.
                     Toast.makeText(getContext(), response.body().getMessage(), Toast.LENGTH_SHORT).show();
                 } else {
-                    Toast.makeText(getContext(), "Se ha registrado un nuevo bien", Toast.LENGTH_SHORT).show();
+                    // Show a successful message,
+                    Toast.makeText(getContext(), response.body().getMessage(), Toast.LENGTH_SHORT).show();
 
-                    // Re-load the recyclerView
+                    // re-load the recyclerView,
                     ((DetailsActivity) getActivity()).cargarBienes();
-                    // and then dismiss this dialog
+                    // and dismiss this dialog.
                     dismiss();
                 }
             } else {
@@ -270,6 +355,10 @@ public class DetailDialogFragment extends DialogFragment implements View.OnClick
             case R.id.btnCapturePatrimonial:
                 Intent intentPatrimonial = new Intent(getContext(), SimpleScannerActivity.class);
                 startActivityForResult(intentPatrimonial, 2);
+                break;
+            case R.id.btnCaptureOldCode:
+                Intent intentCaptureOld = new Intent(getContext(), SimpleScannerActivity.class);
+                startActivityForResult(intentCaptureOld, 3);
                 break;
 
             case R.id.btnCheckQR:
@@ -416,6 +505,12 @@ public class DetailDialogFragment extends DialogFragment implements View.OnClick
             if (resultCode == Activity.RESULT_OK) {
                 final String result = data.getStringExtra("code");
                 etPatrimonial.setText(result);
+                Toast.makeText(getContext(), "Usa el botón de la diana para buscar y traer datos.", Toast.LENGTH_SHORT).show();
+            }
+        } else if (requestCode == 3) {
+            if (resultCode == Activity.RESULT_OK) {
+                final String result = data.getStringExtra("code");
+                etOldCode.setText(result);
                 Toast.makeText(getContext(), "Usa el botón de la diana para buscar y traer datos.", Toast.LENGTH_SHORT).show();
             }
         }

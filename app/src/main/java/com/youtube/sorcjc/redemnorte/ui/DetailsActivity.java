@@ -118,7 +118,7 @@ public class DetailsActivity extends AppCompatActivity implements View.OnClickLi
 
     private void showCreateDetailDialog() {
         FragmentManager fragmentManager = getSupportFragmentManager();
-        DetailDialogFragment newFragment = DetailDialogFragment.newInstance(headerCode);
+        DetailDialogFragment newFragment = DetailDialogFragment.newInstance(headerCode, "");
 
         FragmentTransaction transaction = fragmentManager.beginTransaction();
         transaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);

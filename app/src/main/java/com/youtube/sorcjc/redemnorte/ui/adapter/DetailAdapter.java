@@ -61,6 +61,7 @@ public class DetailAdapter extends RecyclerView.Adapter<DetailAdapter.ViewHolder
                     showProductDataDialog();
                     break;
                 case R.id.btnEditProduct:
+                    editProductDialog();
                     break;
             }
         }
@@ -68,6 +69,16 @@ public class DetailAdapter extends RecyclerView.Adapter<DetailAdapter.ViewHolder
         private void showProductDataDialog() {
             FragmentManager fragmentManager = ((DetailsActivity) context).getSupportFragmentManager();
             ShowDetailDialog newFragment = ShowDetailDialog.newInstance(hoja_id, qr_code);
+
+            FragmentTransaction transaction = fragmentManager.beginTransaction();
+            transaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
+            transaction.add(android.R.id.content, newFragment)
+                    .addToBackStack(null).commit();
+        }
+
+        private void editProductDialog() {
+            FragmentManager fragmentManager = ((DetailsActivity) context).getSupportFragmentManager();
+            DetailDialogFragment newFragment = DetailDialogFragment.newInstance(hoja_id, qr_code);
 
             FragmentTransaction transaction = fragmentManager.beginTransaction();
             transaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
