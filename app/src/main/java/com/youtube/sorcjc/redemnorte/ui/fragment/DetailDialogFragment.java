@@ -263,13 +263,6 @@ public class DetailDialogFragment extends DialogFragment implements View.OnClick
             return;
         }
 
-        if (etPatrimonial.getText().toString().trim().isEmpty() && !checkSurplus.isChecked()) {
-            tilPatrimonial.setError("Escanea el código o declara que es un bien sobrante !");
-            return;
-        } else {
-            tilPatrimonial.setErrorEnabled(false);
-        }
-
         performRegisterRequest();
     }
 
@@ -540,7 +533,7 @@ public class DetailDialogFragment extends DialogFragment implements View.OnClick
     public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
         // checkSurplus
         if (b) {
-            Global.showInformationDialog(getContext(), "Importante", "Un bien sobrante es aquel que no tiene código patrimonial asignado. Si no estás seguro, comunícate con tu superior.");
+            Global.showInformationDialog(getContext(), "Importante", "Un bien sobrante es aquel que no tiene código patrimonial asignado, y además ningún usuario se quiere hacer responsable.");
         }
     }
 }
