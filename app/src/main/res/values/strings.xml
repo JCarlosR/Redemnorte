@@ -36,6 +36,7 @@
     <string name="hint_dim_high">Alto</string>
     <string name="hint_operative">Operativo?</string>
     <string name="hint_observation">Observación</string>
+    <string name="hint_responsible">Usuario responsable</string>
 
     <string name="hint_preservation">Estado de conservación</string>
 

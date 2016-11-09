@@ -17,6 +17,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
 import android.widget.ArrayAdapter;
+import android.widget.AutoCompleteTextView;
 import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.Spinner;
@@ -41,7 +42,7 @@ import retrofit2.Response;
 
 public class HeaderDialogFragment extends DialogFragment {
 
-    private Spinner spinnerResponsible;
+    private AutoCompleteTextView spinnerResponsible;
     private EditText etId, etLocal, etUbicacion, etCargo, etOficina, etAmbiente, etArea;
     private TextInputLayout tilId, tilLocal, tilUbicacion, tilCargo, tilOficina, tilAmbiente, tilArea;
     private CheckBox checkPendiente;
@@ -110,7 +111,7 @@ public class HeaderDialogFragment extends DialogFragment {
 
         obtenerDatosResponsables();
 
-        spinnerResponsible = (Spinner) view.findViewById(R.id.spinnerResponsible);
+        spinnerResponsible = (AutoCompleteTextView) view.findViewById(R.id.spinnerResponsible);
         checkPendiente = (CheckBox) view.findViewById(R.id.checkPendiente);
 
         return view;
@@ -122,8 +123,8 @@ public class HeaderDialogFragment extends DialogFragment {
             list.add(r.getNombre());
         }
 
-        ArrayAdapter<String> spinnerArrayAdapter = new ArrayAdapter<String>(getContext(), android.R.layout.simple_spinner_item, list);
-        spinnerArrayAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        ArrayAdapter<String> spinnerArrayAdapter = new ArrayAdapter<String>(getContext(), android.R.layout.simple_dropdown_item_1line, list);
+        // spinnerArrayAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         spinnerResponsible.setAdapter(spinnerArrayAdapter);
     }
 
@@ -213,7 +214,7 @@ public class HeaderDialogFragment extends DialogFragment {
         final String id = etId.getText().toString().trim();
         final String local = etLocal.getText().toString().trim();
         final String ubicacion = etUbicacion.getText().toString().trim();
-        final String responsable = spinnerResponsible.getSelectedItem().toString();
+        final String responsable = spinnerResponsible.getText().toString().trim();
         final String cargo = etCargo.getText().toString().trim();
         final String oficina = etOficina.getText().toString().trim();
         final String ambiente = etAmbiente.getText().toString().trim();
@@ -339,7 +340,8 @@ public class HeaderDialogFragment extends DialogFragment {
             etAmbiente.setText(hoja.getAmbiente());
             etArea.setText(hoja.getArea());
 
-            spinnerResponsible.setSelection(Global.getSpinnerIndex(spinnerResponsible, hoja.getResponsable()));
+            spinnerResponsible.setText(hoja.getResponsable());
+            // spinnerResponsible.setSelection(Global.getSpinnerIndex(spinnerResponsible, hoja.getResponsable()));
 
             if ( hoja.getActivo().equals("0") ) // si la hoja no está activa, está pendiente
                 checkPendiente.setChecked(true);
