@@ -102,6 +102,7 @@ public interface RedemnorteApiService {
             @Field("alto") String alto,
 
             @Field("condicion") String condicion,
+            @Field("etiquetado") String etiquetado,
             @Field("operativo") String operativo,
             @Field("observacion") String observacion
     );
@@ -126,6 +127,7 @@ public interface RedemnorteApiService {
             @Field("alto") String alto,
 
             @Field("condicion") String condicion,
+            @Field("etiquetado") String etiquetado,
             @Field("operativo") String operativo,
             @Field("observacion") String observacion
     );

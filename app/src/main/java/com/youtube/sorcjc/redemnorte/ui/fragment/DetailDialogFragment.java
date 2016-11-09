@@ -51,7 +51,7 @@ public class DetailDialogFragment extends DialogFragment implements View.OnClick
             etObservation;
 
     private Spinner spinnerPreservation, spinnerOldYear;
-    private CheckBox checkOperative, checkSurplus;
+    private CheckBox checkOperative, checkSurplus, checkEtiquetado;
 
     private TextInputLayout tilQR, tilPatrimonial,
             tilDescription, tilColor, tilBrand, tilModel, tilSeries,
@@ -157,6 +157,7 @@ public class DetailDialogFragment extends DialogFragment implements View.OnClick
         checkOperative = (CheckBox) view.findViewById(R.id.checkOperative);
         checkSurplus = (CheckBox) view.findViewById(R.id.checkSurplus);
         checkSurplus.setOnCheckedChangeListener(this);
+        checkEtiquetado = (CheckBox) view.findViewById(R.id.checkEtiquetado);
 
         tilQR = (TextInputLayout) view.findViewById(R.id.tilQR);
         tilPatrimonial = (TextInputLayout) view.findViewById(R.id.tilPatrimonial);
@@ -209,8 +210,9 @@ public class DetailDialogFragment extends DialogFragment implements View.OnClick
         spinnerOldYear.setSelection(Global.getSpinnerIndex(spinnerOldYear, bien.getOld_year()));
         spinnerPreservation.setSelection(Global.getSpinnerIndex(spinnerPreservation, bien.getPreservation()));
 
-        checkOperative.setSelected( bien.isOperative().equals("S") );
-        checkSurplus.setSelected( bien.getPatrimonial().trim().isEmpty() );
+        checkOperative.setChecked( bien.isOperative().equals("S") );
+        checkSurplus.setChecked( bien.getPatrimonial().trim().isEmpty() );
+        checkEtiquetado.setChecked( bien.getEtiquetado().equals("1") );
 
         etDescription.setText(bien.getDescription());
         etColor.setText(bien.getColor());
@@ -288,6 +290,7 @@ public class DetailDialogFragment extends DialogFragment implements View.OnClick
         final String alto = etDimHigh.getText().toString().trim();
 
         final String condicion = spinnerPreservation.getSelectedItem().toString();
+        final String etiquetado = checkEtiquetado.isChecked() ? "1" : "0";
         final String operativo = checkOperative.isChecked() ? "S" : "N";
         final String observacion = etObservation.getText().toString().trim();
 
@@ -298,7 +301,7 @@ public class DetailDialogFragment extends DialogFragment implements View.OnClick
                     hoja_id, QR_code, patrimonial_code, old_code, old_year,
                     denominacion, marca, modelo, serie, color,
                     largo, ancho, alto,
-                    condicion, operativo, observacion
+                    condicion, etiquetado, operativo, observacion
             );
         } else {
             // Qr code assigned => register new detail
@@ -306,7 +309,7 @@ public class DetailDialogFragment extends DialogFragment implements View.OnClick
                     hoja_id, QR_code, patrimonial_code, old_code, old_year,
                     denominacion, marca, modelo, serie, color,
                     largo, ancho, alto,
-                    condicion, operativo, observacion
+                    condicion, etiquetado, operativo, observacion
             );
         }
         call.enqueue(new RegistrarBienCallback());

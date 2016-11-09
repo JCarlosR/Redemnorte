@@ -43,6 +43,8 @@ public class Bien {
     // Status
     @SerializedName("condicion")
     private String preservation;
+    @SerializedName("etiquetado")
+    private String etiquetado;
     @SerializedName("operativo")
     private String operative;
     @SerializedName("observacion")
@@ -203,5 +205,13 @@ public class Bien {
 
     public void setCodigoActivo(String codigoActivo) {
         this.codigoActivo = codigoActivo;
+    }
+
+    public String getEtiquetado() {
+        return etiquetado;
+    }
+
+    public void setEtiquetado(String etiquetado) {
+        this.etiquetado = etiquetado;
     }
 }

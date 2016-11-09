@@ -123,7 +123,15 @@
                 android:id="@+id/checkSurplus"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Este es un bienConsolidado sobrante" />
+                android:enabled="false"
+                android:text="Este es un bien sobrante" />
+
+            <CheckBox
+                android:id="@+id/checkEtiquetado"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:enabled="false"
+                android:text="Este bien se encuentra etiquetado" />
 
             <android.support.design.widget.TextInputLayout
                 android:id="@+id/tilDescription"
@@ -286,7 +294,7 @@
                 android:id="@+id/checkOperative"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:checked="true"
+                android:enabled="false"
                 android:text="@string/hint_operative" />
 
             <android.support.design.widget.TextInputLayout

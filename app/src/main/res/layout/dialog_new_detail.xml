@@ -140,6 +140,12 @@
                 android:layout_height="wrap_content"
                 android:text="Declaro que es un bien sobrante" />
 
+            <CheckBox
+                android:id="@+id/checkEtiquetado"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="El bien está etiquetado" />
+
             <android.support.design.widget.TextInputLayout
                 android:id="@+id/tilDescription"
                 android:layout_width="match_parent"
