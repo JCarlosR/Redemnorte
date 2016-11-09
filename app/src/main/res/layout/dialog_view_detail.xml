@@ -120,13 +120,6 @@
             </LinearLayout>
 
             <CheckBox
-                android:id="@+id/checkSurplus"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:enabled="false"
-                android:text="Este es un bien sobrante" />
-
-            <CheckBox
                 android:id="@+id/checkEtiquetado"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"

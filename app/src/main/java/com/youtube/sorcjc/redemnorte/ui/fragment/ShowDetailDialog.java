@@ -56,7 +56,7 @@ public class ShowDetailDialog extends DialogFragment implements Callback<BienRes
             etObservation, etPreservation;
 
     private Spinner spinnerOldYear;
-    private CheckBox checkOperative, checkSurplus, checkEtiquetado;
+    private CheckBox checkOperative, checkEtiquetado;
 
     // Params required for the request
     private String hoja_id, qr_code;
@@ -111,7 +111,6 @@ public class ShowDetailDialog extends DialogFragment implements Callback<BienRes
 
         etPreservation = (EditText) view.findViewById(R.id.etPreservation);
         checkOperative = (CheckBox) view.findViewById(R.id.checkOperative);
-        checkSurplus = (CheckBox) view.findViewById(R.id.checkSurplus);
         checkEtiquetado = (CheckBox) view.findViewById(R.id.checkEtiquetado);
 
         btnCapturePhoto = (Button) view.findViewById(R.id.btnCapturePhoto);
@@ -166,7 +165,6 @@ public class ShowDetailDialog extends DialogFragment implements Callback<BienRes
         etPreservation.setText(bien.getPreservation());
 
         checkOperative.setChecked( bien.isOperative().equals("S") );
-        checkSurplus.setChecked( bien.getPatrimonial().trim().isEmpty() );
         checkEtiquetado.setChecked( bien.getEtiquetado().trim().equals("1") );
 
         etDescription.setText(bien.getDescription());

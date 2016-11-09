@@ -43,7 +43,7 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-public class DetailDialogFragment extends DialogFragment implements View.OnClickListener, CompoundButton.OnCheckedChangeListener {
+public class DetailDialogFragment extends DialogFragment implements View.OnClickListener {
 
     private EditText etQR, etPatrimonial, etOldCode,
             etDescription, etColor, etBrand, etModel, etSeries,
@@ -51,7 +51,7 @@ public class DetailDialogFragment extends DialogFragment implements View.OnClick
             etObservation;
 
     private Spinner spinnerPreservation, spinnerOldYear;
-    private CheckBox checkOperative, checkSurplus, checkEtiquetado;
+    private CheckBox checkOperative, checkEtiquetado;
 
     private TextInputLayout tilQR, tilPatrimonial,
             tilDescription, tilColor, tilBrand, tilModel, tilSeries,
@@ -155,8 +155,6 @@ public class DetailDialogFragment extends DialogFragment implements View.OnClick
 
         spinnerPreservation = (Spinner) view.findViewById(R.id.spinnerPreservation);
         checkOperative = (CheckBox) view.findViewById(R.id.checkOperative);
-        checkSurplus = (CheckBox) view.findViewById(R.id.checkSurplus);
-        checkSurplus.setOnCheckedChangeListener(this);
         checkEtiquetado = (CheckBox) view.findViewById(R.id.checkEtiquetado);
 
         tilQR = (TextInputLayout) view.findViewById(R.id.tilQR);
@@ -211,7 +209,6 @@ public class DetailDialogFragment extends DialogFragment implements View.OnClick
         spinnerPreservation.setSelection(Global.getSpinnerIndex(spinnerPreservation, bien.getPreservation()));
 
         checkOperative.setChecked( bien.isOperative().equals("S") );
-        checkSurplus.setChecked( bien.getPatrimonial().trim().isEmpty() );
         checkEtiquetado.setChecked( bien.getEtiquetado().equals("1") );
 
         etDescription.setText(bien.getDescription());
@@ -529,11 +526,4 @@ public class DetailDialogFragment extends DialogFragment implements View.OnClick
         }
     }
 
-    @Override
-    public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
-        // checkSurplus
-        if (b) {
-            Global.showInformationDialog(getContext(), "Importante", "Un bien sobrante es aquel que no tiene código patrimonial asignado, y además ningún usuario se quiere hacer responsable.");
-        }
-    }
 }
