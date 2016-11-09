@@ -12,9 +12,9 @@
     <string name="hint_local">LOCAL (Sapitos, El Porvenir, La Esperanza)</string>
     <string name="hint_ubicacion">UBICACIÓN (Módulo A, Módulo B)</string>
     <string name="hint_cargo">CARGO (Gerente, Asistente)</string>
-    <string name="hint_oficina">OFICINA (Gerencia, Subgerencia)</string>
+    <string name="hint_area">ÁREA (Logística, RRHH)</string>
+    <string name="hint_oficina">OFICINA (Compras, Patrimonio, Personal)</string>
     <string name="hint_ambiente">AMBIENTE (Primer piso, Taller)</string>
-    <string name="hint_area">ÁREA (Contabilidad, Logística)</string>
 
     <!-- Dialog new header errors -->
     <string name="error_hoja_id">Es necesario ingresar el nro de hoja</string>
