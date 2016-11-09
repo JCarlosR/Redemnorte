@@ -475,6 +475,7 @@ public class DetailDialogFragment extends DialogFragment implements View.OnClick
                     Toast.makeText(getContext(), byOldCodeResponse.getMessage(), Toast.LENGTH_LONG).show();
                 } else {
                     etDescription.setText(byOldCodeResponse.getBien().getDescription());
+                    etPatrimonial.setText(byOldCodeResponse.getBien().getCodigoActivo());
                     Toast.makeText(getContext(), byOldCodeResponse.getMessage(), Toast.LENGTH_LONG).show();
                 }
             }

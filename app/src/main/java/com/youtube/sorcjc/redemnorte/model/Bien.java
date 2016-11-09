@@ -52,6 +52,9 @@ public class Bien {
     @SerializedName("photo_extension")
     private String photo_extension;
 
+    // Used when the data is taken using an old code
+    private String codigoActivo;
+
     public Bien(String qr, String patrimonial, String description) {
         this.qr = qr;
         this.patrimonial = patrimonial;
@@ -192,5 +195,13 @@ public class Bien {
 
     public void setPhoto_extension(String photo_extension) {
         this.photo_extension = photo_extension;
+    }
+
+    public String getCodigoActivo() {
+        return codigoActivo;
+    }
+
+    public void setCodigoActivo(String codigoActivo) {
+        this.codigoActivo = codigoActivo;
     }
 }

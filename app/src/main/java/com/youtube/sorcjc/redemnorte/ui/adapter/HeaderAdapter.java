@@ -94,11 +94,26 @@ public class HeaderAdapter extends RecyclerView.Adapter<HeaderAdapter.ViewHolder
     }
 
     @Override
+    public int getItemViewType(int position) {
+        int activo = 1;
+        if (dataSet.get(position).getActivo().equals("0"))
+            activo = 0;
+
+        return activo;
+    }
+
+    @Override
     public HeaderAdapter.ViewHolder onCreateViewHolder(ViewGroup parent,
                                                    int viewType) {
         // create a new view
         View v = LayoutInflater.from(parent.getContext())
                 .inflate(R.layout.item_header, parent, false);
+
+        if (viewType == 0) { // no active
+            v.findViewById(R.id.linearLayout).setBackgroundResource(R.color.dividerColor);
+        } else { // is active
+            v.findViewById(R.id.linearLayout).setBackgroundResource(0);
+        }
 
         return new ViewHolder(v);
     }
