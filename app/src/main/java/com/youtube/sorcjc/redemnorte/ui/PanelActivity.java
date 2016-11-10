@@ -8,7 +8,13 @@ import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.LinearLayout;
 import android.widget.Toast;
 
 import com.youtube.sorcjc.redemnorte.Global;
@@ -32,6 +38,9 @@ import static java.security.AccessController.getContext;
 public class PanelActivity extends AppCompatActivity implements View.OnClickListener, Callback<HojasResponse> {
 
     private HeaderAdapter headerAdapter;
+    private LinearLayout layoutSearchBox;
+
+    private EditText etQuery;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -65,7 +74,6 @@ public class PanelActivity extends AppCompatActivity implements View.OnClickList
                     fab.hide();
                 }
             }
-
             @Override
             public void onScrollStateChanged(RecyclerView recyclerView, int newState)
             {
@@ -73,10 +81,42 @@ public class PanelActivity extends AppCompatActivity implements View.OnClickList
                 {
                     fab.show();
                 }
-
                 super.onScrollStateChanged(recyclerView, newState);
             }
         });
+
+        layoutSearchBox = (LinearLayout) findViewById(R.id.layoutSearchBox);
+
+        toolbar.setOnMenuItemClickListener(
+            new Toolbar.OnMenuItemClickListener() {
+                @Override
+                public boolean onMenuItemClick(MenuItem item) {
+                    int id = item.getItemId();
+
+                    if (id == R.id.search) {
+                        if (layoutSearchBox.getVisibility() == View.VISIBLE)
+                            layoutSearchBox.setVisibility(View.GONE);
+                        else
+                            layoutSearchBox.setVisibility(View.VISIBLE);
+                        return true;
+                    }
+
+                    return true;
+                }
+        });
+
+        Button btnQuery = (Button) findViewById(R.id.btnQuery);
+        btnQuery.setOnClickListener(this);
+
+        etQuery = (EditText) findViewById(R.id.etQueryHeader);
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.search_menu, menu);
+
+        return super.onCreateOptionsMenu(menu);
     }
 
     public void cargarHojas() {
@@ -90,6 +130,10 @@ public class PanelActivity extends AppCompatActivity implements View.OnClickList
         switch (view.getId()) {
             case R.id.fab:
                 showCreateHeaderDialog();
+                break;
+
+            case R.id.btnQuery:
+                headerAdapter.filterResponsibleStartsWith(etQuery.getText().toString().trim());
                 break;
         }
     }

@@ -2,6 +2,7 @@
     <string name="app_name">Redemnorte</string>
 
     <string name="save_action">Guardar</string>
+    <string name="search_action">Buscar</string>
 
     <!-- Main activity -->
     <string name="username">Usuario</string>

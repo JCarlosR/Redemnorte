@@ -20,10 +20,8 @@ import com.youtube.sorcjc.redemnorte.ui.fragment.HeaderDialogFragment;
 import java.util.ArrayList;
 
 public class HeaderAdapter extends RecyclerView.Adapter<HeaderAdapter.ViewHolder> {
-    private ArrayList<Hoja> dataSet;
+    private ArrayList<Hoja> dataSet, filteredDataSet;
 
-    // Provide a reference to the views for each item
-    // Complex dataSet items may need more than one view per item
     static class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
         // context
         Context context;
@@ -84,20 +82,35 @@ public class HeaderAdapter extends RecyclerView.Adapter<HeaderAdapter.ViewHolder
 
     public HeaderAdapter(ArrayList<Hoja> dataSet) {
         this.dataSet = dataSet;
+        this.filteredDataSet = dataSet;
     }
 
     public void setDataSet(ArrayList<Hoja> dataSet) {
         this.dataSet = dataSet;
+        this.filteredDataSet = dataSet;
+        notifyDataSetChanged();
+    }
+
+    public void filterResponsibleStartsWith(String query) {
+        if (query.isEmpty()) {
+            filteredDataSet = dataSet;
+        } else {
+            filteredDataSet = new ArrayList<>();
+            for (Hoja item : dataSet) {
+                if (item.getResponsable().toLowerCase().contains(query.toLowerCase()))
+                    filteredDataSet.add(item);
+            }
+        }
         notifyDataSetChanged();
     }
 
     @Override
     public int getItemViewType(int position) {
-        int activo = 1;
+        int active = 1;
         if (dataSet.get(position).getActivo().equals("0"))
-            activo = 0;
+            active = 0;
 
-        return activo;
+        return active;
     }
 
     @Override
@@ -121,7 +134,7 @@ public class HeaderAdapter extends RecyclerView.Adapter<HeaderAdapter.ViewHolder
     public void onBindViewHolder(ViewHolder holder, int position) {
         // get element from your dataSet-set at this position
         // replace the contents of the view with that element
-        Hoja currentHeader = dataSet.get(position);
+        Hoja currentHeader = filteredDataSet.get(position);
 
         holder.headerCode.setText(currentHeader.getId());
         holder.responsibleName.setText(currentHeader.getResponsable());
@@ -137,6 +150,6 @@ public class HeaderAdapter extends RecyclerView.Adapter<HeaderAdapter.ViewHolder
 
     @Override
     public int getItemCount() {
-        return dataSet.size();
+        return filteredDataSet.size();
     }
 }

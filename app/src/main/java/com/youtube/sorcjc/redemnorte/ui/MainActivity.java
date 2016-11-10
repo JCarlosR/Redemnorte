@@ -57,7 +57,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 Global.saveInSharedPreferences(this, "username", username);
                 break;
             case R.id.btnCall:
-                Toast.makeText(this, "Are you serious?", Toast.LENGTH_SHORT).show();
+                Toast.makeText(this, "Julisa Mendoza: 953 637 576", Toast.LENGTH_SHORT).show();
                 break;
         }
     }
