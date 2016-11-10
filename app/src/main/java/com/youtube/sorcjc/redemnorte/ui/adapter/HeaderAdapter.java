@@ -22,9 +22,8 @@ import java.util.ArrayList;
 public class HeaderAdapter extends RecyclerView.Adapter<HeaderAdapter.ViewHolder> {
     private ArrayList<Hoja> dataSet;
 
-    // Provide a reference to the views for each dataSet item
-    // Complex dataSet items may need more than one view per item, and
-    // you provide access to all the views for a dataSet item in a view holder
+    // Provide a reference to the views for each item
+    // Complex dataSet items may need more than one view per item
     static class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
         // context
         Context context;
@@ -83,7 +82,6 @@ public class HeaderAdapter extends RecyclerView.Adapter<HeaderAdapter.ViewHolder
         }
     }
 
-    // Provide a suitable constructor (depends on the kind of dataset)
     public HeaderAdapter(ArrayList<Hoja> dataSet) {
         this.dataSet = dataSet;
     }
@@ -110,9 +108,9 @@ public class HeaderAdapter extends RecyclerView.Adapter<HeaderAdapter.ViewHolder
                 .inflate(R.layout.item_header, parent, false);
 
         if (viewType == 0) { // no active
-            v.findViewById(R.id.linearLayout).setBackgroundResource(R.color.dividerColor);
+            v.findViewById(R.id.tvInactive).setVisibility(View.VISIBLE);
         } else { // is active
-            v.findViewById(R.id.linearLayout).setBackgroundResource(0);
+            v.findViewById(R.id.tvInactive).setVisibility(View.GONE);
         }
 
         return new ViewHolder(v);

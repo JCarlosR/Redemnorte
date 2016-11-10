@@ -4,7 +4,7 @@
     android:id="@+id/cardView"
     card_view:cardCornerRadius="4dp"
     android:layout_width="match_parent"
-    android:layout_height="105dp"
+    android:layout_height="wrap_content"
     android:layout_margin="5dp">
 
     <LinearLayout
@@ -34,6 +34,12 @@
             android:layout_height="wrap_content"
             android:text="27 de Octubre del 2016"/>
 
+        <TextView
+            android:id="@+id/tvInactive"
+            android:textColor="@color/red"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="PENDIENTE DE REVISIÓN" />
 
         <LinearLayout
             android:layout_width="match_parent"
