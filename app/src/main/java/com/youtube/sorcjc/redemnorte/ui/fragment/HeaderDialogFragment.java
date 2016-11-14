@@ -19,6 +19,7 @@ import android.view.Window;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.CheckBox;
+import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.Toast;
@@ -43,8 +44,8 @@ import retrofit2.Response;
 public class HeaderDialogFragment extends DialogFragment {
 
     private AutoCompleteTextView spinnerResponsible;
-    private EditText etId, etLocal, etUbicacion, etCargo, etOficina, etAmbiente, etArea;
-    private TextInputLayout tilId, tilLocal, tilUbicacion, tilCargo, tilOficina, tilAmbiente, tilArea;
+    private EditText etId, etLocal, etUbicacion, etCargo, etOficina, etAmbiente, etArea, etObservation;
+    private TextInputLayout tilId, tilLocal, tilUbicacion, tilCargo, tilOficina, tilAmbiente, tilArea, tilObservation;
     private CheckBox checkPendiente;
 
     private String hoja_id;
@@ -100,6 +101,7 @@ public class HeaderDialogFragment extends DialogFragment {
         etOficina = (EditText) view.findViewById(R.id.etOficina);
         etAmbiente = (EditText) view.findViewById(R.id.etAmbiente);
         etArea = (EditText) view.findViewById(R.id.etArea);
+        etObservation = (EditText) view.findViewById(R.id.etObservation);
 
         tilId = (TextInputLayout) view.findViewById(R.id.tilId);
         tilLocal = (TextInputLayout) view.findViewById(R.id.tilLocal);
@@ -108,13 +110,32 @@ public class HeaderDialogFragment extends DialogFragment {
         tilOficina = (TextInputLayout) view.findViewById(R.id.tilOficina);
         tilAmbiente = (TextInputLayout) view.findViewById(R.id.tilAmbiente);
         tilArea = (TextInputLayout) view.findViewById(R.id.tilArea);
+        tilObservation = (TextInputLayout) view.findViewById(R.id.tilObservation);
 
         obtenerDatosResponsables();
 
         spinnerResponsible = (AutoCompleteTextView) view.findViewById(R.id.spinnerResponsible);
         checkPendiente = (CheckBox) view.findViewById(R.id.checkPendiente);
+        if (hoja_id.isEmpty()) { // set for new headers (for edit mode will be set later)
+            setCheckPendienteOnChangeListener();
+        }
 
         return view;
+    }
+
+    private void setCheckPendienteOnChangeListener() {
+        checkPendiente.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                if (isChecked) {
+                    tilObservation.setVisibility(View.VISIBLE);
+                    Global.showInformationDialog(getContext(), "Observación", "¿Por qué motivo la hoja se ha marcado como pendiente?");
+                } else {
+                    tilObservation.setVisibility(View.GONE);
+                    etObservation.setText("");
+                }
+            }
+        });
     }
 
     private void poblarSpinnerResponsables(ArrayList<Responsable> responsables) {
@@ -220,6 +241,7 @@ public class HeaderDialogFragment extends DialogFragment {
         final String ambiente = etAmbiente.getText().toString().trim();
         final String area = etArea.getText().toString().trim();
         final String activo = checkPendiente.isChecked() ? "0" : "1";
+        final String observacion = etObservation.getText().toString().trim();
 
         // If we have received an ID, we have to edit the data, else, we have to create a new record
         if (hoja_id.isEmpty()) {
@@ -227,13 +249,13 @@ public class HeaderDialogFragment extends DialogFragment {
 
             Call<SimpleResponse> call = RedemnorteApiAdapter.getApiService().postRegistrarHoja(
                     id, local, ubicacion, responsable, cargo, oficina,
-                    ambiente, area, activo, inventariador
+                    ambiente, area, activo, observacion, inventariador
             );
             call.enqueue(new RegistrarHojaCallback());
         } else {
             Call<SimpleResponse> call = RedemnorteApiAdapter.getApiService().postEditarHoja(
                     id, local, ubicacion, responsable, cargo, oficina,
-                    ambiente, area, activo
+                    ambiente, area, activo, observacion
             );
             call.enqueue(new EditarHojaCallback());
         }
@@ -341,10 +363,16 @@ public class HeaderDialogFragment extends DialogFragment {
             etArea.setText(hoja.getArea());
 
             spinnerResponsible.setText(hoja.getResponsable());
-            // spinnerResponsible.setSelection(Global.getSpinnerIndex(spinnerResponsible, hoja.getResponsable()));
 
-            if ( hoja.getActivo().equals("0") ) // si la hoja no está activa, está pendiente
+            if ( hoja.getActivo().equals("0") ) {
+                // active==0 => pendiente
                 checkPendiente.setChecked(true);
+                // pendiente => show observation field
+                tilObservation.setVisibility(View.VISIBLE);
+                etObservation.setText(hoja.getObservacion());
+            }
+
+            setCheckPendienteOnChangeListener();
         }
     }
 

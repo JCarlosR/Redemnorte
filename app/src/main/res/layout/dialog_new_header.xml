@@ -76,6 +76,19 @@
                     android:singleLine="true"
                     android:hint="@string/hint_ubicacion"
                     android:layout_height="wrap_content" />
+
+                <android.support.design.widget.TextInputLayout
+                    android:id="@+id/tilOficina"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent">
+
+                    <EditText
+                        android:id="@+id/etOficina"
+                        android:layout_width="match_parent"
+                        android:singleLine="true"
+                        android:hint="@string/hint_oficina"
+                        android:layout_height="wrap_content" />
+                </android.support.design.widget.TextInputLayout>
             </android.support.design.widget.TextInputLayout>
 
             <AutoCompleteTextView
@@ -110,19 +123,6 @@
             </android.support.design.widget.TextInputLayout>
 
             <android.support.design.widget.TextInputLayout
-                android:id="@+id/tilOficina"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content">
-
-                <EditText
-                    android:id="@+id/etOficina"
-                    android:layout_width="match_parent"
-                    android:singleLine="true"
-                    android:hint="@string/hint_oficina"
-                    android:layout_height="wrap_content" />
-            </android.support.design.widget.TextInputLayout>
-
-            <android.support.design.widget.TextInputLayout
                 android:id="@+id/tilAmbiente"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content">
@@ -141,6 +141,18 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="Marcar como hoja pendiente de revisión" />
+
+            <android.support.design.widget.TextInputLayout
+                android:id="@+id/tilObservation"
+                android:visibility="gone"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+                <EditText
+                    android:id="@+id/etObservation"
+                    android:hint="@string/hint_observation"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content" />
+            </android.support.design.widget.TextInputLayout>
         </LinearLayout>
 
     </android.support.v4.widget.NestedScrollView>
