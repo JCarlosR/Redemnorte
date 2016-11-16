@@ -41,6 +41,13 @@
             android:layout_height="wrap_content"
             android:text="PENDIENTE DE REVISIÓN" />
 
+        <TextView
+            android:id="@+id/tvImpreso"
+            android:textColor="@color/colorPrimaryDark"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="ESTA HOJA YA SE HA IMPRESO" />
+
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"

@@ -14,6 +14,7 @@ public class Hoja {
     private String inventariador;
     private String activo;
     private String observacion;
+    private String impreso;
 
     public String getId() {
         return id;
@@ -111,4 +112,11 @@ public class Hoja {
         this.observacion = observacion;
     }
 
+    public String getImpreso() {
+        return impreso;
+    }
+
+    public void setImpreso(String impreso) {
+        this.impreso = impreso;
+    }
 }

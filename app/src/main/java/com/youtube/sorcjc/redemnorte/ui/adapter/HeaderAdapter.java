@@ -29,6 +29,7 @@ public class HeaderAdapter extends RecyclerView.Adapter<HeaderAdapter.ViewHolder
         TextView headerCode;
         TextView responsibleName;
         TextView headerDate;
+        TextView tvImpreso;
         // buttons
         Button btnDetails;
         Button btnEditHeader;
@@ -42,6 +43,7 @@ public class HeaderAdapter extends RecyclerView.Adapter<HeaderAdapter.ViewHolder
             headerCode = (TextView) v.findViewById(R.id.headerCode);
             responsibleName = (TextView) v.findViewById(R.id.responsibleName);
             headerDate = (TextView) v.findViewById(R.id.headerDate);
+            tvImpreso = (TextView) v.findViewById(R.id.tvImpreso);
 
             btnDetails = (Button) v.findViewById(R.id.btnDetails);
             btnEditHeader = (Button) v.findViewById(R.id.btnEditHeader);
@@ -128,17 +130,21 @@ public class HeaderAdapter extends RecyclerView.Adapter<HeaderAdapter.ViewHolder
 
         return new ViewHolder(v);
     }
-
-    // Replace the contents of a view (invoked by the layout manager)
     @Override
     public void onBindViewHolder(ViewHolder holder, int position) {
-        // get element from your dataSet-set at this position
-        // replace the contents of the view with that element
+        // get element from dataSet at this position
+        // and replace the contents of the view
         Hoja currentHeader = filteredDataSet.get(position);
 
         holder.headerCode.setText(currentHeader.getId());
         holder.responsibleName.setText(currentHeader.getResponsable());
         holder.headerDate.setText(currentHeader.getFecha());
+
+        if (currentHeader.getImpreso().trim().equals("1")) {
+            holder.tvImpreso.setVisibility(View.VISIBLE);
+        } else {
+            holder.tvImpreso.setVisibility(View.GONE);
+        }
 
         // set events
         holder.setOnClickListeners();
