@@ -18,7 +18,11 @@ public class BienConsolidado {
     @SerializedName("estado")
     private String estado;
 
+    @SerializedName("empleado")
     private String empleado;
+    @SerializedName("situacion")
+    private String situacion;
+
     private String ubicacion;
     private String local;
 
@@ -88,5 +92,13 @@ public class BienConsolidado {
 
     public void setLocal(String local) {
         this.local = local;
+    }
+
+    public String getSituacion() {
+        return situacion;
+    }
+
+    public void setSituacion(String situacion) {
+        this.situacion = situacion;
     }
 }

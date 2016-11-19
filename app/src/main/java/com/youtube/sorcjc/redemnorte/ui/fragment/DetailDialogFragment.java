@@ -407,9 +407,17 @@ public class DetailDialogFragment extends DialogFragment implements View.OnClick
         final String model = bienConsolidado.getModel().trim();
         final String series = bienConsolidado.getSeries().trim();
         final String estado = bienConsolidado.getEstado();
-
+        final String situacion = bienConsolidado.getSituacion().trim();
         // final String ubicacion = bienConsolidado.getUbicacion();
         // final String local = bienConsolidado.getLocal();
+
+        // WHERE situacion =  'BP' OR situacion =  'BA' OR situacion =  'NO' OR situacion =  'NU'
+        if (situacion.equals("BP") || situacion.equals("BA") || situacion.equals("NO") || situacion.equals("NU")) {
+            final String title = "Importante";
+            final String message = "Lamentablemente este bien ha sido dado de baja.";
+            Global.showInformationDialog(getContext(), title, message);
+            return;
+        }
 
         etDescription.setText(description);
         etBrand.setText(brand);
