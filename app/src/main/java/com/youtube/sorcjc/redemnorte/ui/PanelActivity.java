@@ -1,5 +1,6 @@
 package com.youtube.sorcjc.redemnorte.ui;
 
+import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
@@ -47,7 +48,7 @@ public class PanelActivity extends AppCompatActivity implements View.OnClickList
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_panel);
 
-        RecyclerView recyclerView = (RecyclerView) findViewById(R.id.recyclerView);
+        RecyclerView recyclerView = findViewById(R.id.recyclerView);
 
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this);
         recyclerView.setLayoutManager(linearLayoutManager);
@@ -58,10 +59,10 @@ public class PanelActivity extends AppCompatActivity implements View.OnClickList
         headerAdapter = new HeaderAdapter(myDataset);
         recyclerView.setAdapter(headerAdapter);
 
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        final FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
+        final FloatingActionButton fab = findViewById(R.id.fab);
         fab.setOnClickListener(this);
 
         recyclerView.addOnScrollListener(new RecyclerView.OnScrollListener()
@@ -85,7 +86,7 @@ public class PanelActivity extends AppCompatActivity implements View.OnClickList
             }
         });
 
-        layoutSearchBox = (LinearLayout) findViewById(R.id.layoutSearchBox);
+        layoutSearchBox = findViewById(R.id.layoutSearchBox);
 
         toolbar.setOnMenuItemClickListener(
             new Toolbar.OnMenuItemClickListener() {
@@ -105,10 +106,10 @@ public class PanelActivity extends AppCompatActivity implements View.OnClickList
                 }
         });
 
-        Button btnQuery = (Button) findViewById(R.id.btnQuery);
+        Button btnQuery = findViewById(R.id.btnQuery);
         btnQuery.setOnClickListener(this);
 
-        etQuery = (EditText) findViewById(R.id.etQueryHeader);
+        etQuery = findViewById(R.id.etQueryHeader);
     }
 
     @Override
@@ -151,7 +152,7 @@ public class PanelActivity extends AppCompatActivity implements View.OnClickList
     }
 
     @Override
-    public void onResponse(Call<HojasResponse> call, Response<HojasResponse> response) {
+    public void onResponse(@NonNull Call<HojasResponse> call, Response<HojasResponse> response) {
         if (response.isSuccessful()) {
             ArrayList<Hoja> hojas = response.body().getHojas();
             headerAdapter.setDataSet(hojas);
@@ -167,7 +168,7 @@ public class PanelActivity extends AppCompatActivity implements View.OnClickList
     }
 
     @Override
-    public void onFailure(Call<HojasResponse> call, Throwable t) {
+    public void onFailure(@NonNull Call<HojasResponse> call, Throwable t) {
         Toast.makeText(this, t.getLocalizedMessage(), Toast.LENGTH_SHORT).show();
     }
 }
