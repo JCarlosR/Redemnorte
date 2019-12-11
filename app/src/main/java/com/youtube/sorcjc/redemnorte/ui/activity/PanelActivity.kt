@@ -8,15 +8,15 @@ import android.support.v7.widget.RecyclerView
 import android.support.v7.widget.Toolbar
 import android.view.Menu
 import android.view.View
-import android.widget.Toast
-import com.youtube.sorcjc.redemnorte.Global
 import com.youtube.sorcjc.redemnorte.R
 import com.youtube.sorcjc.redemnorte.io.MyApiAdapter
 import com.youtube.sorcjc.redemnorte.model.Sheet
 import com.youtube.sorcjc.redemnorte.ui.adapter.HeaderAdapter
 import com.youtube.sorcjc.redemnorte.ui.fragment.HeaderDialogFragment
+import com.youtube.sorcjc.redemnorte.util.PreferenceHelper
+import com.youtube.sorcjc.redemnorte.util.PreferenceHelper.get
+import com.youtube.sorcjc.redemnorte.util.toast
 import kotlinx.android.synthetic.main.activity_panel.*
-import org.json.JSONObject
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -24,7 +24,13 @@ import java.util.*
 
 class PanelActivity : AppCompatActivity(), View.OnClickListener, Callback<ArrayList<Sheet>> {
 
-    private var headerAdapter: HeaderAdapter? = null
+    private val headerAdapter by lazy {
+        HeaderAdapter()
+    }
+
+    private val preferences by lazy {
+        PreferenceHelper.defaultPrefs(this)
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -33,16 +39,19 @@ class PanelActivity : AppCompatActivity(), View.OnClickListener, Callback<ArrayL
         val linearLayoutManager = LinearLayoutManager(this)
         recyclerView.layoutManager = linearLayoutManager
 
-        val sheetsDataSet = ArrayList<Sheet>()
         loadInventorySheets()
 
-        headerAdapter = HeaderAdapter(sheetsDataSet)
         recyclerView.adapter = headerAdapter
 
         setSupportActionBar(toolbar)
+        hideAndDisplayToolbarAccordingly()
 
         fab.setOnClickListener(this)
 
+        btnQuery.setOnClickListener(this)
+    }
+
+    private fun hideAndDisplayToolbarAccordingly() {
         recyclerView.addOnScrollListener(object : RecyclerView.OnScrollListener() {
             override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
                 if (dy > 0 || dy < 0 && fab.isShown) {
@@ -71,8 +80,6 @@ class PanelActivity : AppCompatActivity(), View.OnClickListener, Callback<ArrayL
                     }
                     true
                 })
-
-        btnQuery.setOnClickListener(this)
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
@@ -82,7 +89,8 @@ class PanelActivity : AppCompatActivity(), View.OnClickListener, Callback<ArrayL
     }
 
     fun loadInventorySheets() {
-        val username = Global.getFromSharedPreferences(this, "username")
+        val username = preferences["username", ""]
+
         val call = MyApiAdapter.getApiService().getSheets(username)
         call.enqueue(this)
     }
@@ -90,14 +98,15 @@ class PanelActivity : AppCompatActivity(), View.OnClickListener, Callback<ArrayL
     override fun onClick(view: View) {
         when (view.id) {
             R.id.fab -> showCreateHeaderDialog()
-            R.id.btnQuery -> headerAdapter!!.filterResponsibleStartsWith(etQueryHeader.text.toString().trim { it <= ' ' })
+            R.id.btnQuery ->
+                headerAdapter.filterResponsibleStartsWith(etQueryHeader.text.toString().trim())
         }
     }
 
     private fun showCreateHeaderDialog() {
         val fragmentManager = supportFragmentManager
 
-        // Empty hoja_id => Register new header
+        // Empty sheetId => Create a new sheet
         val newFragment = HeaderDialogFragment.newInstance("")
         val transaction = fragmentManager.beginTransaction()
 
@@ -110,21 +119,15 @@ class PanelActivity : AppCompatActivity(), View.OnClickListener, Callback<ArrayL
         if (response.isSuccessful) {
             val sheets = response.body()
             if (sheets != null) {
-                headerAdapter!!.setDataSet(sheets)
-                Toast.makeText(this, getString(R.string.sheets_count_message) + sheets.size, Toast.LENGTH_SHORT).show()
+                headerAdapter.setDataSet(sheets)
+                toast(getString(R.string.sheets_count_message) + sheets.size)
             }
-
         } else {
-            try {
-                val jObjError = JSONObject(response.errorBody()!!.string())
-                Toast.makeText(this, jObjError.getString("message"), Toast.LENGTH_LONG).show()
-            } catch (e: Exception) {
-                Toast.makeText(this, e.message, Toast.LENGTH_LONG).show()
-            }
+            toast(getString(R.string.error_format_server_response))
         }
     }
 
     override fun onFailure(call: Call<ArrayList<Sheet>>, t: Throwable) {
-        Toast.makeText(this, t.localizedMessage, Toast.LENGTH_SHORT).show()
+        toast(t.localizedMessage)
     }
 }

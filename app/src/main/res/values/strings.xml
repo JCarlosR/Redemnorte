@@ -68,6 +68,14 @@
     <string name="error_til_description">Ingresa una descripción</string>
 
     <string name="error_login">Los datos son incorrectos</string>
-    <string name="sheets_count_message">Cantidad de sheets =></string>
+    <string name="sheets_count_message">Hojas registradas: </string>
     <string name="scanner_results">Resultados</string>
+    <string name="error_format_server_response">Error en el formato de respuesta</string>
+    <string name="success_sheet_updated_message">Se ha editado correctamente la hoja</string>
+    <string name="success_sheet_created_message">Se ha registrado una nueva hoja</string>
+    <string name="title_sheet_create">Registrar nueva hoja</string>
+    <string name="title_sheet_edit">Editar hoja</string>
+    <string name="btn_edit_sheet">Editar hoja</string>
+    <string name="btn_see_items">Ver bienes</string>
+    <string name="label_sheet_already_printed">ESTA HOJA YA SE HA IMPRESO</string>
 </resources>

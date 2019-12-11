@@ -17,33 +17,29 @@ import com.youtube.sorcjc.redemnorte.model.Responsable
 import com.youtube.sorcjc.redemnorte.model.Sheet
 import com.youtube.sorcjc.redemnorte.ui.activity.PanelActivity
 import kotlinx.android.synthetic.main.dialog_new_header.*
+import com.youtube.sorcjc.redemnorte.util.toast
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 import java.util.*
 
 class HeaderDialogFragment : DialogFragment() {
-    private var hoja_id: String? = null
+    private var sheetId: String = ""
     
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        hoja_id = arguments!!.getString("hoja_id")
+        
+        arguments?.getString("hoja_id")?.let {
+            sheetId = it
+        }
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
                               savedInstanceState: Bundle?): View? {
         val view = inflater.inflate(R.layout.dialog_new_header, container, false)
 
-        val title: String
-        if (hoja_id!!.isEmpty()) title = "Registrar nueva hoja" else {
-            title = "Editar hoja"
-            fetchHeaderDataFromServer()
-            etId.setText(hoja_id)
-            etId.isEnabled = false
-        }
-        
-        toolbar?.title = title
-        (activity as AppCompatActivity?)!!.setSupportActionBar(toolbar)
+
+        (activity as AppCompatActivity?)?.setSupportActionBar(toolbar)
         
         val actionBar = (activity as AppCompatActivity?)!!.supportActionBar
         if (actionBar != null) {
@@ -53,17 +49,29 @@ class HeaderDialogFragment : DialogFragment() {
         }
         setHasOptionsMenu(true)
 
-        obtenerDatosResponsables()
+        fetchResponsibleUsersData()
 
         // spinnerResponsible = view.findViewById<View>(R.id.spinnerResponsible) as AutoCompleteTextView
-
         return view
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        if (hoja_id!!.isEmpty()) { // set for new headers (for edit mode will be set later)
+        val title: String
+        if (sheetId.isEmpty())
+            title = getString(R.string.title_sheet_create)
+        else {
+            title = getString(R.string.title_sheet_edit)
+            fetchHeaderDataFromServer()
+            etId.setText(sheetId)
+            etId.isEnabled = false
+        }
+
+        toolbar.title = title
+
+        // set for new headers (for edit mode will be set later)
+        if (sheetId.isEmpty()) {
             setCheckPendienteOnChangeListener()
         }
     }
@@ -90,7 +98,7 @@ class HeaderDialogFragment : DialogFragment() {
         spinnerResponsible!!.setAdapter(spinnerArrayAdapter)
     }
 
-    private fun obtenerDatosResponsables() {
+    private fun fetchResponsibleUsersData() {
         val call = MyApiAdapter.getApiService().responsables
         call.enqueue(ResponsablesCallback())
     }
@@ -103,7 +111,7 @@ class HeaderDialogFragment : DialogFragment() {
                     poblarSpinnerResponsables(responsableResponse.responsables)
                 }
             } else {
-                Toast.makeText(context, "Error en el formato de respuesta", Toast.LENGTH_SHORT).show()
+                Toast.makeText(context, getString(R.string.error_format_server_response), Toast.LENGTH_SHORT).show()
             }
         }
 
@@ -124,6 +132,7 @@ class HeaderDialogFragment : DialogFragment() {
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         val id = item.itemId
+
         if (id == R.id.save) {
             validateForm()
             return true
@@ -132,6 +141,7 @@ class HeaderDialogFragment : DialogFragment() {
             dismiss()
             return true
         }
+
         return super.onOptionsItemSelected(item)
     }
 
@@ -158,32 +168,32 @@ class HeaderDialogFragment : DialogFragment() {
             return
         }
 
-        val id = etId!!.text.toString().trim { it <= ' ' }
-        val local = etLocal!!.text.toString().trim { it <= ' ' }
-        val ubicacion = etUbicacion!!.text.toString().trim { it <= ' ' }
-        val responsable = spinnerResponsible!!.text.toString().trim { it <= ' ' }
-        val cargo = etCargo!!.text.toString().trim { it <= ' ' }
-        val oficina = etOficina!!.text.toString().trim { it <= ' ' }
-        val ambiente = etAmbiente!!.text.toString().trim { it <= ' ' }
-        val area = etArea!!.text.toString().trim { it <= ' ' }
+        val id = etId.text.toString().trim { it <= ' ' }
+        val place = etLocal.text.toString().trim { it <= ' ' }
+        val ubicacion = etUbicacion.text.toString().trim { it <= ' ' }
+        val responsible = spinnerResponsible.text.toString().trim { it <= ' ' }
+        val position = etCargo.text.toString().trim { it <= ' ' }
+        val office = etOficina.text.toString().trim { it <= ' ' }
+        val ambient = etAmbiente.text.toString().trim { it <= ' ' }
+        val area = etArea.text.toString().trim { it <= ' ' }
         val activo = if (checkPendiente.isChecked) "0" else "1"
-        val observacion = etObservation!!.text.toString().trim { it <= ' ' }
+        val obs = etObservation.text.toString().trim { it <= ' ' }
 
 
-        // If we have received an ID, we have to edit the data, else, we have to create a new record
-        if (hoja_id!!.isEmpty()) {
+        // If we have received an ID, we have to edit the data, else we have to create a new record
+        if (sheetId.isEmpty()) {
             val inventariador = Global.getFromSharedPreferences(activity, "username")
             val call = MyApiAdapter.getApiService().storeSheet(
-                    id, local, ubicacion, responsable, cargo, oficina,
-                    ambiente, area, activo, observacion, inventariador
+                    id, place, ubicacion, responsible, position, office,
+                    ambient, area, activo, obs, inventariador
             )
             call.enqueue(RegistrarHojaCallback())
         } else {
             val call = MyApiAdapter.getApiService().updateSheet(
-                    id, local, ubicacion, responsable, cargo, oficina,
-                    ambiente, area, activo, observacion
+                    id, place, ubicacion, responsible, position, office,
+                    ambient, area, activo, obs
             )
-            call.enqueue(EditarHojaCallback())
+            call.enqueue(EditSheetCallback())
         }
     }
 
@@ -193,57 +203,58 @@ class HeaderDialogFragment : DialogFragment() {
                 val simpleResponse = response.body()
                 if (simpleResponse!!.isError) {
                     // Log.d("HeaderDialog", "messageError => " + simpleResponse.getMessage());
-                    Toast.makeText(context, simpleResponse.message, Toast.LENGTH_SHORT).show()
+                    context?.toast(simpleResponse.message)
                 } else {
-                    Toast.makeText(context, "Se ha registrado una nueva hoja", Toast.LENGTH_SHORT).show()
+                    context?.toast(getString(R.string.success_sheet_created_message))
+
                     // Re-load the sheets
                     (activity as PanelActivity?)?.loadInventorySheets()
                     dismiss()
                 }
             } else {
-                Toast.makeText(context, "Error en el formato de respuesta", Toast.LENGTH_SHORT).show()
+                context?.toast(getString(R.string.error_format_server_response))
             }
         }
 
         override fun onFailure(call: Call<SimpleResponse?>, t: Throwable) {
-            Toast.makeText(context, t.localizedMessage, Toast.LENGTH_SHORT).show()
+            context?.toast(t.localizedMessage)
         }
     }
 
-    internal inner class EditarHojaCallback : Callback<SimpleResponse?> {
+    internal inner class EditSheetCallback : Callback<SimpleResponse?> {
         override fun onResponse(call: Call<SimpleResponse?>, response: Response<SimpleResponse?>) {
             if (response.isSuccessful) {
                 val simpleResponse = response.body()
                 if (simpleResponse!!.isError) {
-                    Toast.makeText(context, simpleResponse.message, Toast.LENGTH_SHORT).show()
+                    context?.toast(simpleResponse.message)
                 } else {
-                    Toast.makeText(context, "Se ha editado correctamente la hoja", Toast.LENGTH_SHORT).show()
+                    context?.toast(getString(R.string.success_sheet_updated_message))
                     // Re-load the sheets
                     (activity as PanelActivity?)?.loadInventorySheets()
                     dismiss()
                 }
             } else {
-                Toast.makeText(context, "Error en el formato de respuesta", Toast.LENGTH_SHORT).show()
+                context?.toast(getString(R.string.error_format_server_response))
             }
         }
 
         override fun onFailure(call: Call<SimpleResponse?>, t: Throwable) {
-            Toast.makeText(context, t.localizedMessage, Toast.LENGTH_SHORT).show()
+            context?.toast(t.localizedMessage)
         }
     }
 
-    private fun validateEditText(editText: EditText?, textInputLayout: TextInputLayout?, errorString: Int): Boolean {
-        if (editText!!.text.toString().trim { it <= ' ' }.isEmpty()) {
-            textInputLayout!!.error = getString(errorString)
+    private fun validateEditText(editText: EditText, textInputLayout: TextInputLayout, errorString: Int): Boolean {
+        if (editText.text.toString().trim { it <= ' ' }.isEmpty()) {
+            textInputLayout.error = getString(errorString)
             return false
         } else {
-            textInputLayout!!.isErrorEnabled = false
+            textInputLayout.isErrorEnabled = false
         }
         return true
     }
 
     private fun fetchHeaderDataFromServer() {
-        val call = MyApiAdapter.getApiService().getSheet(hoja_id)
+        val call = MyApiAdapter.getApiService().getSheet(sheetId)
         call.enqueue(ShowHeaderDataCallback())
     }
 
@@ -252,33 +263,33 @@ class HeaderDialogFragment : DialogFragment() {
             if (response.isSuccessful) {
                 val hojaResponse = response.body()
                 if (hojaResponse!!.isError) {
-                    Toast.makeText(context, hojaResponse.message, Toast.LENGTH_SHORT).show()
+                    context?.toast(hojaResponse.message)
                 } else {
                     showHeaderDataInFields(hojaResponse.sheet)
                 }
             } else {
-                Toast.makeText(context, "Error en el formato de respuesta", Toast.LENGTH_SHORT).show()
+                context?.toast(getString(R.string.error_format_server_response))
             }
         }
 
         override fun onFailure(call: Call<HojaResponse?>, t: Throwable) {
-            Toast.makeText(context, t.localizedMessage, Toast.LENGTH_SHORT).show()
+            context?.toast(t.localizedMessage)
         }
 
         private fun showHeaderDataInFields(sheet: Sheet) {
-            etLocal.setText(sheet.local)
-            etUbicacion.setText(sheet.ubicacion)
-            etCargo.setText(sheet.cargo)
-            etOficina.setText(sheet.oficina)
-            etAmbiente.setText(sheet.ambiente)
+            etLocal.setText(sheet.place)
+            etUbicacion.setText(sheet.location)
+            etCargo.setText(sheet.position)
+            etOficina.setText(sheet.office)
+            etAmbiente.setText(sheet.ambient)
             etArea.setText(sheet.area)
-            spinnerResponsible.setText(sheet.responsable)
+            spinnerResponsible.setText(sheet.responsible_user)
 
             if (sheet.activo == "0") { // active==0 => pendiente
                 checkPendiente.isChecked = true
                 // pendiente => show observation field
-                tilObservation!!.visibility = View.VISIBLE
-                etObservation!!.setText(sheet.observacion)
+                tilObservation.visibility = View.VISIBLE
+                etObservation.setText(sheet.observation)
             }
             setCheckPendienteOnChangeListener()
         }

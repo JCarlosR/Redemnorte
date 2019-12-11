@@ -15,24 +15,29 @@ import com.youtube.sorcjc.redemnorte.ui.activity.DetailsActivity
 import com.youtube.sorcjc.redemnorte.ui.activity.PanelActivity
 import com.youtube.sorcjc.redemnorte.ui.fragment.HeaderDialogFragment.Companion.newInstance
 import java.util.*
+import kotlin.collections.ArrayList
 
-class HeaderAdapter(private var dataSet: ArrayList<Sheet>) : RecyclerView.Adapter<HeaderAdapter.ViewHolder>() {
+class HeaderAdapter(private var dataSet: ArrayList<Sheet> = ArrayList()) : RecyclerView.Adapter<HeaderAdapter.ViewHolder>() {
     private var filteredDataSet: ArrayList<Sheet>
 
     class ViewHolder(v: View) : RecyclerView.ViewHolder(v), View.OnClickListener {
         // context
         var context: Context = v.context
+
         // text views
         var headerCode: TextView = v.findViewById(R.id.headerCode)
         var responsibleName: TextView = v.findViewById(R.id.responsibleName)
         var headerDate: TextView = v.findViewById(R.id.headerDate)
         var tvImpreso: TextView = v.findViewById(R.id.tvImpreso)
+
         // buttons
         var btnDetails: Button = v.findViewById(R.id.btnDetails)
         var btnEditHeader: Button = v.findViewById(R.id.btnEditHeader)
+
         // params
         var hoja_id: String? = null
         var responsable: String? = null
+
         fun setOnClickListeners() {
             btnDetails.setOnClickListener(this)
             btnEditHeader.setOnClickListener(this)
@@ -52,7 +57,8 @@ class HeaderAdapter(private var dataSet: ArrayList<Sheet>) : RecyclerView.Adapte
 
         private fun showEditHeaderDialog(hoja_id: String?) {
             val fragmentManager = (context as PanelActivity).supportFragmentManager
-            // hoja_id is required to => edit a specific header
+
+            // sheet_id is required to => edit a specific header
             val newFragment = newInstance(hoja_id)
             val transaction = fragmentManager.beginTransaction()
             transaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
@@ -74,7 +80,7 @@ class HeaderAdapter(private var dataSet: ArrayList<Sheet>) : RecyclerView.Adapte
         } else {
             filteredDataSet = ArrayList()
             for (item in dataSet) {
-                if (item.responsable!!.toLowerCase().contains(query.toLowerCase())) filteredDataSet.add(item)
+                if (item.responsible_user!!.toLowerCase().contains(query.toLowerCase())) filteredDataSet.add(item)
             }
         }
         notifyDataSetChanged()
@@ -109,13 +115,16 @@ class HeaderAdapter(private var dataSet: ArrayList<Sheet>) : RecyclerView.Adapte
         holder.headerCode.text = id
         holder.responsibleName.text = responsable
         holder.headerDate.text = fecha
-        if (impreso!!.trim { it <= ' ' } == "1") {
+
+        if (impreso!=null && impreso == "1") {
             holder.tvImpreso.visibility = View.VISIBLE
         } else {
             holder.tvImpreso.visibility = View.GONE
         }
+
         // set events
         holder.setOnClickListeners()
+
         // params needed to show the details
         holder.hoja_id = id
         holder.responsable = responsable!!.trim { it <= ' ' }
