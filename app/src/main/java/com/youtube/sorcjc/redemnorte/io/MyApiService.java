@@ -5,7 +5,7 @@ import com.youtube.sorcjc.redemnorte.io.response.BienesResponse;
 import com.youtube.sorcjc.redemnorte.io.response.ByOldCodeResponse;
 import com.youtube.sorcjc.redemnorte.io.response.ByPatrimonialResponse;
 import com.youtube.sorcjc.redemnorte.io.response.HojaResponse;
-import com.youtube.sorcjc.redemnorte.io.response.HojasResponse;
+import com.youtube.sorcjc.redemnorte.io.response.SheetsResponse;
 import com.youtube.sorcjc.redemnorte.io.response.ResponsableResponse;
 import com.youtube.sorcjc.redemnorte.io.response.SimpleResponse;
 
@@ -27,9 +27,8 @@ public interface RedemnorteApiService {
             @Field("image") String base64, @Field("extension") String extension,
             @Field("hoja_id") String hoja_id, @Field("QR_code") String QR_code);
 
-    @FormUrlEncoded
-    @POST("hojas.php")
-    Call<HojasResponse> getHojas(@Field("dni") String dni);
+    @GET("sheets")
+    Call<SheetsResponse> getSheets(@Field("dni") String dni);
 
     @GET("hoja.php")
     Call<HojaResponse> getHoja(@Query("hoja_id") String hoja_id);

@@ -10,16 +10,14 @@ public class RedemnorteApiAdapter {
     private static RedemnorteApiService API_SERVICE;
 
     public static RedemnorteApiService getApiService() {
-
-        // Creating the interceptor, and setting the log level
         HttpLoggingInterceptor logging = new HttpLoggingInterceptor();
         logging.setLevel(HttpLoggingInterceptor.Level.BODY);
 
         OkHttpClient.Builder httpClient = new OkHttpClient.Builder();
-        // add logging as last interceptor
-        httpClient.addInterceptor(logging);  // <-- this is the important line!
+        // add logging interceptor
+        httpClient.addInterceptor(logging);
 
-        String baseUrl = "http://redemnorte.pe/SistemaInventarios/api/";
+        String baseUrl = "https://redemnorte.com/api/";
 
         if (API_SERVICE == null) {
             Retrofit retrofit = new Retrofit.Builder()
