@@ -8,6 +8,7 @@ import com.youtube.sorcjc.redemnorte.io.response.HojaResponse;
 import com.youtube.sorcjc.redemnorte.io.response.ResponsableResponse;
 import com.youtube.sorcjc.redemnorte.io.response.SimpleResponse;
 import com.youtube.sorcjc.redemnorte.model.Sheet;
+import com.youtube.sorcjc.redemnorte.model.User;
 
 import java.util.ArrayList;
 
@@ -19,6 +20,10 @@ import retrofit2.http.POST;
 import retrofit2.http.Query;
 
 public interface MyApiService {
+
+
+    @POST("login")
+    Call<User> postLogin(@Query("username") String username, @Query("password") String password);
 
     @GET("responsables")
     Call<ResponsableResponse> getResponsables();
@@ -40,9 +45,6 @@ public interface MyApiService {
 
     @GET("bien")
     Call<BienResponse> getItem(@Query("hoja_id") String hoja_id, @Query("QR_code") String QR_code);
-
-    @GET("login")
-    Call<SimpleResponse> getLogin(@Query("username") String username, @Query("password") String password);
 
     @FormUrlEncoded
     @POST("sheets")

@@ -47,7 +47,7 @@ public class Global {
     }
 
     public static String getProductPhotoUrl(String hoja_id, String qr_code, String extension) {
-        return "http://redemnorte.pe/SistemaInventarios/images/2016/"+hoja_id+"-"+qr_code+"."+extension;
+        return "https://redemnorte.com/images/2016/"+hoja_id+"-"+qr_code+"."+extension;
     }
 
     public static void showInformationDialog(Context context, String title, String message) {

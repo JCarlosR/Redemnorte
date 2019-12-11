@@ -180,7 +180,7 @@ class DetailDialogFragment : DialogFragment(), View.OnClickListener {
 
         val call: Call<SimpleResponse>
         call = if (qr_code_param != null && !qr_code_param!!.isEmpty()) { // Qr code provided => edit mode
-            MyApiAdapter.getApiService().postEditarBien(
+            MyApiAdapter.getApiService().updateItem(
                     hoja_id, QR_code, patrimonial_code, old_code, old_year,
                     denominacion, marca, modelo, serie, color,
                     largo, ancho, alto,
