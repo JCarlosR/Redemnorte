@@ -1,22 +1,21 @@
 package com.youtube.sorcjc.redemnorte.ui.activity
 
 import android.os.Bundle
-import android.support.design.widget.FloatingActionButton
 import android.support.v4.app.FragmentTransaction
 import android.support.v4.app.NavUtils
 import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
-import android.support.v7.widget.Toolbar
 import android.view.MenuItem
 import android.view.View
 import android.widget.Toast
 import com.youtube.sorcjc.redemnorte.R
-import com.youtube.sorcjc.redemnorte.io.RedemnorteApiAdapter
+import com.youtube.sorcjc.redemnorte.io.MyApiAdapter
 import com.youtube.sorcjc.redemnorte.io.response.BienesResponse
 import com.youtube.sorcjc.redemnorte.model.Item
 import com.youtube.sorcjc.redemnorte.ui.adapter.DetailAdapter
 import com.youtube.sorcjc.redemnorte.ui.fragment.DetailDialogFragment
+import kotlinx.android.synthetic.main.activity_details.*
 import org.json.JSONObject
 import retrofit2.Call
 import retrofit2.Callback
@@ -24,31 +23,42 @@ import retrofit2.Response
 import java.util.*
 
 class DetailsActivity : AppCompatActivity(), View.OnClickListener, Callback<BienesResponse> {
-    private var detailAdapter: DetailAdapter? = null
-    private var hoja_id: String? = null
-    private var responsable: String? = null
+
+    private val myDataSet by lazy {
+        ArrayList<Item>()
+    }
+
+    private val detailAdapter by lazy {
+        DetailAdapter(myDataSet, hoja_id, responsable)
+    }
+
+    private var hoja_id: String? = ""
+    private var responsable: String? = ""
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_details)
+
         val extras = intent.extras
         if (extras != null) {
             hoja_id = extras.getString("hoja_id")
             responsable = extras.getString("responsable")
         }
-        val recyclerView = findViewById<View>(R.id.recyclerView) as RecyclerView
+
         val linearLayoutManager = LinearLayoutManager(this)
         recyclerView.layoutManager = linearLayoutManager
-        val myDataSet = ArrayList<Item>()
-        detailAdapter = DetailAdapter(myDataSet, hoja_id, responsable)
+
         recyclerView.adapter = detailAdapter
-        cargarBienes()
-        val toolbar = findViewById<View>(R.id.toolbar) as Toolbar
+        loadItems()
+
         toolbar.title = "Sheet $hoja_id"
         setSupportActionBar(toolbar)
+
         val actionBar = supportActionBar
         actionBar?.setDisplayHomeAsUpEnabled(true)
-        val fab = findViewById<View>(R.id.fab) as FloatingActionButton
+
         fab.setOnClickListener(this)
+
         recyclerView.addOnScrollListener(object : RecyclerView.OnScrollListener() {
             override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
                 if (dy > 0 || dy < 0 && fab.isShown) fab.hide()
@@ -61,8 +71,8 @@ class DetailsActivity : AppCompatActivity(), View.OnClickListener, Callback<Bien
         })
     }
 
-    fun cargarBienes() {
-        val call = RedemnorteApiAdapter.getApiService().getBienes(hoja_id)
+    fun loadItems() {
+        val call = MyApiAdapter.getApiService().getItems(hoja_id)
         call.enqueue(this)
     }
 
@@ -94,8 +104,8 @@ class DetailsActivity : AppCompatActivity(), View.OnClickListener, Callback<Bien
     override fun onResponse(call: Call<BienesResponse>, response: Response<BienesResponse>) {
         if (response.isSuccessful) {
             val bienes = response.body()!!.bienes
-            detailAdapter!!.setDataSet(bienes)
-            Toast.makeText(this, "Cantidad de bienes => " + bienes.size, Toast.LENGTH_SHORT).show()
+            detailAdapter.setDataSet(bienes)
+            Toast.makeText(this, getString(R.string.sheets_count_message) + bienes.size, Toast.LENGTH_SHORT).show()
         } else {
             try {
                 val jObjError = JSONObject(response.errorBody()!!.string())

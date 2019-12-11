@@ -18,7 +18,7 @@
     <string name="hint_ambiente">AMBIENTE (Primer piso, Taller)</string>
 
     <!-- Dialog new header errors -->
-    <string name="error_hoja_id">Es necesario ingresar el nro de hoja</string>
+    <string name="error_hoja_id">Es necesario ingresar el nro de sheet</string>
     <string name="error_local">Es necesario ingresar un local</string>
     <string name="error_ubicacion">Es necesario ingresar una ubicación</string>
     <string name="error_cargo">Es necesario ingresar un cargo</string>
@@ -49,9 +49,12 @@
         <item>Malo</item>
     </string-array>
     <string name="preservation_prompt">Seleccione condición</string>
+
     <!-- New detail old year options -->
     <string-array name="old_code_years">
-        <item>2015</item>
+        <item>2018</item>
+        <item>2017</item>
+        <item>2016</item>
         <item>2013</item>
         <item>2012</item>
         <item>2011</item>
@@ -65,4 +68,6 @@
     <string name="error_til_description">Ingresa una descripción</string>
 
     <string name="error_login">Los datos son incorrectos</string>
+    <string name="sheets_count_message">Cantidad de sheets =></string>
+    <string name="scanner_results">Resultados</string>
 </resources>

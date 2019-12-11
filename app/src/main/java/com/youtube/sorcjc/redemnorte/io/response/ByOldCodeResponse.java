@@ -1,13 +1,12 @@
 package com.youtube.sorcjc.redemnorte.io.response;
 
 import com.google.gson.annotations.SerializedName;
-import com.youtube.sorcjc.redemnorte.model.Bien;
-import com.youtube.sorcjc.redemnorte.model.BienConsolidado;
+import com.youtube.sorcjc.redemnorte.model.Item;
 
 public class ByOldCodeResponse {
 
-    @SerializedName("bien")
-    private Bien bien;
+    @SerializedName("item")
+    private Item item;
 
     @SerializedName("mensaje")
     private String message;
@@ -15,12 +14,12 @@ public class ByOldCodeResponse {
     @SerializedName("error")
     private boolean error;
 
-    public Bien getBien() {
-        return bien;
+    public Item getItem() {
+        return item;
     }
 
-    public void setBien(Bien bien) {
-        this.bien = bien;
+    public void setItem(Item item) {
+        this.item = item;
     }
 
     public boolean isError() {

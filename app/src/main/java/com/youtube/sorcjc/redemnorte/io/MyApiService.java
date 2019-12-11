@@ -5,9 +5,11 @@ import com.youtube.sorcjc.redemnorte.io.response.BienesResponse;
 import com.youtube.sorcjc.redemnorte.io.response.ByOldCodeResponse;
 import com.youtube.sorcjc.redemnorte.io.response.ByPatrimonialResponse;
 import com.youtube.sorcjc.redemnorte.io.response.HojaResponse;
-import com.youtube.sorcjc.redemnorte.io.response.SheetsResponse;
 import com.youtube.sorcjc.redemnorte.io.response.ResponsableResponse;
 import com.youtube.sorcjc.redemnorte.io.response.SimpleResponse;
+import com.youtube.sorcjc.redemnorte.model.Sheet;
+
+import java.util.ArrayList;
 
 import retrofit2.Call;
 import retrofit2.http.Field;
@@ -16,36 +18,35 @@ import retrofit2.http.GET;
 import retrofit2.http.POST;
 import retrofit2.http.Query;
 
-public interface RedemnorteApiService {
+public interface MyApiService {
 
-    @GET("responsables.php")
+    @GET("responsables")
     Call<ResponsableResponse> getResponsables();
 
     @FormUrlEncoded
-    @POST("registrar-foto.php")
+    @POST("registrar-foto")
     Call<SimpleResponse> postPhoto(
             @Field("image") String base64, @Field("extension") String extension,
             @Field("hoja_id") String hoja_id, @Field("QR_code") String QR_code);
 
     @GET("sheets")
-    Call<SheetsResponse> getSheets(@Field("dni") String dni);
+    Call<ArrayList<Sheet>> getSheets(@Query("dni") String dni);
 
-    @GET("hoja.php")
-    Call<HojaResponse> getHoja(@Query("hoja_id") String hoja_id);
+    @GET("/sheets/1")
+    Call<HojaResponse> getSheet(@Query("sheet_id") String sheet_id);
 
-    @FormUrlEncoded
-    @POST("bienes.php")
-    Call<BienesResponse> getBienes(@Field("hoja_id") String hoja_id);
+    @GET("items")
+    Call<BienesResponse> getItems(@Query("sheet_id") String sheet_id);
 
-    @GET("bien.php")
-    Call<BienResponse> getBien(@Query("hoja_id") String hoja_id, @Query("QR_code") String QR_code);
+    @GET("bien")
+    Call<BienResponse> getItem(@Query("hoja_id") String hoja_id, @Query("QR_code") String QR_code);
 
-    @GET("login.php")
+    @GET("login")
     Call<SimpleResponse> getLogin(@Query("username") String username, @Query("password") String password);
 
     @FormUrlEncoded
-    @POST("registrar-hoja.php")
-    Call<SimpleResponse> postRegistrarHoja(
+    @POST("sheets")
+    Call<SimpleResponse> storeSheet(
             @Field("id") String id,
             @Field("local") String local,
             @Field("ubicacion") String ubicacion,
@@ -60,8 +61,8 @@ public interface RedemnorteApiService {
     );
 
     @FormUrlEncoded
-    @POST("editar-hoja.php")
-    Call<SimpleResponse> postEditarHoja(
+    @POST("editar-hoja")
+    Call<SimpleResponse> updateSheet(
             @Field("id") String id,
             @Field("local") String local,
             @Field("ubicacion") String ubicacion,
@@ -74,18 +75,18 @@ public interface RedemnorteApiService {
             @Field("observacion") String observacion
     );
 
-    @GET("check-qr.php")
+    @GET("check-qr")
     Call<SimpleResponse> getCheckQr(@Query("qr_code") String QR_code);
 
-    @GET("take-by-patrimonial.php")
+    @GET("take-by-patrimonial")
     Call<ByPatrimonialResponse> getByPatrimonial(@Query("patrimonial") String patrimonial);
 
-    @GET("take-by-old-code.php")
+    @GET("take-by-old-code")
     Call<ByOldCodeResponse> getByOldCode(@Query("year") String year, @Query("code") String code);
 
     @FormUrlEncoded
-    @POST("registrar-bien.php")
-    Call<SimpleResponse> postRegistrarBien(
+    @POST("items")
+    Call<SimpleResponse> storeItem(
             @Field("hoja_id") String hoja_id,
             @Field("QR_code") String QR_code,
             @Field("patrimonial_code") String patrimonial_code,
@@ -109,8 +110,8 @@ public interface RedemnorteApiService {
     );
 
     @FormUrlEncoded
-    @POST("editar-bien.php")
-    Call<SimpleResponse> postEditarBien(
+    @POST("items/update")
+    Call<SimpleResponse> updateItem(
             @Field("hoja_id") String hoja_id,
             @Field("QR_code") String QR_code,
             @Field("patrimonial_code") String patrimonial_code,

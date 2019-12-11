@@ -1,14 +1,12 @@
 package com.youtube.sorcjc.redemnorte.io.response;
 
 import com.google.gson.annotations.SerializedName;
-import com.youtube.sorcjc.redemnorte.model.Hoja;
-
-import java.util.ArrayList;
+import com.youtube.sorcjc.redemnorte.model.Sheet;
 
 public class HojaResponse {
 
-    @SerializedName("hoja")
-    private Hoja hoja;
+    @SerializedName("sheet")
+    private Sheet sheet;
 
     @SerializedName("error")
     private boolean error;
@@ -16,12 +14,12 @@ public class HojaResponse {
     @SerializedName("mensaje")
     private String message;
 
-    public Hoja getHoja() {
-        return hoja;
+    public Sheet getSheet() {
+        return sheet;
     }
 
-    public void setHoja(Hoja hoja) {
-        this.hoja = hoja;
+    public void setSheet(Sheet sheet) {
+        this.sheet = sheet;
     }
 
     public boolean isError() {

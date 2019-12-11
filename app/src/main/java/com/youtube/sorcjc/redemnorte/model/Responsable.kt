@@ -1,6 +1,5 @@
 package com.youtube.sorcjc.redemnorte.model
 
-class Responsable {
+data class Responsable (
     var nombre: String? = null
-
-}
+)

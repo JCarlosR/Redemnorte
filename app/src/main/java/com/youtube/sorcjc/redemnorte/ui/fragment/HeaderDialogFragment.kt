@@ -5,43 +5,26 @@ import android.os.Bundle
 import android.support.design.widget.TextInputLayout
 import android.support.v4.app.DialogFragment
 import android.support.v7.app.AppCompatActivity
-import android.support.v7.widget.Toolbar
 import android.view.*
 import android.widget.*
 import com.youtube.sorcjc.redemnorte.Global
 import com.youtube.sorcjc.redemnorte.R
-import com.youtube.sorcjc.redemnorte.io.RedemnorteApiAdapter
+import com.youtube.sorcjc.redemnorte.io.MyApiAdapter
 import com.youtube.sorcjc.redemnorte.io.response.HojaResponse
 import com.youtube.sorcjc.redemnorte.io.response.ResponsableResponse
 import com.youtube.sorcjc.redemnorte.io.response.SimpleResponse
 import com.youtube.sorcjc.redemnorte.model.Responsable
 import com.youtube.sorcjc.redemnorte.model.Sheet
 import com.youtube.sorcjc.redemnorte.ui.activity.PanelActivity
+import kotlinx.android.synthetic.main.dialog_new_header.*
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 import java.util.*
 
 class HeaderDialogFragment : DialogFragment() {
-    private var spinnerResponsible: AutoCompleteTextView? = null
-    private var etId: EditText? = null
-    private var etLocal: EditText? = null
-    private var etUbicacion: EditText? = null
-    private var etCargo: EditText? = null
-    private var etOficina: EditText? = null
-    private var etAmbiente: EditText? = null
-    private var etArea: EditText? = null
-    private var etObservation: EditText? = null
-    private var tilId: TextInputLayout? = null
-    private var tilLocal: TextInputLayout? = null
-    private var tilUbicacion: TextInputLayout? = null
-    private var tilCargo: TextInputLayout? = null
-    private var tilOficina: TextInputLayout? = null
-    private var tilAmbiente: TextInputLayout? = null
-    private var tilArea: TextInputLayout? = null
-    private var tilObservation: TextInputLayout? = null
-    private var checkPendiente: CheckBox? = null
     private var hoja_id: String? = null
+    
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         hoja_id = arguments!!.getString("hoja_id")
@@ -50,17 +33,18 @@ class HeaderDialogFragment : DialogFragment() {
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
                               savedInstanceState: Bundle?): View? {
         val view = inflater.inflate(R.layout.dialog_new_header, container, false)
-        etId = view.findViewById<View>(R.id.etId) as EditText
+
         val title: String
         if (hoja_id!!.isEmpty()) title = "Registrar nueva hoja" else {
             title = "Editar hoja"
             fetchHeaderDataFromServer()
-            etId!!.setText(hoja_id)
-            etId!!.isEnabled = false
+            etId.setText(hoja_id)
+            etId.isEnabled = false
         }
-        val toolbar = view.findViewById<View>(R.id.toolbar) as Toolbar
-        toolbar.title = title
+        
+        toolbar?.title = title
         (activity as AppCompatActivity?)!!.setSupportActionBar(toolbar)
+        
         val actionBar = (activity as AppCompatActivity?)!!.supportActionBar
         if (actionBar != null) {
             actionBar.setDisplayHomeAsUpEnabled(true)
@@ -68,38 +52,30 @@ class HeaderDialogFragment : DialogFragment() {
             actionBar.setHomeAsUpIndicator(android.R.drawable.ic_menu_close_clear_cancel)
         }
         setHasOptionsMenu(true)
-        etLocal = view.findViewById<View>(R.id.etLocal) as EditText
-        etUbicacion = view.findViewById<View>(R.id.etUbicacion) as EditText
-        etCargo = view.findViewById<View>(R.id.etCargo) as EditText
-        etOficina = view.findViewById<View>(R.id.etOficina) as EditText
-        etAmbiente = view.findViewById<View>(R.id.etAmbiente) as EditText
-        etArea = view.findViewById<View>(R.id.etArea) as EditText
-        etObservation = view.findViewById<View>(R.id.etObservation) as EditText
-        tilId = view.findViewById<View>(R.id.tilId) as TextInputLayout
-        tilLocal = view.findViewById<View>(R.id.tilLocal) as TextInputLayout
-        tilUbicacion = view.findViewById<View>(R.id.tilUbicacion) as TextInputLayout
-        tilCargo = view.findViewById<View>(R.id.tilCargo) as TextInputLayout
-        tilOficina = view.findViewById<View>(R.id.tilOficina) as TextInputLayout
-        tilAmbiente = view.findViewById<View>(R.id.tilAmbiente) as TextInputLayout
-        tilArea = view.findViewById<View>(R.id.tilArea) as TextInputLayout
-        tilObservation = view.findViewById<View>(R.id.tilObservation) as TextInputLayout
+
         obtenerDatosResponsables()
-        spinnerResponsible = view.findViewById<View>(R.id.spinnerResponsible) as AutoCompleteTextView
-        checkPendiente = view.findViewById<View>(R.id.checkPendiente) as CheckBox
-        if (hoja_id!!.isEmpty()) { // set for new headers (for edit mode will be set later)
-            setCheckPendienteOnChangeListener()
-        }
+
+        // spinnerResponsible = view.findViewById<View>(R.id.spinnerResponsible) as AutoCompleteTextView
+
         return view
     }
 
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+
+        if (hoja_id!!.isEmpty()) { // set for new headers (for edit mode will be set later)
+            setCheckPendienteOnChangeListener()
+        }
+    }
+
     private fun setCheckPendienteOnChangeListener() {
-        checkPendiente!!.setOnCheckedChangeListener { buttonView, isChecked ->
+        checkPendiente.setOnCheckedChangeListener { _, isChecked ->
             if (isChecked) {
-                tilObservation!!.visibility = View.VISIBLE
+                tilObservation.visibility = View.VISIBLE
                 Global.showInformationDialog(context, "Observación", "¿Por qué motivo la hoja se ha marcado como pendiente?")
             } else {
-                tilObservation!!.visibility = View.GONE
-                etObservation!!.setText("")
+                tilObservation.visibility = View.GONE
+                etObservation.setText("")
             }
         }
     }
@@ -115,7 +91,7 @@ class HeaderDialogFragment : DialogFragment() {
     }
 
     private fun obtenerDatosResponsables() {
-        val call = RedemnorteApiAdapter.getApiService().responsables
+        val call = MyApiAdapter.getApiService().responsables
         call.enqueue(ResponsablesCallback())
     }
 
@@ -151,7 +127,8 @@ class HeaderDialogFragment : DialogFragment() {
         if (id == R.id.save) {
             validateForm()
             return true
-        } else if (id == android.R.id.home) { // handle close button click here
+        } else if (id == android.R.id.home) {
+            // handle close button click here
             dismiss()
             return true
         }
@@ -180,6 +157,7 @@ class HeaderDialogFragment : DialogFragment() {
         if (!validateEditText(etArea, tilArea, R.string.error_area)) {
             return
         }
+
         val id = etId!!.text.toString().trim { it <= ' ' }
         val local = etLocal!!.text.toString().trim { it <= ' ' }
         val ubicacion = etUbicacion!!.text.toString().trim { it <= ' ' }
@@ -188,18 +166,20 @@ class HeaderDialogFragment : DialogFragment() {
         val oficina = etOficina!!.text.toString().trim { it <= ' ' }
         val ambiente = etAmbiente!!.text.toString().trim { it <= ' ' }
         val area = etArea!!.text.toString().trim { it <= ' ' }
-        val activo = if (checkPendiente!!.isChecked) "0" else "1"
+        val activo = if (checkPendiente.isChecked) "0" else "1"
         val observacion = etObservation!!.text.toString().trim { it <= ' ' }
+
+
         // If we have received an ID, we have to edit the data, else, we have to create a new record
         if (hoja_id!!.isEmpty()) {
             val inventariador = Global.getFromSharedPreferences(activity, "username")
-            val call = RedemnorteApiAdapter.getApiService().postRegistrarHoja(
+            val call = MyApiAdapter.getApiService().storeSheet(
                     id, local, ubicacion, responsable, cargo, oficina,
                     ambiente, area, activo, observacion, inventariador
             )
             call.enqueue(RegistrarHojaCallback())
         } else {
-            val call = RedemnorteApiAdapter.getApiService().postEditarHoja(
+            val call = MyApiAdapter.getApiService().updateSheet(
                     id, local, ubicacion, responsable, cargo, oficina,
                     ambiente, area, activo, observacion
             )
@@ -211,12 +191,13 @@ class HeaderDialogFragment : DialogFragment() {
         override fun onResponse(call: Call<SimpleResponse?>, response: Response<SimpleResponse?>) {
             if (response.isSuccessful) {
                 val simpleResponse = response.body()
-                if (simpleResponse!!.isError) { // Log.d("HeaderDialog", "messageError => " + simpleResponse.getMessage());
+                if (simpleResponse!!.isError) {
+                    // Log.d("HeaderDialog", "messageError => " + simpleResponse.getMessage());
                     Toast.makeText(context, simpleResponse.message, Toast.LENGTH_SHORT).show()
                 } else {
                     Toast.makeText(context, "Se ha registrado una nueva hoja", Toast.LENGTH_SHORT).show()
                     // Re-load the sheets
-                    (activity as PanelActivity?)!!.loadInventorySheets()
+                    (activity as PanelActivity?)?.loadInventorySheets()
                     dismiss()
                 }
             } else {
@@ -238,7 +219,7 @@ class HeaderDialogFragment : DialogFragment() {
                 } else {
                     Toast.makeText(context, "Se ha editado correctamente la hoja", Toast.LENGTH_SHORT).show()
                     // Re-load the sheets
-                    (activity as PanelActivity?)!!.loadInventorySheets()
+                    (activity as PanelActivity?)?.loadInventorySheets()
                     dismiss()
                 }
             } else {
@@ -262,7 +243,7 @@ class HeaderDialogFragment : DialogFragment() {
     }
 
     private fun fetchHeaderDataFromServer() {
-        val call = RedemnorteApiAdapter.getApiService().getHoja(hoja_id)
+        val call = MyApiAdapter.getApiService().getSheet(hoja_id)
         call.enqueue(ShowHeaderDataCallback())
     }
 
@@ -285,15 +266,16 @@ class HeaderDialogFragment : DialogFragment() {
         }
 
         private fun showHeaderDataInFields(sheet: Sheet) {
-            etLocal!!.setText(sheet.local)
-            etUbicacion!!.setText(sheet.ubicacion)
-            etCargo!!.setText(sheet.cargo)
-            etOficina!!.setText(sheet.oficina)
-            etAmbiente!!.setText(sheet.ambiente)
-            etArea!!.setText(sheet.area)
-            spinnerResponsible!!.setText(sheet.responsable)
+            etLocal.setText(sheet.local)
+            etUbicacion.setText(sheet.ubicacion)
+            etCargo.setText(sheet.cargo)
+            etOficina.setText(sheet.oficina)
+            etAmbiente.setText(sheet.ambiente)
+            etArea.setText(sheet.area)
+            spinnerResponsible.setText(sheet.responsable)
+
             if (sheet.activo == "0") { // active==0 => pendiente
-                checkPendiente!!.isChecked = true
+                checkPendiente.isChecked = true
                 // pendiente => show observation field
                 tilObservation!!.visibility = View.VISIBLE
                 etObservation!!.setText(sheet.observacion)
@@ -303,6 +285,7 @@ class HeaderDialogFragment : DialogFragment() {
     }
 
     companion object {
+        @JvmStatic
         fun newInstance(hoja_id: String?): HeaderDialogFragment {
             val f = HeaderDialogFragment()
             val args = Bundle()

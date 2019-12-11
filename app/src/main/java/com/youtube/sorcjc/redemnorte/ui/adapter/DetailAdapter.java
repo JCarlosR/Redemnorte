@@ -11,8 +11,8 @@ import android.widget.Button;
 import android.widget.TextView;
 
 import com.youtube.sorcjc.redemnorte.R;
-import com.youtube.sorcjc.redemnorte.model.Bien;
-import com.youtube.sorcjc.redemnorte.ui.DetailsActivity;
+import com.youtube.sorcjc.redemnorte.model.Item;
+import com.youtube.sorcjc.redemnorte.ui.activity.DetailsActivity;
 import com.youtube.sorcjc.redemnorte.ui.fragment.DetailDialogFragment;
 import com.youtube.sorcjc.redemnorte.ui.fragment.ShowDetailDialog;
 
@@ -20,7 +20,7 @@ import java.util.ArrayList;
 
 public class DetailAdapter extends RecyclerView.Adapter<DetailAdapter.ViewHolder> {
 
-    private ArrayList<Bien> dataSet;
+    private ArrayList<Item> dataSet;
     private static String hoja_id, responsable;
 
     // Provide a reference to the views for each data item
@@ -88,13 +88,13 @@ public class DetailAdapter extends RecyclerView.Adapter<DetailAdapter.ViewHolder
     }
 
     // Provide a suitable constructor
-    public DetailAdapter(ArrayList<Bien> myDataSet, String _hoja_id, String _responsable) {
+    public DetailAdapter(ArrayList<Item> myDataSet, String _hoja_id, String _responsable) {
         dataSet = myDataSet;
         hoja_id = _hoja_id;
         responsable = _responsable;
     }
 
-    public void setDataSet(ArrayList<Bien> dataSet) {
+    public void setDataSet(ArrayList<Item> dataSet) {
         this.dataSet = dataSet;
         notifyDataSetChanged();
     }
@@ -115,11 +115,11 @@ public class DetailAdapter extends RecyclerView.Adapter<DetailAdapter.ViewHolder
     public void onBindViewHolder(ViewHolder holder, int position) {
         // get element from your data-set at this position
         // replace the contents of the view with that element
-        Bien bien = dataSet.get(position);
-        holder.qr_code = bien.getQr();
-        holder.tvDetailQR.setText("QR: " + bien.getQr());
-        holder.tvDescription.setText(bien.getDescription());
-        holder.tvPatrimonial.setText("Cód Patrimonial: " + bien.getPatrimonial());
+        Item item = dataSet.get(position);
+        holder.qr_code = item.getQr();
+        holder.tvDetailQR.setText("QR: " + item.getQr());
+        holder.tvDescription.setText(item.getDescription());
+        holder.tvPatrimonial.setText("Cód Patrimonial: " + item.getPatrimonial());
 
         // set events
         holder.setOnClickListeners();

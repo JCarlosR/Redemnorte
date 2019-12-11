@@ -21,15 +21,15 @@ class HeaderAdapter(private var dataSet: ArrayList<Sheet>) : RecyclerView.Adapte
 
     class ViewHolder(v: View) : RecyclerView.ViewHolder(v), View.OnClickListener {
         // context
-        var context: Context
+        var context: Context = v.context
         // text views
-        var headerCode: TextView
-        var responsibleName: TextView
-        var headerDate: TextView
-        var tvImpreso: TextView
+        var headerCode: TextView = v.findViewById(R.id.headerCode)
+        var responsibleName: TextView = v.findViewById(R.id.responsibleName)
+        var headerDate: TextView = v.findViewById(R.id.headerDate)
+        var tvImpreso: TextView = v.findViewById(R.id.tvImpreso)
         // buttons
-        var btnDetails: Button
-        var btnEditHeader: Button
+        var btnDetails: Button = v.findViewById(R.id.btnDetails)
+        var btnEditHeader: Button = v.findViewById(R.id.btnEditHeader)
         // params
         var hoja_id: String? = null
         var responsable: String? = null
@@ -60,15 +60,6 @@ class HeaderAdapter(private var dataSet: ArrayList<Sheet>) : RecyclerView.Adapte
                     .addToBackStack(null).commit()
         }
 
-        init {
-            context = v.context
-            headerCode = v.findViewById(R.id.headerCode)
-            responsibleName = v.findViewById(R.id.responsibleName)
-            headerDate = v.findViewById(R.id.headerDate)
-            tvImpreso = v.findViewById(R.id.tvImpreso)
-            btnDetails = v.findViewById(R.id.btnDetails)
-            btnEditHeader = v.findViewById(R.id.btnEditHeader)
-        }
     }
 
     fun setDataSet(dataSet: ArrayList<Sheet>) {
@@ -97,18 +88,23 @@ class HeaderAdapter(private var dataSet: ArrayList<Sheet>) : RecyclerView.Adapte
 
     override fun onCreateViewHolder(parent: ViewGroup,
                                     viewType: Int): ViewHolder { // create a new view
+
         val v = LayoutInflater.from(parent.context)
                 .inflate(R.layout.item_header, parent, false)
-        if (viewType == 0) { // no active
+
+        if (viewType == 0) {
+            // no active
             v.findViewById<View>(R.id.tvInactive).visibility = View.VISIBLE
-        } else { // is active
+        } else {
+            // is active
             v.findViewById<View>(R.id.tvInactive).visibility = View.GONE
         }
         return ViewHolder(v)
     }
 
-    override fun onBindViewHolder(holder: ViewHolder, position: Int) { // get element from dataSet at this position
-// and replace the contents of the view
+    override fun onBindViewHolder(holder: ViewHolder, position: Int) {
+        // get element from dataSet at this position
+        // and replace the contents of the view
         val (id, fecha, _, _, responsable, _, _, _, _, _, _, _, impreso) = filteredDataSet[position]
         holder.headerCode.text = id
         holder.responsibleName.text = responsable

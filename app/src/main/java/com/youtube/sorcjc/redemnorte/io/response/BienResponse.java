@@ -1,20 +1,18 @@
 package com.youtube.sorcjc.redemnorte.io.response;
 
-import com.youtube.sorcjc.redemnorte.model.Bien;
-
-import java.util.ArrayList;
+import com.youtube.sorcjc.redemnorte.model.Item;
 
 public class BienResponse {
 
-    private Bien bien;
+    private Item item;
     private boolean error;
 
-    public Bien getBien() {
-        return bien;
+    public Item getItem() {
+        return item;
     }
 
-    public void setBien(Bien bien) {
-        this.bien = bien;
+    public void setItem(Item item) {
+        this.item = item;
     }
 
     public boolean isError() {

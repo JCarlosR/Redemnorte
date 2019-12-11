@@ -5,11 +5,11 @@ import okhttp3.logging.HttpLoggingInterceptor;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
-public class RedemnorteApiAdapter {
+public class MyApiAdapter {
 
-    private static RedemnorteApiService API_SERVICE;
+    private static MyApiService API_SERVICE;
 
-    public static RedemnorteApiService getApiService() {
+    public static MyApiService getApiService() {
         HttpLoggingInterceptor logging = new HttpLoggingInterceptor();
         logging.setLevel(HttpLoggingInterceptor.Level.BODY);
 
@@ -25,7 +25,7 @@ public class RedemnorteApiAdapter {
                     .addConverterFactory(GsonConverterFactory.create())
                     .client(httpClient.build()) // <-- using the log level
                     .build();
-            API_SERVICE = retrofit.create(RedemnorteApiService.class);
+            API_SERVICE = retrofit.create(MyApiService.class);
         }
 
         return API_SERVICE;

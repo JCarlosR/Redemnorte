@@ -1,4 +1,4 @@
-package com.youtube.sorcjc.redemnorte.ui
+package com.youtube.sorcjc.redemnorte.ui.activity
 
 import android.os.Bundle
 import android.support.v4.app.FragmentTransaction
@@ -8,12 +8,10 @@ import android.support.v7.widget.RecyclerView
 import android.support.v7.widget.Toolbar
 import android.view.Menu
 import android.view.View
-import android.widget.Button
 import android.widget.Toast
 import com.youtube.sorcjc.redemnorte.Global
 import com.youtube.sorcjc.redemnorte.R
-import com.youtube.sorcjc.redemnorte.io.RedemnorteApiAdapter
-import com.youtube.sorcjc.redemnorte.io.response.HojasResponse
+import com.youtube.sorcjc.redemnorte.io.MyApiAdapter
 import com.youtube.sorcjc.redemnorte.model.Sheet
 import com.youtube.sorcjc.redemnorte.ui.adapter.HeaderAdapter
 import com.youtube.sorcjc.redemnorte.ui.fragment.HeaderDialogFragment
@@ -24,14 +22,14 @@ import retrofit2.Callback
 import retrofit2.Response
 import java.util.*
 
-class PanelActivity : AppCompatActivity(), View.OnClickListener, Callback<HojasResponse> {
+class PanelActivity : AppCompatActivity(), View.OnClickListener, Callback<ArrayList<Sheet>> {
+
     private var headerAdapter: HeaderAdapter? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_panel)
 
-        val recyclerView = findViewById<RecyclerView>(R.id.recyclerView)
         val linearLayoutManager = LinearLayoutManager(this)
         recyclerView.layoutManager = linearLayoutManager
 
@@ -73,7 +71,7 @@ class PanelActivity : AppCompatActivity(), View.OnClickListener, Callback<HojasR
                     }
                     true
                 })
-        val btnQuery = findViewById<Button>(R.id.btnQuery)
+
         btnQuery.setOnClickListener(this)
     }
 
@@ -85,7 +83,7 @@ class PanelActivity : AppCompatActivity(), View.OnClickListener, Callback<HojasR
 
     fun loadInventorySheets() {
         val username = Global.getFromSharedPreferences(this, "username")
-        val call = RedemnorteApiAdapter.getApiService().getHojas(username)
+        val call = MyApiAdapter.getApiService().getSheets(username)
         call.enqueue(this)
     }
 
@@ -108,11 +106,14 @@ class PanelActivity : AppCompatActivity(), View.OnClickListener, Callback<HojasR
                 .addToBackStack(null).commit()
     }
 
-    override fun onResponse(call: Call<HojasResponse>, response: Response<HojasResponse>) {
+    override fun onResponse(call: Call<ArrayList<Sheet>>, response: Response<ArrayList<Sheet>>) {
         if (response.isSuccessful) {
-            val hojas = response.body()!!.sheets
-            headerAdapter!!.setDataSet(hojas)
-            Toast.makeText(this, getString(R.string.sheets_count_message) + hojas.size, Toast.LENGTH_SHORT).show()
+            val sheets = response.body()
+            if (sheets != null) {
+                headerAdapter!!.setDataSet(sheets)
+                Toast.makeText(this, getString(R.string.sheets_count_message) + sheets.size, Toast.LENGTH_SHORT).show()
+            }
+
         } else {
             try {
                 val jObjError = JSONObject(response.errorBody()!!.string())
@@ -123,7 +124,7 @@ class PanelActivity : AppCompatActivity(), View.OnClickListener, Callback<HojasR
         }
     }
 
-    override fun onFailure(call: Call<HojasResponse>, t: Throwable) {
+    override fun onFailure(call: Call<ArrayList<Sheet>>, t: Throwable) {
         Toast.makeText(this, t.localizedMessage, Toast.LENGTH_SHORT).show()
     }
 }

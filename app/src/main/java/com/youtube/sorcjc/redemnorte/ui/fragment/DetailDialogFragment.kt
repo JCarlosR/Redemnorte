@@ -12,7 +12,7 @@ import android.view.*
 import android.widget.*
 import com.youtube.sorcjc.redemnorte.Global
 import com.youtube.sorcjc.redemnorte.R
-import com.youtube.sorcjc.redemnorte.io.RedemnorteApiAdapter
+import com.youtube.sorcjc.redemnorte.io.MyApiAdapter
 import com.youtube.sorcjc.redemnorte.io.response.BienResponse
 import com.youtube.sorcjc.redemnorte.io.response.ByOldCodeResponse
 import com.youtube.sorcjc.redemnorte.io.response.ByPatrimonialResponse
@@ -21,50 +21,26 @@ import com.youtube.sorcjc.redemnorte.model.BienConsolidado
 import com.youtube.sorcjc.redemnorte.model.Item
 import com.youtube.sorcjc.redemnorte.ui.activity.DetailsActivity
 import com.youtube.sorcjc.redemnorte.ui.activity.SimpleScannerActivity
+import kotlinx.android.synthetic.main.dialog_new_detail.*
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 
 class DetailDialogFragment : DialogFragment(), View.OnClickListener {
-    private var etQR: EditText? = null
-    private var etPatrimonial: EditText? = null
-    private var etOldCode: EditText? = null
-    private var etDescription: EditText? = null
-    private var etColor: EditText? = null
-    private var etBrand: EditText? = null
-    private var etModel: EditText? = null
-    private var etSeries: EditText? = null
-    private var etDimLong: EditText? = null
-    private var etDimWidth: EditText? = null
-    private var etDimHigh: EditText? = null
-    private var etObservation: EditText? = null
-    private var spinnerPreservation: Spinner? = null
-    private var spinnerOldYear: Spinner? = null
-    private var checkOperative: CheckBox? = null
-    private var checkEtiquetado: CheckBox? = null
-    private var tilQR: TextInputLayout? = null
-    private var tilPatrimonial: TextInputLayout? = null
-    private var tilDescription: TextInputLayout? = null
-    private var tilColor: TextInputLayout? = null
-    private var tilBrand: TextInputLayout? = null
-    private var tilModel: TextInputLayout? = null
-    private var tilSeries: TextInputLayout? = null
-    private var tilDimLong: TextInputLayout? = null
-    private var tilDimWidth: TextInputLayout? = null
-    private var tilDimHigh: TextInputLayout? = null
-    private var tilObservation: TextInputLayout? = null
-    private var btnCaptureQR: ImageButton? = null
-    private var btnCheckQR: ImageButton? = null
+
     // Param that contains the ID of the parent header
     private var hoja_id: String? = null
+
     // The next param only is provided when the fragment is opened in edit mode
     private var qr_code_param: String? = null
+
     // Responsible associated with the header, so we can check if the detail is assigned to it
-// in old databases
+    // in old databases
     private var responsable: String? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
         hoja_id = arguments!!.getString("hoja_id")
         qr_code_param = arguments!!.getString("qr_code")
         responsable = arguments!!.getString("responsable")
@@ -72,7 +48,9 @@ class DetailDialogFragment : DialogFragment(), View.OnClickListener {
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
                               savedInstanceState: Bundle?): View? {
+
         val view = inflater.inflate(R.layout.dialog_new_detail, container, false)
+
         val toolbar = view.findViewById<View>(R.id.toolbar) as Toolbar
         var title = "Registrar nuevo bien"
         if (qr_code_param != null && !qr_code_param!!.isEmpty()) title = "Editar bien seleccionado"
@@ -85,63 +63,32 @@ class DetailDialogFragment : DialogFragment(), View.OnClickListener {
             actionBar.setHomeAsUpIndicator(android.R.drawable.ic_menu_close_clear_cancel)
         }
         setHasOptionsMenu(true)
-        getViewReferences(view)
+
         // Capture QR, Patrimonial Barcode & Old code
-        btnCaptureQR = view.findViewById<View>(R.id.btnCaptureQR) as ImageButton
-        btnCaptureQR!!.setOnClickListener(this)
-        val btnCapturePatrimonial = view.findViewById<View>(R.id.btnCapturePatrimonial) as ImageButton
+        btnCaptureQR.setOnClickListener(this)
         btnCapturePatrimonial.setOnClickListener(this)
-        val btnCaptureOldCode = view.findViewById<View>(R.id.btnCaptureOldCode) as ImageButton
         btnCaptureOldCode.setOnClickListener(this)
+
         // Check if QR is available
-        btnCheckQR = view.findViewById(R.id.btnCheckQR)
         btnCheckQR.setOnClickListener(this)
+
         // Take data by patrimonial code
-        val btnTakeByPatrimonial = view.findViewById<ImageButton>(R.id.btnTakeByPatrimonial)
         btnTakeByPatrimonial.setOnClickListener(this)
+
         // Take data by old code
-        val btnTakeByOldCode = view.findViewById<ImageButton>(R.id.btnTakeByOldCode)
         btnTakeByOldCode.setOnClickListener(this)
         setupEditMode()
+
         return view
     }
 
-    private fun getViewReferences(view: View) {
-        etQR = view.findViewById<View>(R.id.etQR) as EditText
-        etPatrimonial = view.findViewById<View>(R.id.etPatrimonial) as EditText
-        etOldCode = view.findViewById<View>(R.id.etOldCode) as EditText
-        spinnerOldYear = view.findViewById<View>(R.id.spinnerOldYear) as Spinner
-        etDescription = view.findViewById<View>(R.id.etDescription) as EditText
-        etColor = view.findViewById<View>(R.id.etColor) as EditText
-        etBrand = view.findViewById<View>(R.id.etBrand) as EditText
-        etModel = view.findViewById<View>(R.id.etModel) as EditText
-        etSeries = view.findViewById<View>(R.id.etSeries) as EditText
-        etDimLong = view.findViewById<View>(R.id.etDimLong) as EditText
-        etDimWidth = view.findViewById<View>(R.id.etDimWidth) as EditText
-        etDimHigh = view.findViewById<View>(R.id.etDimHigh) as EditText
-        etObservation = view.findViewById<View>(R.id.etObservation) as EditText
-        spinnerPreservation = view.findViewById<View>(R.id.spinnerPreservation) as Spinner
-        checkOperative = view.findViewById<View>(R.id.checkOperative) as CheckBox
-        checkEtiquetado = view.findViewById<View>(R.id.checkEtiquetado) as CheckBox
-        tilQR = view.findViewById(R.id.tilQR)
-        tilPatrimonial = view.findViewById(R.id.tilPatrimonial)
-        tilDescription = view.findViewById(R.id.tilDescription)
-        tilColor = view.findViewById(R.id.tilColor)
-        tilBrand = view.findViewById(R.id.tilBrand)
-        tilModel = view.findViewById(R.id.tilModel)
-        tilSeries = view.findViewById(R.id.tilSeries)
-        tilDimLong = view.findViewById(R.id.tilDimLong)
-        tilDimWidth = view.findViewById(R.id.tilDimWidth)
-        tilDimHigh = view.findViewById(R.id.tilDimHigh)
-        tilObservation = view.findViewById(R.id.tilObservation)
-    }
-
-    private fun setupEditMode() { // qr_code_param provided => edit mode
-        if (!qr_code_param!!.isEmpty()) {
+    private fun setupEditMode() {
+        // qr_code_param provided => edit mode
+        if (qr_code_param!!.isNotEmpty()) {
             etQR!!.isEnabled = false
             btnCaptureQR!!.visibility = View.GONE
             btnCheckQR!!.visibility = View.GONE
-            val call = RedemnorteApiAdapter.getApiService().getBien(hoja_id, qr_code_param)
+            val call = MyApiAdapter.getApiService().getItem(hoja_id, qr_code_param)
             call.enqueue(GetPreviousDataCallback())
         }
     }
@@ -162,22 +109,22 @@ class DetailDialogFragment : DialogFragment(), View.OnClickListener {
     }
 
     private fun setProductDataToViews(item: Item) {
-        etQR!!.setText(item.qr)
-        etPatrimonial!!.setText(item.patrimonial)
-        etOldCode!!.setText(item.old_code)
-        spinnerOldYear!!.setSelection(Global.getSpinnerIndex(spinnerOldYear, item.old_year))
-        spinnerPreservation!!.setSelection(Global.getSpinnerIndex(spinnerPreservation, item.preservation))
-        checkOperative!!.isChecked = item.isOperative == "S"
-        checkEtiquetado!!.isChecked = item.etiquetado == "1"
-        etDescription!!.setText(item.description)
-        etColor!!.setText(item.color)
-        etBrand!!.setText(item.brand)
-        etModel!!.setText(item.model)
-        etSeries!!.setText(item.series)
-        etDimLong!!.setText(item.dimLong)
-        etDimWidth!!.setText(item.dimWidth)
-        etDimHigh!!.setText(item.dimHigh)
-        etObservation!!.setText(item.observation)
+        etQR.setText(item.qr)
+        etPatrimonial.setText(item.patrimonial)
+        etOldCode.setText(item.old_code)
+        spinnerOldYear.setSelection(Global.getSpinnerIndex(spinnerOldYear, item.old_year))
+        spinnerPreservation.setSelection(Global.getSpinnerIndex(spinnerPreservation, item.preservation))
+        checkOperative.isChecked = item.isOperative == "S"
+        checkEtiquetado.isChecked = item.etiquetado == "1"
+        etDescription.setText(item.description)
+        etColor.setText(item.color)
+        etBrand.setText(item.brand)
+        etModel.setText(item.model)
+        etSeries.setText(item.series)
+        etDimLong.setText(item.dimLong)
+        etDimWidth.setText(item.dimWidth)
+        etDimHigh.setText(item.dimHigh)
+        etObservation.setText(item.observation)
     }
 
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
@@ -192,6 +139,7 @@ class DetailDialogFragment : DialogFragment(), View.OnClickListener {
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         val id = item.itemId
+
         if (id == R.id.save) {
             validateForm()
             return true
@@ -229,16 +177,17 @@ class DetailDialogFragment : DialogFragment(), View.OnClickListener {
         val etiquetado = if (checkEtiquetado!!.isChecked) "1" else "0"
         val operativo = if (checkOperative!!.isChecked) "S" else "N"
         val observacion = etObservation!!.text.toString().trim { it <= ' ' }
+
         val call: Call<SimpleResponse>
         call = if (qr_code_param != null && !qr_code_param!!.isEmpty()) { // Qr code provided => edit mode
-            RedemnorteApiAdapter.getApiService().postEditarBien(
+            MyApiAdapter.getApiService().postEditarBien(
                     hoja_id, QR_code, patrimonial_code, old_code, old_year,
                     denominacion, marca, modelo, serie, color,
                     largo, ancho, alto,
                     condicion, etiquetado, operativo, observacion
             )
         } else { // Qr code assigned => register new detail
-            RedemnorteApiAdapter.getApiService().postRegistrarBien(
+            MyApiAdapter.getApiService().storeItem(
                     hoja_id, QR_code, patrimonial_code, old_code, old_year,
                     denominacion, marca, modelo, serie, color,
                     largo, ancho, alto,
@@ -301,7 +250,7 @@ class DetailDialogFragment : DialogFragment(), View.OnClickListener {
     }
 
     private fun performByPatrimonialRequest() {
-        val call = RedemnorteApiAdapter.getApiService().getByPatrimonial(etPatrimonial!!.text.toString().trim { it <= ' ' })
+        val call = MyApiAdapter.getApiService().getByPatrimonial(etPatrimonial!!.text.toString().trim { it <= ' ' })
         call.enqueue(TakeByPatrimonialCallback())
     }
 
@@ -332,19 +281,22 @@ class DetailDialogFragment : DialogFragment(), View.OnClickListener {
         val series = bienConsolidado.series!!.trim { it <= ' ' }
         val estado = bienConsolidado.estado
         val situacion = bienConsolidado.situacion!!.trim { it <= ' ' }
+
         // final String ubicacion = bienConsolidado.getUbicacion();
-// final String local = bienConsolidado.getLocal();
-// WHERE situacion =  'BP' OR situacion =  'BA' OR situacion =  'NO' OR situacion =  'NU'
+        // final String local = bienConsolidado.getLocal();
+        // WHERE situacion =  'BP' OR situacion =  'BA' OR situacion =  'NO' OR situacion =  'NU'
+
         if (situacion == "BP" || situacion == "BA" || situacion == "NO" || situacion == "NU") {
             val title = "Importante"
             val message = "Lamentablemente este bien ha sido dado de baja."
             Global.showInformationDialog(context, title, message)
             return
         }
-        etDescription!!.setText(description)
-        etBrand!!.setText(brand)
-        etModel!!.setText(model)
-        etSeries!!.setText(series)
+        etDescription.setText(description)
+        etBrand.setText(brand)
+        etModel.setText(model)
+        etSeries.setText(series)
+
         var preservation = ""
         when (estado) {
             "BU" -> preservation = "Bueno"
@@ -355,7 +307,8 @@ class DetailDialogFragment : DialogFragment(), View.OnClickListener {
             "ER" -> preservation = "Malo"
             "IN" -> preservation = "Malo"
         }
-        spinnerPreservation!!.setSelection(Global.getSpinnerIndex(spinnerPreservation, preservation))
+        spinnerPreservation.setSelection(Global.getSpinnerIndex(spinnerPreservation, preservation))
+
         val empleado = bienConsolidado.empleado!!.trim { it <= ' ' }
         if (empleado != responsable) {
             var message = "Este bien le pertenece al usuario $empleado.\n"
@@ -368,7 +321,7 @@ class DetailDialogFragment : DialogFragment(), View.OnClickListener {
     private fun performByOldCodeRequest() {
         val year = spinnerOldYear!!.selectedItem.toString()
         val code = etOldCode!!.text.toString().trim { it <= ' ' }
-        val call = RedemnorteApiAdapter.getApiService().getByOldCode(year, code)
+        val call = MyApiAdapter.getApiService().getByOldCode(year, code)
         call.enqueue(TakeByOldCodeCallback())
     }
 
@@ -393,7 +346,7 @@ class DetailDialogFragment : DialogFragment(), View.OnClickListener {
     }
 
     private fun performCheckQrRequest() {
-        val call = RedemnorteApiAdapter.getApiService().getCheckQr(etQR!!.text.toString().trim { it <= ' ' })
+        val call = MyApiAdapter.getApiService().getCheckQr(etQR!!.text.toString().trim { it <= ' ' })
         call.enqueue(CheckRequestCallback())
     }
 
@@ -433,6 +386,7 @@ class DetailDialogFragment : DialogFragment(), View.OnClickListener {
     }
 
     companion object {
+        @JvmStatic
         fun newInstance(hoja_id: String?, qr_code: String?, responsable: String?): DetailDialogFragment {
             val f = DetailDialogFragment()
             val args = Bundle()
