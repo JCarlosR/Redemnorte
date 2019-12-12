@@ -5,15 +5,15 @@ import android.os.Bundle
 import android.support.design.widget.TextInputLayout
 import android.support.v4.app.DialogFragment
 import android.support.v7.app.AppCompatActivity
+import android.util.Log
 import android.view.*
 import android.widget.*
 import com.youtube.sorcjc.redemnorte.Global
 import com.youtube.sorcjc.redemnorte.R
 import com.youtube.sorcjc.redemnorte.io.MyApiAdapter
 import com.youtube.sorcjc.redemnorte.io.response.HojaResponse
-import com.youtube.sorcjc.redemnorte.io.response.ResponsableResponse
 import com.youtube.sorcjc.redemnorte.io.response.SimpleResponse
-import com.youtube.sorcjc.redemnorte.model.Responsable
+import com.youtube.sorcjc.redemnorte.model.ResponsibleUser
 import com.youtube.sorcjc.redemnorte.model.Sheet
 import com.youtube.sorcjc.redemnorte.ui.activity.PanelActivity
 import kotlinx.android.synthetic.main.dialog_new_header.*
@@ -32,25 +32,16 @@ class HeaderDialogFragment : DialogFragment() {
         arguments?.getString("hoja_id")?.let {
             sheetId = it
         }
+
+        setHasOptionsMenu(true)
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
                               savedInstanceState: Bundle?): View? {
+
         val view = inflater.inflate(R.layout.dialog_new_header, container, false)
 
-
-        (activity as AppCompatActivity?)?.setSupportActionBar(toolbar)
-        
-        val actionBar = (activity as AppCompatActivity?)!!.supportActionBar
-        if (actionBar != null) {
-            actionBar.setDisplayHomeAsUpEnabled(true)
-            actionBar.setHomeButtonEnabled(true)
-            actionBar.setHomeAsUpIndicator(android.R.drawable.ic_menu_close_clear_cancel)
-        }
-        setHasOptionsMenu(true)
-
         fetchResponsibleUsersData()
-
         // spinnerResponsible = view.findViewById<View>(R.id.spinnerResponsible) as AutoCompleteTextView
         return view
     }
@@ -70,14 +61,29 @@ class HeaderDialogFragment : DialogFragment() {
 
         toolbar.title = title
 
+        val appCompatActivity = (activity as AppCompatActivity)
+        appCompatActivity.setSupportActionBar(toolbar)
+
+        val actionBar = appCompatActivity.supportActionBar
+        /*
+        Log.d("HeaderDialogFragment", "appCompatActivity => $appCompatActivity")
+        Log.d("HeaderDialogFragment", "toolbar => $toolbar")
+        Log.d("HeaderDialogFragment", "actionBar => $actionBar")
+        */
+
+        if (actionBar != null) {
+            actionBar.setDisplayHomeAsUpEnabled(true)
+            actionBar.setHomeButtonEnabled(true)
+        }
+
         // set for new headers (for edit mode will be set later)
         if (sheetId.isEmpty()) {
-            setCheckPendienteOnChangeListener()
+            setCheckPendingOnChangeListener()
         }
     }
 
-    private fun setCheckPendienteOnChangeListener() {
-        checkPendiente.setOnCheckedChangeListener { _, isChecked ->
+    private fun setCheckPendingOnChangeListener() {
+        checkPending.setOnCheckedChangeListener { _, isChecked ->
             if (isChecked) {
                 tilObservation.visibility = View.VISIBLE
                 Global.showInformationDialog(context, "Observación", "¿Por qué motivo la hoja se ha marcado como pendiente?")
@@ -88,35 +94,32 @@ class HeaderDialogFragment : DialogFragment() {
         }
     }
 
-    private fun poblarSpinnerResponsables(responsables: ArrayList<Responsable>) {
-        val list: MutableList<String?> = ArrayList()
-        for ((nombre) in responsables) {
-            list.add(nombre)
+    private fun populateResponsibleUsersSpinner(responsibleUsers: ArrayList<ResponsibleUser>) {
+        context?.let {
+            val arrayAdapter = ArrayAdapter(it, android.R.layout.simple_dropdown_item_1line, responsibleUsers)
+            spinnerResponsible.setAdapter(arrayAdapter)
         }
-        val spinnerArrayAdapter = ArrayAdapter(context, android.R.layout.simple_dropdown_item_1line, list)
-        // spinnerArrayAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        spinnerResponsible!!.setAdapter(spinnerArrayAdapter)
+        // ArrayAdapter<Doctor>(this@CreateAppointmentActivity, android.R.layout.simple_list_item_1, doctors)
     }
 
     private fun fetchResponsibleUsersData() {
-        val call = MyApiAdapter.getApiService().responsables
-        call.enqueue(ResponsablesCallback())
+        val call = MyApiAdapter.getApiService().getResponsibleUsers()
+        call.enqueue(ResponsibleUsersCallback())
     }
 
-    internal inner class ResponsablesCallback : Callback<ResponsableResponse?> {
-        override fun onResponse(call: Call<ResponsableResponse?>, response: Response<ResponsableResponse?>) {
+    internal inner class ResponsibleUsersCallback : Callback<ArrayList<ResponsibleUser>> {
+        override fun onResponse(call: Call<ArrayList<ResponsibleUser>>, response: Response<ArrayList<ResponsibleUser>>) {
             if (response.isSuccessful) {
-                val responsableResponse = response.body()
-                if (!responsableResponse!!.isError) {
-                    poblarSpinnerResponsables(responsableResponse.responsables)
+                response.body()?.let {
+                    populateResponsibleUsersSpinner(it)
                 }
             } else {
-                Toast.makeText(context, getString(R.string.error_format_server_response), Toast.LENGTH_SHORT).show()
+                context?.toast(getString(R.string.error_format_server_response))
             }
         }
 
-        override fun onFailure(call: Call<ResponsableResponse?>, t: Throwable) {
-            Toast.makeText(context, t.localizedMessage, Toast.LENGTH_SHORT).show()
+        override fun onFailure(call: Call<ArrayList<ResponsibleUser>>, t: Throwable) {
+            context?.toast(t.localizedMessage)
         }
     }
 
@@ -124,6 +127,12 @@ class HeaderDialogFragment : DialogFragment() {
         val dialog = super.onCreateDialog(savedInstanceState)
         dialog.requestWindowFeature(Window.FEATURE_NO_TITLE)
         return dialog
+    }
+
+    override fun onPrepareOptionsMenu(menu: Menu?) {
+        super.onPrepareOptionsMenu(menu)
+
+        menu?.removeItem(R.id.search)
     }
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
@@ -137,7 +146,7 @@ class HeaderDialogFragment : DialogFragment() {
             validateForm()
             return true
         } else if (id == android.R.id.home) {
-            // handle close button click here
+            // close button
             dismiss()
             return true
         }
@@ -146,38 +155,38 @@ class HeaderDialogFragment : DialogFragment() {
     }
 
     private fun validateForm() {
-        if (!validateEditText(etId, tilId, R.string.error_hoja_id)) {
+        if (!validEditText(etId, tilId, R.string.error_hoja_id)) {
             return
         }
-        if (!validateEditText(etLocal, tilLocal, R.string.error_local)) {
+        if (!validEditText(etLocal, tilLocal, R.string.error_local)) {
             return
         }
-        if (!validateEditText(etUbicacion, tilUbicacion, R.string.error_ubicacion)) {
+        if (!validEditText(etUbicacion, tilUbicacion, R.string.error_ubicacion)) {
             return
         }
-        if (!validateEditText(etCargo, tilCargo, R.string.error_cargo)) {
+        if (!validEditText(etCargo, tilCargo, R.string.error_cargo)) {
             return
         }
-        if (!validateEditText(etOficina, tilOficina, R.string.error_oficina)) {
+        if (!validEditText(etOficina, tilOficina, R.string.error_oficina)) {
             return
         }
-        if (!validateEditText(etAmbiente, tilAmbiente, R.string.error_ambiente)) {
+        if (!validEditText(etAmbiente, tilAmbiente, R.string.error_ambiente)) {
             return
         }
-        if (!validateEditText(etArea, tilArea, R.string.error_area)) {
+        if (!validEditText(etArea, tilArea, R.string.error_area)) {
             return
         }
 
-        val id = etId.text.toString().trim { it <= ' ' }
-        val place = etLocal.text.toString().trim { it <= ' ' }
-        val ubicacion = etUbicacion.text.toString().trim { it <= ' ' }
-        val responsible = spinnerResponsible.text.toString().trim { it <= ' ' }
-        val position = etCargo.text.toString().trim { it <= ' ' }
-        val office = etOficina.text.toString().trim { it <= ' ' }
-        val ambient = etAmbiente.text.toString().trim { it <= ' ' }
-        val area = etArea.text.toString().trim { it <= ' ' }
-        val activo = if (checkPendiente.isChecked) "0" else "1"
-        val obs = etObservation.text.toString().trim { it <= ' ' }
+        val id = etId.text.toString().trim()
+        val place = etLocal.text.toString().trim()
+        val ubicacion = etUbicacion.text.toString().trim()
+        val responsible = spinnerResponsible.text.toString().trim()
+        val position = etCargo.text.toString().trim()
+        val office = etOficina.text.toString().trim()
+        val ambient = etAmbiente.text.toString().trim()
+        val area = etArea.text.toString().trim()
+        val pending = checkPending.isChecked
+        val obs = etObservation.text.toString().trim()
 
 
         // If we have received an ID, we have to edit the data, else we have to create a new record
@@ -185,24 +194,23 @@ class HeaderDialogFragment : DialogFragment() {
             val inventariador = Global.getFromSharedPreferences(activity, "username")
             val call = MyApiAdapter.getApiService().storeSheet(
                     id, place, ubicacion, responsible, position, office,
-                    ambient, area, activo, obs, inventariador
+                    ambient, area, pending, obs, inventariador
             )
-            call.enqueue(RegistrarHojaCallback())
+            call.enqueue(CreateSheetCallback())
         } else {
             val call = MyApiAdapter.getApiService().updateSheet(
                     id, place, ubicacion, responsible, position, office,
-                    ambient, area, activo, obs
+                    ambient, area, pending, obs
             )
             call.enqueue(EditSheetCallback())
         }
     }
 
-    internal inner class RegistrarHojaCallback : Callback<SimpleResponse?> {
+    internal inner class CreateSheetCallback : Callback<SimpleResponse?> {
         override fun onResponse(call: Call<SimpleResponse?>, response: Response<SimpleResponse?>) {
             if (response.isSuccessful) {
                 val simpleResponse = response.body()
-                if (simpleResponse!!.isError) {
-                    // Log.d("HeaderDialog", "messageError => " + simpleResponse.getMessage());
+                if (simpleResponse?.isError == true) {
                     context?.toast(simpleResponse.message)
                 } else {
                     context?.toast(getString(R.string.success_sheet_created_message))
@@ -243,8 +251,8 @@ class HeaderDialogFragment : DialogFragment() {
         }
     }
 
-    private fun validateEditText(editText: EditText, textInputLayout: TextInputLayout, errorString: Int): Boolean {
-        if (editText.text.toString().trim { it <= ' ' }.isEmpty()) {
+    private fun validEditText(editText: EditText, textInputLayout: TextInputLayout, errorString: Int): Boolean {
+        if (editText.text.toString().trim().isEmpty()) {
             textInputLayout.error = getString(errorString)
             return false
         } else {
@@ -285,22 +293,23 @@ class HeaderDialogFragment : DialogFragment() {
             etArea.setText(sheet.area)
             spinnerResponsible.setText(sheet.responsible_user)
 
-            if (sheet.activo == "0") { // active==0 => pendiente
-                checkPendiente.isChecked = true
-                // pendiente => show observation field
+            if (sheet.pending) {
+                checkPending.isChecked = true
+                // if pending show the observation field
                 tilObservation.visibility = View.VISIBLE
                 etObservation.setText(sheet.observation)
             }
-            setCheckPendienteOnChangeListener()
+
+            setCheckPendingOnChangeListener()
         }
     }
 
     companion object {
         @JvmStatic
-        fun newInstance(hoja_id: String?): HeaderDialogFragment {
+        fun newInstance(sheetId: String?): HeaderDialogFragment {
             val f = HeaderDialogFragment()
             val args = Bundle()
-            args.putString("hoja_id", hoja_id)
+            args.putString("hoja_id", sheetId)
             f.arguments = args
             return f
         }

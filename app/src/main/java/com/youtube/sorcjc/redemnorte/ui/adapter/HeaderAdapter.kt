@@ -14,7 +14,6 @@ import com.youtube.sorcjc.redemnorte.model.Sheet
 import com.youtube.sorcjc.redemnorte.ui.activity.DetailsActivity
 import com.youtube.sorcjc.redemnorte.ui.activity.PanelActivity
 import com.youtube.sorcjc.redemnorte.ui.fragment.HeaderDialogFragment.Companion.newInstance
-import java.util.*
 import kotlin.collections.ArrayList
 
 class HeaderAdapter(private var dataSet: ArrayList<Sheet> = ArrayList()) : RecyclerView.Adapter<HeaderAdapter.ViewHolder>() {
@@ -28,14 +27,14 @@ class HeaderAdapter(private var dataSet: ArrayList<Sheet> = ArrayList()) : Recyc
         var headerCode: TextView = v.findViewById(R.id.headerCode)
         var responsibleName: TextView = v.findViewById(R.id.responsibleName)
         var headerDate: TextView = v.findViewById(R.id.headerDate)
-        var tvImpreso: TextView = v.findViewById(R.id.tvImpreso)
+        var tvPrinted: TextView = v.findViewById(R.id.tvPrinted)
 
         // buttons
         var btnDetails: Button = v.findViewById(R.id.btnDetails)
         var btnEditHeader: Button = v.findViewById(R.id.btnEditHeader)
 
         // params
-        var hoja_id: String? = null
+        var sheetId: String? = null
         var responsable: String? = null
 
         fun setOnClickListeners() {
@@ -47,11 +46,11 @@ class HeaderAdapter(private var dataSet: ArrayList<Sheet> = ArrayList()) : Recyc
             when (view.id) {
                 R.id.btnDetails -> {
                     val intent = Intent(context, DetailsActivity::class.java)
-                    intent.putExtra("hoja_id", hoja_id)
+                    intent.putExtra("hoja_id", sheetId)
                     intent.putExtra("responsable", responsable)
                     context.startActivity(intent)
                 }
-                R.id.btnEditHeader -> showEditHeaderDialog(hoja_id)
+                R.id.btnEditHeader -> showEditHeaderDialog(sheetId)
             }
         }
 
@@ -80,16 +79,18 @@ class HeaderAdapter(private var dataSet: ArrayList<Sheet> = ArrayList()) : Recyc
         } else {
             filteredDataSet = ArrayList()
             for (item in dataSet) {
-                if (item.responsible_user!!.toLowerCase().contains(query.toLowerCase())) filteredDataSet.add(item)
+                if (item.responsible_user!!.toLowerCase().contains(query.toLowerCase()))
+                    filteredDataSet.add(item)
             }
         }
         notifyDataSetChanged()
     }
 
     override fun getItemViewType(position: Int): Int {
-        var active = 1
-        if (dataSet[position].activo == "0") active = 0
-        return active
+        // viewType 1 means active, 0 means pending
+        return if (dataSet[position].pending)
+            0
+        else 1
     }
 
     override fun onCreateViewHolder(parent: ViewGroup,
@@ -100,10 +101,10 @@ class HeaderAdapter(private var dataSet: ArrayList<Sheet> = ArrayList()) : Recyc
 
         if (viewType == 0) {
             // no active
-            v.findViewById<View>(R.id.tvInactive).visibility = View.VISIBLE
+            v.findViewById<View>(R.id.tvPending).visibility = View.VISIBLE
         } else {
             // is active
-            v.findViewById<View>(R.id.tvInactive).visibility = View.GONE
+            v.findViewById<View>(R.id.tvPending).visibility = View.GONE
         }
         return ViewHolder(v)
     }
@@ -111,23 +112,23 @@ class HeaderAdapter(private var dataSet: ArrayList<Sheet> = ArrayList()) : Recyc
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         // get element from dataSet at this position
         // and replace the contents of the view
-        val (id, fecha, _, _, responsable, _, _, _, _, _, _, _, impreso) = filteredDataSet[position]
+        val (id, fecha, _, _, responsable, _, _, _, _, _, _, _, printed) = filteredDataSet[position]
         holder.headerCode.text = id
         holder.responsibleName.text = responsable
         holder.headerDate.text = fecha
 
-        if (impreso!=null && impreso == "1") {
-            holder.tvImpreso.visibility = View.VISIBLE
+        holder.tvPrinted.visibility = if (printed) {
+            View.VISIBLE
         } else {
-            holder.tvImpreso.visibility = View.GONE
+            View.GONE
         }
 
         // set events
         holder.setOnClickListeners()
 
         // params needed to show the details
-        holder.hoja_id = id
-        holder.responsable = responsable!!.trim { it <= ' ' }
+        holder.sheetId = id
+        holder.responsable = responsable!!.trim()
     }
 
     override fun getItemCount(): Int {

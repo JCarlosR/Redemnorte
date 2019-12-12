@@ -18,7 +18,7 @@
     <string name="hint_ambiente">AMBIENTE (Primer piso, Taller)</string>
 
     <!-- Dialog new header errors -->
-    <string name="error_hoja_id">Es necesario ingresar el nro de sheet</string>
+    <string name="error_hoja_id">Es necesario ingresar el nro de hoja</string>
     <string name="error_local">Es necesario ingresar un local</string>
     <string name="error_ubicacion">Es necesario ingresar una ubicación</string>
     <string name="error_cargo">Es necesario ingresar un cargo</string>
@@ -78,4 +78,5 @@
     <string name="btn_edit_sheet">Editar hoja</string>
     <string name="btn_see_items">Ver bienes</string>
     <string name="label_sheet_already_printed">ESTA HOJA YA SE HA IMPRESO</string>
+    <string name="checkbox_mark_as_review_pending">Marcar como hoja pendiente de revisión</string>
 </resources>

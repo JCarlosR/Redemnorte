@@ -1,19 +1,19 @@
 package com.youtube.sorcjc.redemnorte.io.response;
 
-import com.youtube.sorcjc.redemnorte.model.Responsable;
+import com.youtube.sorcjc.redemnorte.model.ResponsibleUser;
 
 import java.util.ArrayList;
 
 public class ResponsableResponse {
 
-    private ArrayList<Responsable> responsables;
+    private ArrayList<ResponsibleUser> responsables;
     private boolean error;
 
-    public ArrayList<Responsable> getResponsables() {
+    public ArrayList<ResponsibleUser> getResponsables() {
         return responsables;
     }
 
-    public void setResponsables(ArrayList<Responsable> responsables) {
+    public void setResponsables(ArrayList<ResponsibleUser> responsables) {
         this.responsables = responsables;
     }
 
