@@ -6,24 +6,25 @@ import android.support.design.widget.TextInputLayout
 import android.support.v4.app.DialogFragment
 import android.support.v7.app.AppCompatActivity
 import android.view.*
-import android.widget.*
-import com.youtube.sorcjc.redemnorte.Global
+import android.widget.ArrayAdapter
+import android.widget.EditText
 import com.youtube.sorcjc.redemnorte.R
 import com.youtube.sorcjc.redemnorte.io.MyApiAdapter
 import com.youtube.sorcjc.redemnorte.io.response.HojaResponse
+import com.youtube.sorcjc.redemnorte.io.response.PublicDataResponse
 import com.youtube.sorcjc.redemnorte.io.response.SimpleResponse
-import com.youtube.sorcjc.redemnorte.model.ResponsibleUser
 import com.youtube.sorcjc.redemnorte.model.Sheet
 import com.youtube.sorcjc.redemnorte.ui.activity.PanelActivity
 import com.youtube.sorcjc.redemnorte.util.PreferenceHelper
 import com.youtube.sorcjc.redemnorte.util.PreferenceHelper.get
+import com.youtube.sorcjc.redemnorte.util.arrayAdapter
 import com.youtube.sorcjc.redemnorte.util.showInfoDialog
-import kotlinx.android.synthetic.main.dialog_new_header.*
 import com.youtube.sorcjc.redemnorte.util.toast
+import kotlinx.android.synthetic.main.dialog_new_header.*
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
-import java.util.*
+
 
 class HeaderDialogFragment : DialogFragment() {
 
@@ -48,8 +49,7 @@ class HeaderDialogFragment : DialogFragment() {
 
         val view = inflater.inflate(R.layout.dialog_new_header, container, false)
 
-        fetchResponsibleUsersData()
-        // spinnerResponsible = view.findViewById<View>(R.id.spinnerResponsible) as AutoCompleteTextView
+        fetchPublicData()
         return view
     }
 
@@ -57,9 +57,10 @@ class HeaderDialogFragment : DialogFragment() {
         super.onViewCreated(view, savedInstanceState)
 
         val title: String
-        if (sheetId.isEmpty())
+        if (sheetId.isEmpty()) {
             title = getString(R.string.title_sheet_create)
-        else {
+            etId.visibility = View.GONE
+        } else {
             title = getString(R.string.title_sheet_edit)
             fetchHeaderDataFromServer()
             etId.setText(sheetId)
@@ -71,16 +72,9 @@ class HeaderDialogFragment : DialogFragment() {
         val appCompatActivity = (activity as AppCompatActivity)
         appCompatActivity.setSupportActionBar(toolbar)
 
-        val actionBar = appCompatActivity.supportActionBar
-        /*
-        Log.d("HeaderDialogFragment", "appCompatActivity => $appCompatActivity")
-        Log.d("HeaderDialogFragment", "toolbar => $toolbar")
-        Log.d("HeaderDialogFragment", "actionBar => $actionBar")
-        */
-
-        if (actionBar != null) {
-            actionBar.setDisplayHomeAsUpEnabled(true)
-            actionBar.setHomeButtonEnabled(true)
+        appCompatActivity.supportActionBar?.let {
+            it.setDisplayHomeAsUpEnabled(true)
+            it.setHomeButtonEnabled(true)
         }
 
         // set for new headers (for edit mode will be set later)
@@ -93,7 +87,7 @@ class HeaderDialogFragment : DialogFragment() {
         checkPending.setOnCheckedChangeListener { _, isChecked ->
             if (isChecked) {
                 tilObservation.visibility = View.VISIBLE
-                context?.showInfoDialog("Observación", "¿Por qué motivo la hoja se ha marcado como pendiente?")
+                context?.showInfoDialog(getString(R.string.dialog_title_observation), getString(R.string.dialog_message_observation))
             } else {
                 tilObservation.visibility = View.GONE
                 etObservation.setText("")
@@ -101,31 +95,37 @@ class HeaderDialogFragment : DialogFragment() {
         }
     }
 
-    private fun populateResponsibleUsersSpinner(responsibleUsers: ArrayList<ResponsibleUser>) {
+    private fun populateSpinners(publicDataResponse: PublicDataResponse) {
         context?.let {
-            val arrayAdapter = ArrayAdapter(it, android.R.layout.simple_dropdown_item_1line, responsibleUsers)
-            spinnerResponsible.setAdapter(arrayAdapter)
+            // val arrayAdapter = ArrayAdapter(it, android.R.layout.simple_dropdown_item_1line, publicDataResponse.responsibleUsers)
+            atvResponsible.setAdapter(it.arrayAdapter(publicDataResponse.responsibleUsers))
+            atvArea.setAdapter(it.arrayAdapter(publicDataResponse.areas))
+            atvPlace.setAdapter(it.arrayAdapter(publicDataResponse.places))
         }
-        // ArrayAdapter<Doctor>(this@CreateAppointmentActivity, android.R.layout.simple_list_item_1, doctors)
+
+        /*spinnerResponsible.onItemClickListener = OnItemClickListener { adapterView, _, position, _ ->
+            val responsible = adapterView.getItemAtPosition(position) as ResponsibleUser
+            Log.i("SelectedText", responsible.name)
+        }*/
     }
 
-    private fun fetchResponsibleUsersData() {
-        val call = MyApiAdapter.getApiService().getResponsibleUsers()
-        call.enqueue(ResponsibleUsersCallback())
+    private fun fetchPublicData() {
+        val call = MyApiAdapter.getApiService().getPublicData()
+        call.enqueue(PublicDataCallback())
     }
 
-    internal inner class ResponsibleUsersCallback : Callback<ArrayList<ResponsibleUser>> {
-        override fun onResponse(call: Call<ArrayList<ResponsibleUser>>, response: Response<ArrayList<ResponsibleUser>>) {
+    internal inner class PublicDataCallback : Callback<PublicDataResponse> {
+        override fun onResponse(call: Call<PublicDataResponse>, response: Response<PublicDataResponse>) {
             if (response.isSuccessful) {
                 response.body()?.let {
-                    populateResponsibleUsersSpinner(it)
+                    populateSpinners(it)
                 }
             } else {
                 context?.toast(getString(R.string.error_format_server_response))
             }
         }
 
-        override fun onFailure(call: Call<ArrayList<ResponsibleUser>>, t: Throwable) {
+        override fun onFailure(call: Call<PublicDataResponse>, t: Throwable) {
             context?.toast(t.localizedMessage)
         }
     }
@@ -162,10 +162,10 @@ class HeaderDialogFragment : DialogFragment() {
     }
 
     private fun validateForm() {
-        if (!validEditText(etId, tilId, R.string.error_hoja_id)) {
+        if (etId.visibility == View.VISIBLE && !validEditText(etId, tilId, R.string.error_hoja_id)) {
             return
         }
-        if (!validEditText(etPlace, tilPlace, R.string.error_local)) {
+        if (!validEditText(atvPlace, tilPlace, R.string.error_local)) {
             return
         }
         if (!validEditText(etLocation, tilLocation, R.string.error_ubicacion)) {
@@ -180,21 +180,20 @@ class HeaderDialogFragment : DialogFragment() {
         if (!validEditText(etAmbient, tilAmbient, R.string.error_ambiente)) {
             return
         }
-        if (!validEditText(etArea, tilArea, R.string.error_area)) {
+        if (!validEditText(atvArea, tilArea, R.string.error_area)) {
             return
         }
 
         val id = etId.text.toString().trim()
-        val place = etPlace.text.toString().trim()
+        val place = atvPlace.text.toString().trim()
         val location = etLocation.text.toString().trim()
-        val responsible = spinnerResponsible.text.toString().trim()
+        val responsible = atvResponsible.text.toString().trim()
         val position = etPosition.text.toString().trim()
         val office = etOffice.text.toString().trim()
         val ambient = etAmbient.text.toString().trim()
-        val area = etArea.text.toString().trim()
+        val area = atvArea.text.toString().trim()
         val pending = checkPending.isChecked
         val obs = etObservation.text.toString().trim()
-
 
         // If we have received an ID, we have to edit the data, else we have to create a new record
         if (sheetId.isEmpty()) {
@@ -213,13 +212,10 @@ class HeaderDialogFragment : DialogFragment() {
         }
     }
 
-    internal inner class CreateSheetCallback : Callback<SimpleResponse?> {
-        override fun onResponse(call: Call<SimpleResponse?>, response: Response<SimpleResponse?>) {
+    internal inner class CreateSheetCallback : Callback<Sheet> {
+        override fun onResponse(call: Call<Sheet>, response: Response<Sheet>) {
             if (response.isSuccessful) {
-                val simpleResponse = response.body()
-                if (simpleResponse?.isError == true) {
-                    context?.toast(simpleResponse.message)
-                } else {
+                response.body()?.let {
                     context?.toast(getString(R.string.success_sheet_created_message))
 
                     // Re-load the sheets
@@ -231,7 +227,7 @@ class HeaderDialogFragment : DialogFragment() {
             }
         }
 
-        override fun onFailure(call: Call<SimpleResponse?>, t: Throwable) {
+        override fun onFailure(call: Call<Sheet>, t: Throwable) {
             context?.toast(t.localizedMessage)
         }
     }
@@ -292,13 +288,13 @@ class HeaderDialogFragment : DialogFragment() {
         }
 
         private fun showHeaderDataInFields(sheet: Sheet) {
-            etPlace.setText(sheet.place)
+            atvPlace.setText(sheet.place)
             etLocation.setText(sheet.location)
             etPosition.setText(sheet.position)
             etOffice.setText(sheet.office)
             etAmbient.setText(sheet.ambient)
-            etArea.setText(sheet.area)
-            spinnerResponsible.setText(sheet.responsible_user)
+            atvArea.setText(sheet.area)
+            atvResponsible.setText(sheet.responsible_user)
 
             if (sheet.pending) {
                 checkPending.isChecked = true

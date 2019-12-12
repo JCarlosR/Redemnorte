@@ -49,7 +49,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener, Callback<User> {
                 preferences["username"] = username
             }
             R.id.btnCall ->
-                Toast.makeText(this, "Julisa Mendoza: 953 637 576", Toast.LENGTH_SHORT).show()
+                toast(getString(R.string.support_contact_info))
         }
     }
 

@@ -11,19 +11,25 @@ import java.util.*
 
 interface MyApiService {
     @POST("login")
-    fun postLogin(@Query("username") username: String?, @Query("password") password: String?): Call<User>
+    @Headers("Accept: application/json")
+    fun postLogin(
+            @Query("username") username: String?,
+            @Query("password") password: String?
+    ): Call<User>
 
-    @GET("responsible-users")
-    fun getResponsibleUsers(): Call<ArrayList<ResponsibleUser>>
+    @GET("public-data")
+    @Headers("Accept: application/json")
+    fun getPublicData(): Call<PublicDataResponse>
 
     @FormUrlEncoded
     @POST("registrar-foto")
     fun postPhoto(
             @Field("image") base64: String?, @Field("extension") extension: String?,
-            @Field("hoja_id") hoja_id: String?, @Field("QR_code") QR_code: String?): Call<SimpleResponse?>
+            @Field("hoja_id") hoja_id: String?, @Field("QR_code") QR_code: String?
+    ): Call<SimpleResponse?>
 
     @GET("sheets")
-    fun getSheets(@Query("dni") dni: String?): Call<ArrayList<Sheet>>
+    fun getSheets(@Query("user_id") userId: Int): Call<ArrayList<Sheet>>
 
     @GET("/sheets/1")
     fun getSheet(@Query("sheet_id") sheet_id: String?): Call<HojaResponse?>
@@ -32,23 +38,26 @@ interface MyApiService {
     fun getItems(@Query("sheet_id") sheet_id: String?): Call<ArrayList<Item>>
 
     @GET("bien")
-    fun getItem(@Query("hoja_id") hoja_id: String?, @Query("QR_code") QR_code: String?): Call<BienResponse>
+    fun getItem(
+            @Query("hoja_id") hoja_id: String?, @Query("QR_code") QR_code: String?
+    ): Call<BienResponse>
 
     @FormUrlEncoded
     @POST("sheets")
+    @Headers("Accept: application/json")
     fun storeSheet(
             @Field("id") id: String?,
             @Field("place") place: String?,
-            @Field("ubicacion") ubicacion: String?,
-            @Field("responsable") responsable: String?,
-            @Field("cargo") cargo: String?,
+            @Field("location") location: String?,
+            @Field("responsible_user") responsibleName: String?,
+            @Field("position") position: String?,
             @Field("office") office: String?,
             @Field("ambient") ambient: String?,
             @Field("area") area: String?,
-            @Field("pending") pending: Boolean?,
+            @Field("pending") pending: Boolean,
             @Field("observation") observation: String?,
             @Field("author") userId: Int
-    ): Call<SimpleResponse?>
+    ): Call<Sheet>
 
     @FormUrlEncoded
     @POST("editar-hoja")
@@ -57,7 +66,7 @@ interface MyApiService {
             @Field("place") place: String?,
             @Field("ubicacion") ubicacion: String?,
             @Field("responsable") responsable: String?,
-            @Field("cargo") cargo: String?,
+            @Field("position") position: String?,
             @Field("office") office: String?,
             @Field("ambient") ambient: String?,
             @Field("area") area: String?,

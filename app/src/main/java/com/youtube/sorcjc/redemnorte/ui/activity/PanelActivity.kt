@@ -89,10 +89,11 @@ class PanelActivity : AppCompatActivity(), View.OnClickListener, Callback<ArrayL
     }
 
     fun loadInventorySheets() {
-        val username = preferences["username", ""]
+        val userId = preferences["user_id", -1]
 
-        val call = MyApiAdapter.getApiService().getSheets(username)
-        call.enqueue(this)
+        MyApiAdapter.getApiService()
+                .getSheets(userId)
+                .enqueue(this)
     }
 
     override fun onClick(view: View) {
@@ -117,10 +118,9 @@ class PanelActivity : AppCompatActivity(), View.OnClickListener, Callback<ArrayL
 
     override fun onResponse(call: Call<ArrayList<Sheet>>, response: Response<ArrayList<Sheet>>) {
         if (response.isSuccessful) {
-            val sheets = response.body()
-            if (sheets != null) {
+            response.body()?.let { sheets ->
                 headerAdapter.setDataSet(sheets)
-                toast(getString(R.string.sheets_count_message) + sheets.size)
+                toast(getString(R.string.sheets_count_message) + " " + sheets.size)
             }
         } else {
             toast(getString(R.string.error_format_server_response))

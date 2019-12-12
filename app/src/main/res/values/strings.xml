@@ -68,7 +68,7 @@
     <string name="error_til_description">Ingresa una descripción</string>
 
     <string name="error_login">Los datos son incorrectos</string>
-    <string name="sheets_count_message">Hojas registradas: </string>
+    <string name="sheets_count_message">Hojas registradas:</string>
     <string name="scanner_results">Resultados</string>
     <string name="error_format_server_response">Error en el formato de respuesta</string>
     <string name="success_sheet_updated_message">Se ha editado correctamente la hoja</string>
@@ -81,4 +81,8 @@
     <string name="checkbox_mark_as_review_pending">Marcar como hoja pendiente de revisión</string>
     <string name="btn_replace_item_photo">Reemplazar foto</string>
     <string name="title_item_show">Datos del bien seleccionado</string>
+    <string name="dialog_title_observation">Observación</string>
+    <string name="dialog_message_observation">¿Por qué motivo la hoja se ha marcado como pendiente?</string>
+    <string name="support_contact_info">Julisa Mendoza: 953 637 576</string>
+    <string name="label_review_pending">PENDIENTE DE REVISIÓN</string>
 </resources>

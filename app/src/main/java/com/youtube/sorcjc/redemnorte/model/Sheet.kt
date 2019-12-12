@@ -3,14 +3,26 @@ package com.youtube.sorcjc.redemnorte.model
 data class Sheet (
         var id: String? = null,
 
-        var place: String? = null, // Local
-        var location: String? = null, // Ubicación
-        var office: String? = null, // Oficina
-        var responsible_user: String? = null, // Usuario responsable
-        var position: String? = null, // Cargo
+        // Local
+        var place: String? = null,
+
+        // Ubicación
+        var location: String? = null,
+
+        // Oficina
+        var office: String? = null,
+
+        // Usuario responsable
+        var responsible_user: String? = null,
+
+        // Cargo
+        var position: String? = null,
+
         var area: String? = null,
         var ambient: String? = null,
-        var user_id: String? = null, // Inventariador
+
+        // Author
+        var user_id: String? = null,
 
         var created_at: String? = null,
         var pending: Boolean,

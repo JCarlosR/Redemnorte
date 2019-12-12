@@ -30,12 +30,12 @@ class HeaderAdapter(private var dataSet: ArrayList<Sheet> = ArrayList()) : Recyc
         var tvPrinted: TextView = v.findViewById(R.id.tvPrinted)
 
         // buttons
-        var btnDetails: Button = v.findViewById(R.id.btnDetails)
-        var btnEditHeader: Button = v.findViewById(R.id.btnEditHeader)
+        private var btnDetails: Button = v.findViewById(R.id.btnDetails)
+        private var btnEditHeader: Button = v.findViewById(R.id.btnEditHeader)
 
         // params
         var sheetId: String? = null
-        var responsable: String? = null
+        var responsible: String? = null
 
         fun setOnClickListeners() {
             btnDetails.setOnClickListener(this)
@@ -47,7 +47,7 @@ class HeaderAdapter(private var dataSet: ArrayList<Sheet> = ArrayList()) : Recyc
                 R.id.btnDetails -> {
                     val intent = Intent(context, DetailsActivity::class.java)
                     intent.putExtra("hoja_id", sheetId)
-                    intent.putExtra("responsable", responsable)
+                    intent.putExtra("responsable", responsible)
                     context.startActivity(intent)
                 }
                 R.id.btnEditHeader -> showEditHeaderDialog(sheetId)
@@ -93,8 +93,7 @@ class HeaderAdapter(private var dataSet: ArrayList<Sheet> = ArrayList()) : Recyc
         else 1
     }
 
-    override fun onCreateViewHolder(parent: ViewGroup,
-                                    viewType: Int): ViewHolder { // create a new view
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
 
         val v = LayoutInflater.from(parent.context)
                 .inflate(R.layout.item_header, parent, false)
@@ -128,7 +127,7 @@ class HeaderAdapter(private var dataSet: ArrayList<Sheet> = ArrayList()) : Recyc
 
         // params needed to show the details
         holder.sheetId = id
-        holder.responsable = responsable!!.trim()
+        holder.responsible = responsable!!.trim()
     }
 
     override fun getItemCount(): Int {
