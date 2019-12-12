@@ -1,6 +1,7 @@
 package com.youtube.sorcjc.redemnorte.io
 
 import com.youtube.sorcjc.redemnorte.io.response.*
+import com.youtube.sorcjc.redemnorte.model.Item
 import com.youtube.sorcjc.redemnorte.model.ResponsibleUser
 import com.youtube.sorcjc.redemnorte.model.Sheet
 import com.youtube.sorcjc.redemnorte.model.User
@@ -28,7 +29,7 @@ interface MyApiService {
     fun getSheet(@Query("sheet_id") sheet_id: String?): Call<HojaResponse?>
 
     @GET("items")
-    fun getItems(@Query("sheet_id") sheet_id: String?): Call<BienesResponse?>
+    fun getItems(@Query("sheet_id") sheet_id: String?): Call<ArrayList<Item>>
 
     @GET("bien")
     fun getItem(@Query("hoja_id") hoja_id: String?, @Query("QR_code") QR_code: String?): Call<BienResponse>

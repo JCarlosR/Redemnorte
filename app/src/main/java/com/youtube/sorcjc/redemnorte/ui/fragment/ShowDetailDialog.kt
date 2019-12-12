@@ -23,6 +23,7 @@ import com.youtube.sorcjc.redemnorte.io.response.SimpleResponse
 import com.youtube.sorcjc.redemnorte.model.Item
 import com.youtube.sorcjc.redemnorte.util.getBase64
 import com.youtube.sorcjc.redemnorte.util.getItemIndex
+import com.youtube.sorcjc.redemnorte.util.toast
 import kotlinx.android.synthetic.main.dialog_view_detail.*
 import retrofit2.Call
 import retrofit2.Callback
@@ -37,20 +38,20 @@ class ShowDetailDialog : DialogFragment(), Callback<BienResponse>, View.OnClickL
     private var currentPhotoPath: String? = null
 
     // Params required for the request
-    private var hoja_id: String? = null
-    private var qr_code: String? = null
+    private var sheetId: String = ""
+    private var qrCode: String = ""
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
                               savedInstanceState: Bundle?): View? {
         val view = inflater.inflate(R.layout.dialog_view_detail, container, false)
-        val toolbar = view.findViewById<View>(R.id.toolbar) as Toolbar
-        toolbar.title = "Datos del bien seleccionado"
+
+        toolbar.title = getString(R.string.title_item_show)
         (activity as AppCompatActivity?)!!.setSupportActionBar(toolbar)
+
         val actionBar = (activity as AppCompatActivity?)!!.supportActionBar
         if (actionBar != null) {
             actionBar.setDisplayHomeAsUpEnabled(true)
             actionBar.setHomeButtonEnabled(true)
-            // actionBar.setHomeAsUpIndicator(android.R.drawable.ic_menu_close_clear_cancel);
         }
         setHasOptionsMenu(true)
 
@@ -62,14 +63,17 @@ class ShowDetailDialog : DialogFragment(), Callback<BienResponse>, View.OnClickL
 
     private val productDataByQrCode: Unit
         get() {
-            val call = MyApiAdapter.getApiService().getItem(hoja_id, qr_code)
+            val call = MyApiAdapter.getApiService().getItem(sheetId, qrCode)
             call.enqueue(this)
         }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        qr_code = arguments!!.getString("qr_code")
-        hoja_id = arguments!!.getString("hoja_id")
+
+        arguments?.let {
+            qrCode = it.getString("qr_code", "")
+            sheetId = it.getString("hoja_id", "")
+        }
     }
 
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
@@ -80,7 +84,8 @@ class ShowDetailDialog : DialogFragment(), Callback<BienResponse>, View.OnClickL
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         val id = item.itemId
-        if (id == android.R.id.home) { // handle close button click here
+        if (id == android.R.id.home) {
+            // close button
             dismiss()
             return true
         }
@@ -94,7 +99,7 @@ class ShowDetailDialog : DialogFragment(), Callback<BienResponse>, View.OnClickL
         spinnerOldYear.setSelection(spinnerOldYear.getItemIndex(item.old_year))
         etPreservation.setText(item.preservation)
         checkOperative.isChecked = item.isOperative == "S"
-        checkEtiquetado.isChecked = item.etiquetado?.trim { it <= ' ' } == "1"
+        checkEtiquetado.isChecked = item.etiquetado?.trim() == "1"
         etDescription.setText(item.description)
         etColor.setText(item.color)
         etBrand.setText(item.brand)
@@ -104,6 +109,7 @@ class ShowDetailDialog : DialogFragment(), Callback<BienResponse>, View.OnClickL
         etDimWidth.setText(item.dimWidth)
         etDimHigh.setText(item.dimHigh)
         etObservation.setText(item.observation)
+
         val extension = item.photo_extension
         if (extension != null && extension.isNotEmpty()) {
             loadDetailPhoto(extension)
@@ -115,12 +121,12 @@ class ShowDetailDialog : DialogFragment(), Callback<BienResponse>, View.OnClickL
             val item = response.body()!!.item
             setProductDataToViews(item)
         } else {
-            Toast.makeText(context, "Formato de respuesta incorrecto", Toast.LENGTH_SHORT).show()
+            context?.toast(getString(R.string.error_format_server_response))
         }
     }
 
     override fun onFailure(call: Call<BienResponse>, t: Throwable) {
-        Toast.makeText(context, t.localizedMessage, Toast.LENGTH_SHORT).show()
+        context?.toast(t.localizedMessage)
     }
 
     override fun onClick(view: View) {
@@ -130,12 +136,14 @@ class ShowDetailDialog : DialogFragment(), Callback<BienResponse>, View.OnClickL
     }
 
     private fun capturePhoto() { // Create the File where the photo should go
-        var photoFile: File? = null
+        val photoFile: File?
+
         photoFile = try {
             createDestinationFile()
         } catch (ex: IOException) {
             return
         }
+
         // Continue only if the File was successfully created
         val takePictureIntent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
         takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, Uri.fromFile(photoFile))
@@ -160,53 +168,59 @@ class ShowDetailDialog : DialogFragment(), Callback<BienResponse>, View.OnClickL
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent) {
         super.onActivityResult(requestCode, resultCode, data)
         if (resultCode == Activity.RESULT_OK) {
-            if (requestCode == REQUEST_CODE_CAMERA) onCaptureImageResult(data)
+            if (requestCode == REQUEST_CODE_CAMERA)
+                onCaptureImageResult(data)
         }
     }
 
     private fun onCaptureImageResult(data: Intent) {
         val bitmap = BitmapFactory.decodeFile(currentPhotoPath)
-        postPicture(bitmap, DEFAULT_PHOTO_EXTENSION)
-        val deleted = File(currentPhotoPath).delete()
-        if (!deleted) {
-            Toast.makeText(context, "Si desea luego puede eliminar la foto del celular", Toast.LENGTH_SHORT).show()
+        postPicture(bitmap)
+
+        currentPhotoPath?.let {
+            val deleted = File(it).delete()
+            if (!deleted) {
+                context?.toast("Si desea luego puede eliminar la foto del celular")
+            }
         }
+
     }
 
-    private fun postPicture(bitmap: Bitmap, extension: String) {
+    private fun postPicture(bitmap: Bitmap, extension: String = DEFAULT_PHOTO_EXTENSION) {
         val base64 = bitmap.getBase64()
         val call = MyApiAdapter.getApiService()
-                .postPhoto(base64, extension, hoja_id, qr_code)
+                .postPhoto(base64, extension, sheetId, qrCode)
         call.enqueue(object : Callback<SimpleResponse?> {
             override fun onResponse(call: Call<SimpleResponse?>, response: Response<SimpleResponse?>) {
                 if (response.isSuccessful) {
-                    Toast.makeText(context, "La foto se ha subido correctamente", Toast.LENGTH_SHORT).show()
+                    context?.toast("La foto se ha subido correctamente")
                     loadDetailPhoto(DEFAULT_PHOTO_EXTENSION)
                 } else {
-                    Toast.makeText(activity, "Ocurrió un problema al enviar la imagen", Toast.LENGTH_SHORT).show()
+                    activity?.toast("Ocurrió un problema al enviar la imagen")
                 }
             }
 
             override fun onFailure(call: Call<SimpleResponse?>, t: Throwable) {
-                Toast.makeText(context, t.localizedMessage, Toast.LENGTH_SHORT).show()
+                context?.toast(t.localizedMessage)
             }
         })
     }
 
     private fun loadDetailPhoto(extension: String) {
-        val imageUrl = Global.getProductPhotoUrl(hoja_id, qr_code, extension)
+        val imageUrl = Global.getProductPhotoUrl(sheetId, qrCode, extension)
         Picasso.with(context).load(imageUrl).fit().centerCrop().into(ivPhoto)
         btnCapturePhoto.text = getString(R.string.btn_replace_item_photo)
     }
 
     companion object {
         private const val REQUEST_CODE_CAMERA = 10101
+
         @JvmStatic
-        fun newInstance(hoja_id: String?, qr_code: String?): ShowDetailDialog {
+        fun newInstance(sheetId: String?, qrCode: String?): ShowDetailDialog {
             val f = ShowDetailDialog()
             val args = Bundle()
-            args.putString("hoja_id", hoja_id)
-            args.putString("qr_code", qr_code)
+            args.putString("hoja_id", sheetId)
+            args.putString("qr_code", qrCode)
             f.arguments = args
             return f
         }

@@ -11,10 +11,10 @@ import android.view.View
 import android.widget.Toast
 import com.youtube.sorcjc.redemnorte.R
 import com.youtube.sorcjc.redemnorte.io.MyApiAdapter
-import com.youtube.sorcjc.redemnorte.io.response.BienesResponse
 import com.youtube.sorcjc.redemnorte.model.Item
 import com.youtube.sorcjc.redemnorte.ui.adapter.DetailAdapter
 import com.youtube.sorcjc.redemnorte.ui.fragment.DetailDialogFragment
+import com.youtube.sorcjc.redemnorte.util.toast
 import kotlinx.android.synthetic.main.activity_details.*
 import org.json.JSONObject
 import retrofit2.Call
@@ -22,7 +22,7 @@ import retrofit2.Callback
 import retrofit2.Response
 import java.util.*
 
-class DetailsActivity : AppCompatActivity(), View.OnClickListener, Callback<BienesResponse> {
+class DetailsActivity : AppCompatActivity(), View.OnClickListener, Callback<ArrayList<Item>> {
 
     private val myDataSet by lazy {
         ArrayList<Item>()
@@ -101,22 +101,18 @@ class DetailsActivity : AppCompatActivity(), View.OnClickListener, Callback<Bien
                 .addToBackStack(null).commit()
     }
 
-    override fun onResponse(call: Call<BienesResponse>, response: Response<BienesResponse>) {
+    override fun onResponse(call: Call<ArrayList<Item>>, response: Response<ArrayList<Item>>) {
         if (response.isSuccessful) {
-            val bienes = response.body()!!.bienes
-            detailAdapter.setDataSet(bienes)
-            Toast.makeText(this, getString(R.string.sheets_count_message) + bienes.size, Toast.LENGTH_SHORT).show()
-        } else {
-            try {
-                val jObjError = JSONObject(response.errorBody()!!.string())
-                Toast.makeText(this, jObjError.getString("message"), Toast.LENGTH_LONG).show()
-            } catch (e: Exception) {
-                Toast.makeText(this, e.message, Toast.LENGTH_LONG).show()
+            response.body()?.let {
+                detailAdapter.setDataSet(it)
+                toast(getString(R.string.sheets_count_message) + it.size)
             }
+        } else {
+            toast(getString(R.string.error_format_server_response))
         }
     }
 
-    override fun onFailure(call: Call<BienesResponse>, t: Throwable) {
-        Toast.makeText(this, t.localizedMessage, Toast.LENGTH_SHORT).show()
+    override fun onFailure(call: Call<ArrayList<Item>>, t: Throwable) {
+        toast(t.localizedMessage)
     }
 }

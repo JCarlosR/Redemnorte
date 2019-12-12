@@ -80,4 +80,5 @@
     <string name="label_sheet_already_printed">ESTA HOJA YA SE HA IMPRESO</string>
     <string name="checkbox_mark_as_review_pending">Marcar como hoja pendiente de revisión</string>
     <string name="btn_replace_item_photo">Reemplazar foto</string>
+    <string name="title_item_show">Datos del bien seleccionado</string>
 </resources>
