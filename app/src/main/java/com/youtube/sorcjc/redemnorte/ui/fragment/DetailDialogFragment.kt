@@ -20,6 +20,7 @@ import com.youtube.sorcjc.redemnorte.model.BienConsolidado
 import com.youtube.sorcjc.redemnorte.model.Item
 import com.youtube.sorcjc.redemnorte.ui.activity.DetailsActivity
 import com.youtube.sorcjc.redemnorte.ui.activity.SimpleScannerActivity
+import com.youtube.sorcjc.redemnorte.util.getItemIndex
 import com.youtube.sorcjc.redemnorte.util.toast
 import com.youtube.sorcjc.redemnorte.util.showInfoDialog
 import kotlinx.android.synthetic.main.dialog_new_detail.*
@@ -118,8 +119,8 @@ class DetailDialogFragment : DialogFragment(), View.OnClickListener {
         etPatrimonial.setText(item.patrimonial)
         etOldCode.setText(item.old_code)
 
-        spinnerOldYear.setSelection(Global.getSpinnerIndex(spinnerOldYear, item.old_year))
-        spinnerPreservation.setSelection(Global.getSpinnerIndex(spinnerPreservation, item.preservation))
+        spinnerOldYear.setSelection(spinnerOldYear.getItemIndex(item.old_year))
+        spinnerPreservation.setSelection(spinnerPreservation.getItemIndex(item.preservation))
 
         checkOperative.isChecked = item.isOperative == "S"
         checkEtiquetado.isChecked = item.etiquetado == "1"
@@ -318,7 +319,7 @@ class DetailDialogFragment : DialogFragment(), View.OnClickListener {
             "ER" -> preservation = "Malo"
             "IN" -> preservation = "Malo"
         }
-        spinnerPreservation.setSelection(Global.getSpinnerIndex(spinnerPreservation, preservation))
+        spinnerPreservation.setSelection(spinnerPreservation.getItemIndex(preservation))
 
         val empleado = bienConsolidado.empleado!!.trim()
         if (empleado != responsable) {

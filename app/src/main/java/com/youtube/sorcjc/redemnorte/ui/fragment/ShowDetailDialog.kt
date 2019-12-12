@@ -21,6 +21,8 @@ import com.youtube.sorcjc.redemnorte.io.MyApiAdapter
 import com.youtube.sorcjc.redemnorte.io.response.BienResponse
 import com.youtube.sorcjc.redemnorte.io.response.SimpleResponse
 import com.youtube.sorcjc.redemnorte.model.Item
+import com.youtube.sorcjc.redemnorte.util.getBase64
+import com.youtube.sorcjc.redemnorte.util.getItemIndex
 import kotlinx.android.synthetic.main.dialog_view_detail.*
 import retrofit2.Call
 import retrofit2.Callback
@@ -89,7 +91,7 @@ class ShowDetailDialog : DialogFragment(), Callback<BienResponse>, View.OnClickL
         etQR.setText(item.qr)
         etPatrimonial.setText(item.patrimonial)
         etOldCode.setText(item.old_code)
-        spinnerOldYear.setSelection(Global.getSpinnerIndex(spinnerOldYear, item.old_year))
+        spinnerOldYear.setSelection(spinnerOldYear.getItemIndex(item.old_year))
         etPreservation.setText(item.preservation)
         checkOperative.isChecked = item.isOperative == "S"
         checkEtiquetado.isChecked = item.etiquetado?.trim { it <= ' ' } == "1"
@@ -172,7 +174,7 @@ class ShowDetailDialog : DialogFragment(), Callback<BienResponse>, View.OnClickL
     }
 
     private fun postPicture(bitmap: Bitmap, extension: String) {
-        val base64 = Global.getBase64FromBitmap(bitmap)
+        val base64 = bitmap.getBase64()
         val call = MyApiAdapter.getApiService()
                 .postPhoto(base64, extension, hoja_id, qr_code)
         call.enqueue(object : Callback<SimpleResponse?> {
@@ -194,7 +196,7 @@ class ShowDetailDialog : DialogFragment(), Callback<BienResponse>, View.OnClickL
     private fun loadDetailPhoto(extension: String) {
         val imageUrl = Global.getProductPhotoUrl(hoja_id, qr_code, extension)
         Picasso.with(context).load(imageUrl).fit().centerCrop().into(ivPhoto)
-        btnCapturePhoto!!.text = "Reemplazar foto"
+        btnCapturePhoto.text = getString(R.string.btn_replace_item_photo)
     }
 
     companion object {
