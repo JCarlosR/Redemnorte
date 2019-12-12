@@ -5,7 +5,6 @@ import android.os.Bundle
 import android.support.design.widget.TextInputLayout
 import android.support.v4.app.DialogFragment
 import android.support.v7.app.AppCompatActivity
-import android.util.Log
 import android.view.*
 import android.widget.*
 import com.youtube.sorcjc.redemnorte.Global
@@ -16,6 +15,9 @@ import com.youtube.sorcjc.redemnorte.io.response.SimpleResponse
 import com.youtube.sorcjc.redemnorte.model.ResponsibleUser
 import com.youtube.sorcjc.redemnorte.model.Sheet
 import com.youtube.sorcjc.redemnorte.ui.activity.PanelActivity
+import com.youtube.sorcjc.redemnorte.util.PreferenceHelper
+import com.youtube.sorcjc.redemnorte.util.PreferenceHelper.get
+import com.youtube.sorcjc.redemnorte.util.showInfoDialog
 import kotlinx.android.synthetic.main.dialog_new_header.*
 import com.youtube.sorcjc.redemnorte.util.toast
 import retrofit2.Call
@@ -24,7 +26,12 @@ import retrofit2.Response
 import java.util.*
 
 class HeaderDialogFragment : DialogFragment() {
+
     private var sheetId: String = ""
+
+    private val preferences by lazy {
+        context?.let { PreferenceHelper.defaultPrefs(it) }
+    }
     
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -86,7 +93,7 @@ class HeaderDialogFragment : DialogFragment() {
         checkPending.setOnCheckedChangeListener { _, isChecked ->
             if (isChecked) {
                 tilObservation.visibility = View.VISIBLE
-                Global.showInformationDialog(context, "Observación", "¿Por qué motivo la hoja se ha marcado como pendiente?")
+                context?.showInfoDialog("Observación", "¿Por qué motivo la hoja se ha marcado como pendiente?")
             } else {
                 tilObservation.visibility = View.GONE
                 etObservation.setText("")
@@ -158,19 +165,19 @@ class HeaderDialogFragment : DialogFragment() {
         if (!validEditText(etId, tilId, R.string.error_hoja_id)) {
             return
         }
-        if (!validEditText(etLocal, tilLocal, R.string.error_local)) {
+        if (!validEditText(etPlace, tilPlace, R.string.error_local)) {
             return
         }
-        if (!validEditText(etUbicacion, tilUbicacion, R.string.error_ubicacion)) {
+        if (!validEditText(etLocation, tilLocation, R.string.error_ubicacion)) {
             return
         }
-        if (!validEditText(etCargo, tilCargo, R.string.error_cargo)) {
+        if (!validEditText(etPosition, tilPosition, R.string.error_cargo)) {
             return
         }
-        if (!validEditText(etOficina, tilOficina, R.string.error_oficina)) {
+        if (!validEditText(etOffice, tilOffice, R.string.error_oficina)) {
             return
         }
-        if (!validEditText(etAmbiente, tilAmbiente, R.string.error_ambiente)) {
+        if (!validEditText(etAmbient, tilAmbient, R.string.error_ambiente)) {
             return
         }
         if (!validEditText(etArea, tilArea, R.string.error_area)) {
@@ -178,12 +185,12 @@ class HeaderDialogFragment : DialogFragment() {
         }
 
         val id = etId.text.toString().trim()
-        val place = etLocal.text.toString().trim()
-        val ubicacion = etUbicacion.text.toString().trim()
+        val place = etPlace.text.toString().trim()
+        val location = etLocation.text.toString().trim()
         val responsible = spinnerResponsible.text.toString().trim()
-        val position = etCargo.text.toString().trim()
-        val office = etOficina.text.toString().trim()
-        val ambient = etAmbiente.text.toString().trim()
+        val position = etPosition.text.toString().trim()
+        val office = etOffice.text.toString().trim()
+        val ambient = etAmbient.text.toString().trim()
         val area = etArea.text.toString().trim()
         val pending = checkPending.isChecked
         val obs = etObservation.text.toString().trim()
@@ -191,15 +198,15 @@ class HeaderDialogFragment : DialogFragment() {
 
         // If we have received an ID, we have to edit the data, else we have to create a new record
         if (sheetId.isEmpty()) {
-            val inventariador = Global.getFromSharedPreferences(activity, "username")
+            val author = preferences?.get("user_id", -1) ?: -1
             val call = MyApiAdapter.getApiService().storeSheet(
-                    id, place, ubicacion, responsible, position, office,
-                    ambient, area, pending, obs, inventariador
+                    id, place, location, responsible, position, office,
+                    ambient, area, pending, obs, author
             )
             call.enqueue(CreateSheetCallback())
         } else {
             val call = MyApiAdapter.getApiService().updateSheet(
-                    id, place, ubicacion, responsible, position, office,
+                    id, place, location, responsible, position, office,
                     ambient, area, pending, obs
             )
             call.enqueue(EditSheetCallback())
@@ -285,11 +292,11 @@ class HeaderDialogFragment : DialogFragment() {
         }
 
         private fun showHeaderDataInFields(sheet: Sheet) {
-            etLocal.setText(sheet.place)
-            etUbicacion.setText(sheet.location)
-            etCargo.setText(sheet.position)
-            etOficina.setText(sheet.office)
-            etAmbiente.setText(sheet.ambient)
+            etPlace.setText(sheet.place)
+            etLocation.setText(sheet.location)
+            etPosition.setText(sheet.position)
+            etOffice.setText(sheet.office)
+            etAmbient.setText(sheet.ambient)
             etArea.setText(sheet.area)
             spinnerResponsible.setText(sheet.responsible_user)
 

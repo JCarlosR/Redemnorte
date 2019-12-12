@@ -51,12 +51,12 @@
             </android.support.design.widget.TextInputLayout>
 
             <android.support.design.widget.TextInputLayout
-                android:id="@+id/tilLocal"
+                android:id="@+id/tilPlace"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content">
 
                 <EditText
-                    android:id="@+id/etLocal"
+                    android:id="@+id/etPlace"
                     android:hint="@string/hint_local"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -64,24 +64,24 @@
             </android.support.design.widget.TextInputLayout>
 
             <android.support.design.widget.TextInputLayout
-                android:id="@+id/tilUbicacion"
+                android:id="@+id/tilLocation"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content">
 
                 <EditText
-                    android:id="@+id/etUbicacion"
+                    android:id="@+id/etLocation"
                     android:layout_width="match_parent"
                     android:singleLine="true"
                     android:hint="@string/hint_ubicacion"
                     android:layout_height="wrap_content" />
 
                 <android.support.design.widget.TextInputLayout
-                    android:id="@+id/tilOficina"
+                    android:id="@+id/tilOffice"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent">
 
                     <EditText
-                        android:id="@+id/etOficina"
+                        android:id="@+id/etOffice"
                         android:layout_width="match_parent"
                         android:singleLine="true"
                         android:hint="@string/hint_oficina"
@@ -96,12 +96,12 @@
                 android:layout_height="wrap_content" />
 
             <android.support.design.widget.TextInputLayout
-                android:id="@+id/tilCargo"
+                android:id="@+id/tilPosition"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content">
 
                 <EditText
-                    android:id="@+id/etCargo"
+                    android:id="@+id/etPosition"
                     android:layout_width="match_parent"
                     android:hint="@string/hint_cargo"
                     android:singleLine="true"
@@ -121,12 +121,12 @@
             </android.support.design.widget.TextInputLayout>
 
             <android.support.design.widget.TextInputLayout
-                android:id="@+id/tilAmbiente"
+                android:id="@+id/tilAmbient"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content">
 
                 <EditText
-                    android:id="@+id/etAmbiente"
+                    android:id="@+id/etAmbient"
                     android:layout_width="match_parent"
                     android:singleLine="true"
                     android:hint="@string/hint_ambiente"

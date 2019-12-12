@@ -10,7 +10,7 @@ import java.util.*
 
 interface MyApiService {
     @POST("login")
-    fun postLogin(@Query("username") username: String?, @Query("password") password: String?): Call<User?>
+    fun postLogin(@Query("username") username: String?, @Query("password") password: String?): Call<User>
 
     @GET("responsible-users")
     fun getResponsibleUsers(): Call<ArrayList<ResponsibleUser>>
@@ -31,7 +31,7 @@ interface MyApiService {
     fun getItems(@Query("sheet_id") sheet_id: String?): Call<BienesResponse?>
 
     @GET("bien")
-    fun getItem(@Query("hoja_id") hoja_id: String?, @Query("QR_code") QR_code: String?): Call<BienResponse?>
+    fun getItem(@Query("hoja_id") hoja_id: String?, @Query("QR_code") QR_code: String?): Call<BienResponse>
 
     @FormUrlEncoded
     @POST("sheets")
@@ -46,7 +46,7 @@ interface MyApiService {
             @Field("area") area: String?,
             @Field("pending") pending: Boolean?,
             @Field("observation") observation: String?,
-            @Field("inventariador") inventariador: String?
+            @Field("author") userId: Int
     ): Call<SimpleResponse?>
 
     @FormUrlEncoded
@@ -65,7 +65,7 @@ interface MyApiService {
     ): Call<SimpleResponse?>
 
     @GET("check-qr")
-    fun getCheckQr(@Query("qr_code") QR_code: String?): Call<SimpleResponse?>
+    fun getCheckQr(@Query("qr_code") QR_code: String?): Call<SimpleResponse>
 
     @GET("take-by-patrimonial")
     fun getByPatrimonial(@Query("patrimonial") patrimonial: String?): Call<ByPatrimonialResponse?>
@@ -93,7 +93,7 @@ interface MyApiService {
             @Field("etiquetado") etiquetado: String?,
             @Field("operativo") operativo: String?,
             @Field("observation") observation: String?
-    ): Call<SimpleResponse?>
+    ): Call<SimpleResponse>
 
     @FormUrlEncoded
     @POST("items/update")
@@ -115,5 +115,5 @@ interface MyApiService {
             @Field("etiquetado") etiquetado: String?,
             @Field("operativo") operativo: String?,
             @Field("observation") observation: String?
-    ): Call<SimpleResponse?>
+    ): Call<SimpleResponse>
 }

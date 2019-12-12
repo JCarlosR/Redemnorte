@@ -7,7 +7,6 @@ import android.os.Bundle
 import android.support.design.widget.TextInputLayout
 import android.support.v4.app.DialogFragment
 import android.support.v7.app.AppCompatActivity
-import android.support.v7.widget.Toolbar
 import android.view.*
 import android.widget.*
 import com.youtube.sorcjc.redemnorte.Global
@@ -21,6 +20,8 @@ import com.youtube.sorcjc.redemnorte.model.BienConsolidado
 import com.youtube.sorcjc.redemnorte.model.Item
 import com.youtube.sorcjc.redemnorte.ui.activity.DetailsActivity
 import com.youtube.sorcjc.redemnorte.ui.activity.SimpleScannerActivity
+import com.youtube.sorcjc.redemnorte.util.toast
+import com.youtube.sorcjc.redemnorte.util.showInfoDialog
 import kotlinx.android.synthetic.main.dialog_new_detail.*
 import retrofit2.Call
 import retrofit2.Callback
@@ -29,7 +30,7 @@ import retrofit2.Response
 class DetailDialogFragment : DialogFragment(), View.OnClickListener {
 
     // Param that contains the ID of the parent header
-    private var hoja_id: String? = null
+    private var sheetId: String? = null
 
     // The next param only is provided when the fragment is opened in edit mode
     private var qr_code_param: String? = null
@@ -41,9 +42,9 @@ class DetailDialogFragment : DialogFragment(), View.OnClickListener {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        hoja_id = arguments!!.getString("hoja_id")
-        qr_code_param = arguments!!.getString("qr_code")
-        responsable = arguments!!.getString("responsable")
+        sheetId = arguments?.getString("hoja_id")
+        qr_code_param = arguments?.getString("qr_code")
+        responsable = arguments?.getString("responsable")
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
@@ -51,10 +52,12 @@ class DetailDialogFragment : DialogFragment(), View.OnClickListener {
 
         val view = inflater.inflate(R.layout.dialog_new_detail, container, false)
 
-        val toolbar = view.findViewById<View>(R.id.toolbar) as Toolbar
         var title = "Registrar nuevo bien"
-        if (qr_code_param != null && !qr_code_param!!.isEmpty()) title = "Editar bien seleccionado"
+        if (qr_code_param != null && qr_code_param!!.isNotEmpty())
+            title = "Editar bien seleccionado"
+
         toolbar.title = title
+
         (activity as AppCompatActivity?)!!.setSupportActionBar(toolbar)
         val actionBar = (activity as AppCompatActivity?)!!.supportActionBar
         if (actionBar != null) {
@@ -85,10 +88,10 @@ class DetailDialogFragment : DialogFragment(), View.OnClickListener {
     private fun setupEditMode() {
         // qr_code_param provided => edit mode
         if (qr_code_param!!.isNotEmpty()) {
-            etQR!!.isEnabled = false
-            btnCaptureQR!!.visibility = View.GONE
-            btnCheckQR!!.visibility = View.GONE
-            val call = MyApiAdapter.getApiService().getItem(hoja_id, qr_code_param)
+            etQR.isEnabled = false
+            btnCaptureQR.visibility = View.GONE
+            btnCheckQR.visibility = View.GONE
+            val call = MyApiAdapter.getApiService().getItem(sheetId, qr_code_param)
             call.enqueue(GetPreviousDataCallback())
         }
     }
@@ -96,15 +99,17 @@ class DetailDialogFragment : DialogFragment(), View.OnClickListener {
     internal inner class GetPreviousDataCallback : Callback<BienResponse> {
         override fun onResponse(call: Call<BienResponse>, response: Response<BienResponse>) {
             if (response.isSuccessful) {
-                val item = response.body()!!.item
-                setProductDataToViews(item)
+                response.body()?.let {
+                    setProductDataToViews(it.item)
+                }
+
             } else {
-                Toast.makeText(context, "Formato de respuesta incorrecto", Toast.LENGTH_SHORT).show()
+                context?.toast(getString(R.string.error_format_server_response))
             }
         }
 
         override fun onFailure(call: Call<BienResponse>, t: Throwable) {
-            Toast.makeText(context, t.localizedMessage, Toast.LENGTH_SHORT).show()
+            context?.toast(t.localizedMessage)
         }
     }
 
@@ -112,10 +117,13 @@ class DetailDialogFragment : DialogFragment(), View.OnClickListener {
         etQR.setText(item.qr)
         etPatrimonial.setText(item.patrimonial)
         etOldCode.setText(item.old_code)
+
         spinnerOldYear.setSelection(Global.getSpinnerIndex(spinnerOldYear, item.old_year))
         spinnerPreservation.setSelection(Global.getSpinnerIndex(spinnerPreservation, item.preservation))
+
         checkOperative.isChecked = item.isOperative == "S"
         checkEtiquetado.isChecked = item.etiquetado == "1"
+
         etDescription.setText(item.description)
         etColor.setText(item.color)
         etBrand.setText(item.brand)
@@ -143,7 +151,8 @@ class DetailDialogFragment : DialogFragment(), View.OnClickListener {
         if (id == R.id.save) {
             validateForm()
             return true
-        } else if (id == android.R.id.home) { // handle close button click here
+        } else if (id == android.R.id.home) {
+            // close button
             dismiss()
             return true
         }
@@ -161,66 +170,68 @@ class DetailDialogFragment : DialogFragment(), View.OnClickListener {
     }
 
     private fun performRegisterRequest() {
-        val QR_code = etQR!!.text.toString().trim { it <= ' ' }
-        val patrimonial_code = etPatrimonial!!.text.toString().trim { it <= ' ' }
-        val old_code = etOldCode!!.text.toString().trim { it <= ' ' }
-        val old_year = spinnerOldYear!!.selectedItem.toString()
-        val denominacion = etDescription!!.text.toString().trim { it <= ' ' }
-        val marca = etBrand!!.text.toString().trim { it <= ' ' }
-        val modelo = etModel!!.text.toString().trim { it <= ' ' }
-        val serie = etSeries!!.text.toString().trim { it <= ' ' }
-        val color = etColor!!.text.toString().trim { it <= ' ' }
-        val largo = etDimLong!!.text.toString().trim { it <= ' ' }
-        val ancho = etDimWidth!!.text.toString().trim { it <= ' ' }
-        val alto = etDimHigh!!.text.toString().trim { it <= ' ' }
-        val condicion = spinnerPreservation!!.selectedItem.toString()
-        val etiquetado = if (checkEtiquetado!!.isChecked) "1" else "0"
-        val operativo = if (checkOperative!!.isChecked) "S" else "N"
-        val observacion = etObservation!!.text.toString().trim { it <= ' ' }
+        val QR_code = etQR.text.toString().trim()
+        val patrimonial_code = etPatrimonial.text.toString().trim()
+        val old_code = etOldCode.text.toString().trim()
+        val old_year = spinnerOldYear.selectedItem.toString()
+        val denominacion = etDescription.text.toString().trim()
+        val marca = etBrand.text.toString().trim()
+        val modelo = etModel.text.toString().trim()
+        val serie = etSeries.text.toString().trim()
+        val color = etColor.text.toString().trim()
+        val largo = etDimLong.text.toString().trim()
+        val ancho = etDimWidth.text.toString().trim()
+        val alto = etDimHigh.text.toString().trim()
+        val condicion = spinnerPreservation.selectedItem.toString()
+        val etiquetado = if (checkEtiquetado.isChecked) "1" else "0"
+        val operativo = if (checkOperative.isChecked) "S" else "N"
+        val observacion = etObservation.text.toString().trim()
 
         val call: Call<SimpleResponse>
-        call = if (qr_code_param != null && !qr_code_param!!.isEmpty()) { // Qr code provided => edit mode
+        call = if (qr_code_param != null && qr_code_param!!.isNotEmpty()) { // Qr code provided => edit mode
             MyApiAdapter.getApiService().updateItem(
-                    hoja_id, QR_code, patrimonial_code, old_code, old_year,
+                    sheetId, QR_code, patrimonial_code, old_code, old_year,
                     denominacion, marca, modelo, serie, color,
                     largo, ancho, alto,
                     condicion, etiquetado, operativo, observacion
             )
         } else { // Qr code assigned => register new detail
             MyApiAdapter.getApiService().storeItem(
-                    hoja_id, QR_code, patrimonial_code, old_code, old_year,
+                    sheetId, QR_code, patrimonial_code, old_code, old_year,
                     denominacion, marca, modelo, serie, color,
                     largo, ancho, alto,
                     condicion, etiquetado, operativo, observacion
             )
         }
-        call.enqueue(RegistrarBienCallback())
+        call.enqueue(CreateItemCallback())
     }
 
-    internal inner class RegistrarBienCallback : Callback<SimpleResponse> {
+    internal inner class CreateItemCallback : Callback<SimpleResponse> {
         override fun onResponse(call: Call<SimpleResponse>, response: Response<SimpleResponse>) {
             if (response.isSuccessful) {
-                if (response.body()!!.isError) { // Just show an error message.
-                    Toast.makeText(context, response.body()!!.message, Toast.LENGTH_SHORT).show()
-                } else { // Show a successful message,
-                    Toast.makeText(context, response.body()!!.message, Toast.LENGTH_SHORT).show()
+                if (response.body()!!.isError) {
+                    // Just show an error message.
+                    context?.toast(response.body()!!.message)
+                } else {
+                    // Show a successful message,
+                    context?.toast(response.body()!!.message)
                     // re-load the recyclerView,
                     (activity as DetailsActivity?)!!.loadItems()
                     // and dismiss this dialog.
                     dismiss()
                 }
             } else {
-                Toast.makeText(context, "Error en el formato de respuesta", Toast.LENGTH_SHORT).show()
+                context?.toast(getString(R.string.error_format_server_response))
             }
         }
 
         override fun onFailure(call: Call<SimpleResponse>, t: Throwable) {
-            Toast.makeText(context, t.localizedMessage, Toast.LENGTH_SHORT).show()
+            context?.toast(t.localizedMessage)
         }
     }
 
     private fun validateEditText(editText: EditText?, textInputLayout: TextInputLayout?, errorString: Int): Boolean {
-        if (editText!!.text.toString().trim { it <= ' ' }.isEmpty()) {
+        if (editText!!.text.toString().trim().isEmpty()) {
             textInputLayout!!.error = getString(errorString)
             return false
         } else {
@@ -250,7 +261,7 @@ class DetailDialogFragment : DialogFragment(), View.OnClickListener {
     }
 
     private fun performByPatrimonialRequest() {
-        val call = MyApiAdapter.getApiService().getByPatrimonial(etPatrimonial!!.text.toString().trim { it <= ' ' })
+        val call = MyApiAdapter.getApiService().getByPatrimonial(etPatrimonial!!.text.toString().trim())
         call.enqueue(TakeByPatrimonialCallback())
     }
 
@@ -260,27 +271,27 @@ class DetailDialogFragment : DialogFragment(), View.OnClickListener {
                 val byPatrimonialResponse = response.body()
                 // The message is used for both, successful and error responses
                 if (byPatrimonialResponse!!.isError) {
-                    Toast.makeText(context, byPatrimonialResponse.message, Toast.LENGTH_LONG).show()
+                    context?.toast(byPatrimonialResponse.message)
                 } else {
                     setBienConsolidadoInViews(byPatrimonialResponse.bienConsolidado)
-                    Toast.makeText(context, byPatrimonialResponse.message, Toast.LENGTH_LONG).show()
+                    context?.toast(byPatrimonialResponse.message)
                 }
             }
         }
 
         override fun onFailure(call: Call<ByPatrimonialResponse?>, t: Throwable) {
-            Toast.makeText(context, t.localizedMessage, Toast.LENGTH_SHORT).show()
+            context?.toast(t.localizedMessage)
         }
     }
 
     private fun setBienConsolidadoInViews(bienConsolidado: BienConsolidado?) {
         if (bienConsolidado == null) return
-        val description = bienConsolidado.description.trim { it <= ' ' }
-        val brand = bienConsolidado.brand!!.trim { it <= ' ' }
-        val model = bienConsolidado.model!!.trim { it <= ' ' }
-        val series = bienConsolidado.series!!.trim { it <= ' ' }
+        val description = bienConsolidado.description.trim()
+        val brand = bienConsolidado.brand!!.trim()
+        val model = bienConsolidado.model!!.trim()
+        val series = bienConsolidado.series!!.trim()
         val estado = bienConsolidado.estado
-        val situacion = bienConsolidado.situacion!!.trim { it <= ' ' }
+        val situacion = bienConsolidado.situacion!!.trim()
 
         // final String ubicacion = bienConsolidado.getUbicacion();
         // final String local = bienConsolidado.getLocal();
@@ -289,7 +300,7 @@ class DetailDialogFragment : DialogFragment(), View.OnClickListener {
         if (situacion == "BP" || situacion == "BA" || situacion == "NO" || situacion == "NU") {
             val title = "Importante"
             val message = "Lamentablemente este bien ha sido dado de baja."
-            Global.showInformationDialog(context, title, message)
+            context?.showInfoDialog(title, message)
             return
         }
         etDescription.setText(description)
@@ -309,18 +320,18 @@ class DetailDialogFragment : DialogFragment(), View.OnClickListener {
         }
         spinnerPreservation.setSelection(Global.getSpinnerIndex(spinnerPreservation, preservation))
 
-        val empleado = bienConsolidado.empleado!!.trim { it <= ' ' }
+        val empleado = bienConsolidado.empleado!!.trim()
         if (empleado != responsable) {
             var message = "Este bien le pertenece al usuario $empleado.\n"
             message += "Verifica si el responsable de esta hoja $responsable se hará cargo.\n"
             message += "De caso contrario, crea una nueva hoja, márcala con el estado pendiente y registra allí el bien."
-            Global.showInformationDialog(context, "Importante", message)
+            context?.showInfoDialog("Importante", message)
         }
     }
 
     private fun performByOldCodeRequest() {
         val year = spinnerOldYear!!.selectedItem.toString()
-        val code = etOldCode!!.text.toString().trim { it <= ' ' }
+        val code = etOldCode!!.text.toString().trim()
         val call = MyApiAdapter.getApiService().getByOldCode(year, code)
         call.enqueue(TakeByOldCodeCallback())
     }
@@ -331,34 +342,34 @@ class DetailDialogFragment : DialogFragment(), View.OnClickListener {
                 val byOldCodeResponse = response.body()
                 // The message is used for both, successful and error responses
                 if (byOldCodeResponse!!.isError) {
-                    Toast.makeText(context, byOldCodeResponse.message, Toast.LENGTH_LONG).show()
+                    context?.toast(byOldCodeResponse.message)
                 } else {
                     etDescription!!.setText(byOldCodeResponse.item.description)
                     etPatrimonial!!.setText(byOldCodeResponse.item.codigoActivo)
-                    Toast.makeText(context, byOldCodeResponse.message, Toast.LENGTH_LONG).show()
+                    context?.toast(byOldCodeResponse.message)
                 }
             }
         }
 
         override fun onFailure(call: Call<ByOldCodeResponse?>, t: Throwable) {
-            Toast.makeText(context, t.localizedMessage, Toast.LENGTH_SHORT).show()
+            context?.toast(t.localizedMessage)
         }
     }
 
     private fun performCheckQrRequest() {
-        val call = MyApiAdapter.getApiService().getCheckQr(etQR!!.text.toString().trim { it <= ' ' })
+        val call = MyApiAdapter.getApiService().getCheckQr(etQR.text.toString().trim())
         call.enqueue(CheckRequestCallback())
     }
 
     internal inner class CheckRequestCallback : Callback<SimpleResponse> {
         override fun onResponse(call: Call<SimpleResponse>, response: Response<SimpleResponse>) {
             if (response.isSuccessful) {
-                Toast.makeText(context, response.body()!!.message, Toast.LENGTH_LONG).show()
+                context?.toast(response.body()!!.message)
             }
         }
 
         override fun onFailure(call: Call<SimpleResponse>, t: Throwable) {
-            Toast.makeText(context, t.localizedMessage, Toast.LENGTH_SHORT).show()
+            context?.toast(t.localizedMessage)
         }
     }
 
@@ -368,19 +379,19 @@ class DetailDialogFragment : DialogFragment(), View.OnClickListener {
             if (resultCode == Activity.RESULT_OK) {
                 val result = data.getStringExtra("code")
                 etQR!!.setText(result)
-                Toast.makeText(context, "Usa el botón del ojito para verificar que no se repita el QR.", Toast.LENGTH_SHORT).show()
+                context?.toast("Usa el botón del ojito para verificar que no se repita el QR.")
             }
         } else if (requestCode == 2) {
             if (resultCode == Activity.RESULT_OK) {
                 val result = data.getStringExtra("code")
                 etPatrimonial!!.setText(result)
-                Toast.makeText(context, "Usa el botón de la diana para buscar y traer datos.", Toast.LENGTH_SHORT).show()
+                context?.toast("Usa el botón de la diana para buscar y traer datos.")
             }
         } else if (requestCode == 3) {
             if (resultCode == Activity.RESULT_OK) {
                 val result = data.getStringExtra("code")
                 etOldCode!!.setText(result)
-                Toast.makeText(context, "Usa el botón de la diana para buscar y traer datos.", Toast.LENGTH_SHORT).show()
+                context?.toast("Usa el botón de la diana para buscar y traer datos.")
             }
         }
     }

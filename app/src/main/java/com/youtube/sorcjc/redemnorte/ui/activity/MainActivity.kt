@@ -56,7 +56,11 @@ class MainActivity : AppCompatActivity(), View.OnClickListener, Callback<User> {
     override fun onResponse(call: Call<User>, response: Response<User>) {
         if (response.isSuccessful) {
             val user = response.body()
-            user?.let { login(it) }
+
+            user?.let {
+                preferences["user_id"] = user.id
+                login(it)
+            }
         } else {
             toast("Los datos ingresados no coinciden con ningún usuario")
         }
