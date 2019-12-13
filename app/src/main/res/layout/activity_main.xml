@@ -11,7 +11,7 @@
     android:orientation="vertical"
     tools:context="com.youtube.sorcjc.redemnorte.ui.activity.MainActivity">
 
-    <android.support.design.widget.TextInputLayout
+    <com.google.android.material.textfield.TextInputLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
 
@@ -22,9 +22,9 @@
             android:layout_height="wrap_content"
             android:hint="@string/username" />
 
-    </android.support.design.widget.TextInputLayout>
+    </com.google.android.material.textfield.TextInputLayout>
 
-    <android.support.design.widget.TextInputLayout
+    <com.google.android.material.textfield.TextInputLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
 
@@ -35,18 +35,18 @@
             android:layout_height="wrap_content"
             android:hint="@string/password" />
 
-    </android.support.design.widget.TextInputLayout>
+    </com.google.android.material.textfield.TextInputLayout>
 
     <Button
         android:id="@+id/btnLogin"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Iniciar sesión"/>
+        android:text="@string/btn_login"/>
 
     <Button
         android:id="@+id/btnCall"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Número de soporte"/>
+        android:text="@string/btn_show_contact_info"/>
 
 </LinearLayout>

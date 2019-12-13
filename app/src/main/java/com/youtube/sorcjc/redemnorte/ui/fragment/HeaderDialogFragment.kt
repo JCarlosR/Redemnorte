@@ -2,12 +2,11 @@ package com.youtube.sorcjc.redemnorte.ui.fragment
 
 import android.app.Dialog
 import android.os.Bundle
-import android.support.design.widget.TextInputLayout
-import android.support.v4.app.DialogFragment
-import android.support.v7.app.AppCompatActivity
 import android.view.*
-import android.widget.ArrayAdapter
 import android.widget.EditText
+import androidx.appcompat.app.AppCompatActivity
+import androidx.fragment.app.DialogFragment
+import com.google.android.material.textfield.TextInputLayout
 import com.youtube.sorcjc.redemnorte.R
 import com.youtube.sorcjc.redemnorte.io.MyApiAdapter
 import com.youtube.sorcjc.redemnorte.io.response.HojaResponse
@@ -136,10 +135,11 @@ class HeaderDialogFragment : DialogFragment() {
         return dialog
     }
 
-    override fun onPrepareOptionsMenu(menu: Menu?) {
-        super.onPrepareOptionsMenu(menu)
-
-        menu?.removeItem(R.id.search)
+    override fun onPrepareOptionsMenu(menu: Menu) {
+        menu.let {
+            super.onPrepareOptionsMenu(it)
+            it.removeItem(R.id.search)
+        }
     }
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
@@ -309,10 +309,10 @@ class HeaderDialogFragment : DialogFragment() {
 
     companion object {
         @JvmStatic
-        fun newInstance(sheetId: String?): HeaderDialogFragment {
+        fun newInstance(sheetId: Int): HeaderDialogFragment {
             val f = HeaderDialogFragment()
             val args = Bundle()
-            args.putString("hoja_id", sheetId)
+            args.putInt("hoja_id", sheetId)
             f.arguments = args
             return f
         }

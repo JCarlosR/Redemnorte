@@ -9,11 +9,9 @@ import android.net.Uri
 import android.os.Bundle
 import android.os.Environment
 import android.provider.MediaStore
-import android.support.v4.app.DialogFragment
-import android.support.v7.app.AppCompatActivity
-import android.support.v7.widget.Toolbar
 import android.view.*
-import android.widget.*
+import androidx.appcompat.app.AppCompatActivity
+import androidx.fragment.app.DialogFragment
 import com.squareup.picasso.Picasso
 import com.youtube.sorcjc.redemnorte.Global
 import com.youtube.sorcjc.redemnorte.R
@@ -32,33 +30,37 @@ import java.io.File
 import java.io.IOException
 
 class ShowDetailDialog : DialogFragment(), Callback<BienResponse>, View.OnClickListener {
-    private val DEFAULT_PHOTO_EXTENSION = "jpg"
 
     // Location of the last photo taken
     private var currentPhotoPath: String? = null
 
     // Params required for the request
-    private var sheetId: String = ""
+    private var sheetId: Int = -1
     private var qrCode: String = ""
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
-                              savedInstanceState: Bundle?): View? {
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         val view = inflater.inflate(R.layout.dialog_view_detail, container, false)
 
-        toolbar.title = getString(R.string.title_item_show)
-        (activity as AppCompatActivity?)!!.setSupportActionBar(toolbar)
-
-        val actionBar = (activity as AppCompatActivity?)!!.supportActionBar
-        if (actionBar != null) {
-            actionBar.setDisplayHomeAsUpEnabled(true)
-            actionBar.setHomeButtonEnabled(true)
-        }
         setHasOptionsMenu(true)
 
         btnCapturePhoto.setOnClickListener(this)
 
         productDataByQrCode
         return view
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+
+        toolbar.title = getString(R.string.title_item_show)
+
+        val appCompatActivity = (activity as AppCompatActivity)
+        appCompatActivity.setSupportActionBar(toolbar)
+
+        appCompatActivity.supportActionBar?.let {
+            it.setDisplayHomeAsUpEnabled(true)
+            it.setHomeButtonEnabled(true)
+        }
     }
 
     private val productDataByQrCode: Unit
@@ -72,7 +74,7 @@ class ShowDetailDialog : DialogFragment(), Callback<BienResponse>, View.OnClickL
 
         arguments?.let {
             qrCode = it.getString("qr_code", "")
-            sheetId = it.getString("hoja_id", "")
+            sheetId = it.getInt("hoja_id")
         }
     }
 
@@ -93,21 +95,21 @@ class ShowDetailDialog : DialogFragment(), Callback<BienResponse>, View.OnClickL
     }
 
     private fun setProductDataToViews(item: Item) {
-        etQR.setText(item.qr)
+        etQR.setText(item.inventory_code)
         etPatrimonial.setText(item.patrimonial)
         etOldCode.setText(item.old_code)
         spinnerOldYear.setSelection(spinnerOldYear.getItemIndex(item.old_year))
-        etPreservation.setText(item.preservation)
-        checkOperative.isChecked = item.isOperative == "S"
-        checkEtiquetado.isChecked = item.etiquetado?.trim() == "1"
-        etDescription.setText(item.description)
+        etPreservation.setText(item.status)
+        checkOperative.isChecked = item.operative
+        checkEtiquetado.isChecked = item.labeled
+        etDescription.setText(item.denomination)
         etColor.setText(item.color)
         etBrand.setText(item.brand)
         etModel.setText(item.model)
         etSeries.setText(item.series)
-        etDimLong.setText(item.dimLong)
-        etDimWidth.setText(item.dimWidth)
-        etDimHigh.setText(item.dimHigh)
+        etDimLong.setText(item.length)
+        etDimWidth.setText(item.width)
+        etDimHigh.setText(item.height)
         etObservation.setText(item.observation)
 
         val extension = item.photo_extension
@@ -165,11 +167,11 @@ class ShowDetailDialog : DialogFragment(), Callback<BienResponse>, View.OnClickL
         return image
     }
 
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent) {
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
         if (resultCode == Activity.RESULT_OK) {
             if (requestCode == REQUEST_CODE_CAMERA)
-                onCaptureImageResult(data)
+                data?.let { onCaptureImageResult(it) }
         }
     }
 
@@ -186,7 +188,7 @@ class ShowDetailDialog : DialogFragment(), Callback<BienResponse>, View.OnClickL
 
     }
 
-    private fun postPicture(bitmap: Bitmap, extension: String = DEFAULT_PHOTO_EXTENSION) {
+    private fun postPicture(bitmap: Bitmap, extension: String = Companion.DEFAULT_PHOTO_EXTENSION) {
         val base64 = bitmap.getBase64()
         val call = MyApiAdapter.getApiService()
                 .postPhoto(base64, extension, sheetId, qrCode)
@@ -194,7 +196,7 @@ class ShowDetailDialog : DialogFragment(), Callback<BienResponse>, View.OnClickL
             override fun onResponse(call: Call<SimpleResponse?>, response: Response<SimpleResponse?>) {
                 if (response.isSuccessful) {
                     context?.toast("La foto se ha subido correctamente")
-                    loadDetailPhoto(DEFAULT_PHOTO_EXTENSION)
+                    loadDetailPhoto(Companion.DEFAULT_PHOTO_EXTENSION)
                 } else {
                     activity?.toast("Ocurrió un problema al enviar la imagen")
                 }
@@ -207,7 +209,7 @@ class ShowDetailDialog : DialogFragment(), Callback<BienResponse>, View.OnClickL
     }
 
     private fun loadDetailPhoto(extension: String) {
-        val imageUrl = Global.getProductPhotoUrl(sheetId, qrCode, extension)
+        val imageUrl = Global.getProductPhotoUrl(sheetId.toString(), qrCode, extension)
         Picasso.with(context).load(imageUrl).fit().centerCrop().into(ivPhoto)
         btnCapturePhoto.text = getString(R.string.btn_replace_item_photo)
     }
@@ -216,13 +218,15 @@ class ShowDetailDialog : DialogFragment(), Callback<BienResponse>, View.OnClickL
         private const val REQUEST_CODE_CAMERA = 10101
 
         @JvmStatic
-        fun newInstance(sheetId: String?, qrCode: String?): ShowDetailDialog {
+        fun newInstance(sheetId: Int, qrCode: String): ShowDetailDialog {
             val f = ShowDetailDialog()
             val args = Bundle()
-            args.putString("hoja_id", sheetId)
+            args.putInt("hoja_id", sheetId)
             args.putString("qr_code", qrCode)
             f.arguments = args
             return f
         }
+
+        private const val DEFAULT_PHOTO_EXTENSION = "jpg"
     }
 }

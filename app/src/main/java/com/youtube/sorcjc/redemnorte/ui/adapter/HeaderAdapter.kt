@@ -2,19 +2,18 @@ package com.youtube.sorcjc.redemnorte.ui.adapter
 
 import android.content.Context
 import android.content.Intent
-import android.support.v4.app.FragmentTransaction
-import android.support.v7.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
 import android.widget.TextView
+import androidx.fragment.app.FragmentTransaction
+import androidx.recyclerview.widget.RecyclerView
 import com.youtube.sorcjc.redemnorte.R
 import com.youtube.sorcjc.redemnorte.model.Sheet
 import com.youtube.sorcjc.redemnorte.ui.activity.DetailsActivity
 import com.youtube.sorcjc.redemnorte.ui.activity.PanelActivity
 import com.youtube.sorcjc.redemnorte.ui.fragment.HeaderDialogFragment.Companion.newInstance
-import kotlin.collections.ArrayList
 
 class HeaderAdapter(private var dataSet: ArrayList<Sheet> = ArrayList()) : RecyclerView.Adapter<HeaderAdapter.ViewHolder>() {
     private var filteredDataSet: ArrayList<Sheet>
@@ -34,7 +33,7 @@ class HeaderAdapter(private var dataSet: ArrayList<Sheet> = ArrayList()) : Recyc
         private var btnEditHeader: Button = v.findViewById(R.id.btnEditHeader)
 
         // params
-        var sheetId: String? = null
+        var sheetId: Int = -1
         var responsible: String? = null
 
         fun setOnClickListeners() {
@@ -54,11 +53,11 @@ class HeaderAdapter(private var dataSet: ArrayList<Sheet> = ArrayList()) : Recyc
             }
         }
 
-        private fun showEditHeaderDialog(hoja_id: String?) {
+        private fun showEditHeaderDialog(sheetId: Int) {
             val fragmentManager = (context as PanelActivity).supportFragmentManager
 
             // sheet_id is required to => edit a specific header
-            val newFragment = newInstance(hoja_id)
+            val newFragment = newInstance(sheetId)
             val transaction = fragmentManager.beginTransaction()
             transaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
             transaction.add(android.R.id.content, newFragment)
@@ -111,9 +110,10 @@ class HeaderAdapter(private var dataSet: ArrayList<Sheet> = ArrayList()) : Recyc
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         // get element from dataSet at this position
         // and replace the contents of the view
-        val (id, fecha, _, _, responsable, _, _, _, _, _, _, _, printed) = filteredDataSet[position]
-        holder.headerCode.text = id
-        holder.responsibleName.text = responsable
+        val (id, fecha, _, _, responsible, _, _, _, _, _, _, _, printed) = filteredDataSet[position]
+
+        holder.headerCode.text = id.toString()
+        holder.responsibleName.text = responsible
         holder.headerDate.text = fecha
 
         holder.tvPrinted.visibility = if (printed) {
@@ -127,7 +127,7 @@ class HeaderAdapter(private var dataSet: ArrayList<Sheet> = ArrayList()) : Recyc
 
         // params needed to show the details
         holder.sheetId = id
-        holder.responsible = responsable!!.trim()
+        holder.responsible = responsible?.trim()
     }
 
     override fun getItemCount(): Int {

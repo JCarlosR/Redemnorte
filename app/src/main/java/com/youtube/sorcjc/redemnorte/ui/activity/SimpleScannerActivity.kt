@@ -4,9 +4,9 @@ import android.app.Activity
 import android.content.Intent
 import android.media.RingtoneManager
 import android.os.Bundle
-import android.support.v4.app.DialogFragment
-import android.support.v7.app.AppCompatActivity
 import android.util.Log
+import androidx.appcompat.app.AppCompatActivity
+import androidx.fragment.app.DialogFragment
 import com.youtube.sorcjc.redemnorte.R
 import com.youtube.sorcjc.redemnorte.ui.fragment.MessageDialogFragment
 import com.youtube.sorcjc.redemnorte.ui.fragment.MessageDialogFragment.MessageDialogListener
@@ -15,7 +15,7 @@ import me.dm7.barcodescanner.zbar.ZBarScannerView
 
 class SimpleScannerActivity : AppCompatActivity(), ZBarScannerView.ResultHandler, MessageDialogListener {
     private val mScannerView by lazy {
-        ZBarScannerView(this) // Programmatically initialize the scanner view
+        ZBarScannerView(this)
     }
 
     private var code: String? = null
@@ -23,18 +23,25 @@ class SimpleScannerActivity : AppCompatActivity(), ZBarScannerView.ResultHandler
     public override fun onCreate(state: Bundle?) {
         super.onCreate(state)
 
-        setContentView(mScannerView) // Set the scanner view as the content view
+        // Set the scanner view as the content view
+        setContentView(mScannerView)
     }
 
     public override fun onResume() {
         super.onResume()
-        mScannerView.setResultHandler(this) // Register ourselves as a handler for scan results.
-        mScannerView.startCamera() // Start camera on resume
+
+        // Register this class as handler for results
+        mScannerView.setResultHandler(this)
+
+        // Start camera on resume
+        mScannerView.startCamera()
     }
 
     public override fun onPause() {
         super.onPause()
-        mScannerView.stopCamera() // Stop camera on pause
+
+        // Stop camera on pause
+        mScannerView.stopCamera()
     }
 
     override fun handleResult(rawResult: Result) {
@@ -63,8 +70,8 @@ class SimpleScannerActivity : AppCompatActivity(), ZBarScannerView.ResultHandler
         fragment.show(supportFragmentManager, "")
     }
 
-    override fun onDialogPositiveClick(dialog: DialogFragment) {
-        // Toast.makeText(this, "Código a usar => " + code, Toast.LENGTH_SHORT).show();
+    override fun onDialogPositiveClick(dialog: DialogFragment?) {
+        // Toast.makeText(this, "Code to use => " + code, Toast.LENGTH_SHORT).show();
 
         val data = Intent()
         data.putExtra("code", code)
@@ -72,12 +79,12 @@ class SimpleScannerActivity : AppCompatActivity(), ZBarScannerView.ResultHandler
         finish()
     }
 
-    override fun onDialogNeutralClick(dialog: DialogFragment) {
+    override fun onDialogNeutralClick(dialog: DialogFragment?) {
         // Resume the camera
         mScannerView.resumeCameraPreview(this)
     }
 
-    override fun onDialogNegativeClick(dialog: DialogFragment) {
+    override fun onDialogNegativeClick(dialog: DialogFragment?) {
         setResult(Activity.RESULT_CANCELED)
         finish()
     }

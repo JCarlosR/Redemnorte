@@ -1,14 +1,13 @@
 package com.youtube.sorcjc.redemnorte.ui.activity
 
 import android.os.Bundle
-import android.support.v4.app.FragmentTransaction
-import android.support.v4.app.NavUtils
-import android.support.v7.app.AppCompatActivity
-import android.support.v7.widget.LinearLayoutManager
-import android.support.v7.widget.RecyclerView
 import android.view.MenuItem
 import android.view.View
-import android.widget.Toast
+import androidx.appcompat.app.AppCompatActivity
+import androidx.core.app.NavUtils
+import androidx.fragment.app.FragmentTransaction
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.youtube.sorcjc.redemnorte.R
 import com.youtube.sorcjc.redemnorte.io.MyApiAdapter
 import com.youtube.sorcjc.redemnorte.model.Item
@@ -16,7 +15,6 @@ import com.youtube.sorcjc.redemnorte.ui.adapter.DetailAdapter
 import com.youtube.sorcjc.redemnorte.ui.fragment.DetailDialogFragment
 import com.youtube.sorcjc.redemnorte.util.toast
 import kotlinx.android.synthetic.main.activity_details.*
-import org.json.JSONObject
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -29,36 +27,38 @@ class DetailsActivity : AppCompatActivity(), View.OnClickListener, Callback<Arra
     }
 
     private val detailAdapter by lazy {
-        DetailAdapter(myDataSet, hoja_id, responsable)
+        DetailAdapter(myDataSet, sheetId, responsible)
     }
 
-    private var hoja_id: String? = ""
-    private var responsable: String? = ""
+    private var sheetId: Int = -1
+    private var responsible: String = ""
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_details)
 
-        val extras = intent.extras
-        if (extras != null) {
-            hoja_id = extras.getString("hoja_id")
-            responsable = extras.getString("responsable")
+        intent.extras?.let {
+            sheetId = it.getInt("hoja_id")
+            responsible = it.getString("responsable", "")
         }
 
-        val linearLayoutManager = LinearLayoutManager(this)
-        recyclerView.layoutManager = linearLayoutManager
+        recyclerView.layoutManager = LinearLayoutManager(this)
 
         recyclerView.adapter = detailAdapter
         loadItems()
 
-        toolbar.title = "Sheet $hoja_id"
+        toolbar.title = getString(R.string.title_activity_details) + sheetId
         setSupportActionBar(toolbar)
 
         val actionBar = supportActionBar
         actionBar?.setDisplayHomeAsUpEnabled(true)
 
         fab.setOnClickListener(this)
+        hideFabOnRecyclerViewScroll()
+    }
 
+    private fun hideFabOnRecyclerViewScroll()
+    {
         recyclerView.addOnScrollListener(object : RecyclerView.OnScrollListener() {
             override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
                 if (dy > 0 || dy < 0 && fab.isShown) fab.hide()
@@ -72,7 +72,7 @@ class DetailsActivity : AppCompatActivity(), View.OnClickListener, Callback<Arra
     }
 
     fun loadItems() {
-        val call = MyApiAdapter.getApiService().getItems(hoja_id)
+        val call = MyApiAdapter.getApiService().getItems(sheetId)
         call.enqueue(this)
     }
 
@@ -94,7 +94,7 @@ class DetailsActivity : AppCompatActivity(), View.OnClickListener, Callback<Arra
 
     private fun showCreateDetailDialog() {
         val fragmentManager = supportFragmentManager
-        val newFragment = DetailDialogFragment.newInstance(hoja_id, "", responsable)
+        val newFragment = DetailDialogFragment.newInstance(sheetId, "", responsible)
         val transaction = fragmentManager.beginTransaction()
         transaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE)
         transaction.add(android.R.id.content, newFragment)
@@ -105,7 +105,7 @@ class DetailsActivity : AppCompatActivity(), View.OnClickListener, Callback<Arra
         if (response.isSuccessful) {
             response.body()?.let {
                 detailAdapter.setDataSet(it)
-                toast(getString(R.string.sheets_count_message) + it.size)
+                toast(getString(R.string.items_count_message) + " " + it.size)
             }
         } else {
             toast(getString(R.string.error_format_server_response))

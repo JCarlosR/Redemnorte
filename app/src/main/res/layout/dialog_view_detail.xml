@@ -1,33 +1,33 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.design.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.coordinatorlayout.widget.CoordinatorLayout 
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:fitsSystemWindows="true">
 
-    <android.support.design.widget.AppBarLayout
+    <com.google.android.material.appbar.AppBarLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:fitsSystemWindows="false"
         android:theme="@style/AppTheme">
 
-        <android.support.v7.widget.Toolbar
+        <androidx.appcompat.widget.Toolbar
             android:id="@+id/toolbar"
             android:layout_width="match_parent"
             android:layout_height="?attr/actionBarSize"
             android:theme="@style/ThemeOverlay.AppCompat.Dark"
             app:layout_scrollFlags="scroll|enterAlways" />
 
-    </android.support.design.widget.AppBarLayout>
+    </com.google.android.material.appbar.AppBarLayout>
 
-    <android.support.v4.widget.NestedScrollView
+    <androidx.core.widget.NestedScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:background="#ffffff"
         app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
-        <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-            xmlns:app="http://schemas.android.com/apk/res-auto"
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:orientation="vertical"
@@ -44,7 +44,7 @@
 
             <ImageView
                 android:id="@+id/ivPhoto"
-                android:contentDescription="Foto del bienConsolidado"
+                android:contentDescription="Foto del bien consolidado"
                 android:scaleType="center"
                 android:layout_width="match_parent"
                 android:layout_height="250dp" />
@@ -56,7 +56,7 @@
                 android:layout_marginTop="6dp"
                 android:textSize="20sp" />
 
-            <android.support.design.widget.TextInputLayout
+            <com.google.android.material.textfield.TextInputLayout
                 android:id="@+id/tilQR"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content">
@@ -70,9 +70,9 @@
                     android:focusable="false"
                     android:focusableInTouchMode="false"
                     android:hint="QR 2016" />
-            </android.support.design.widget.TextInputLayout>
+            </com.google.android.material.textfield.TextInputLayout>
 
-            <android.support.design.widget.TextInputLayout
+            <com.google.android.material.textfield.TextInputLayout
                 android:id="@+id/tilPatrimonial"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content">
@@ -86,7 +86,7 @@
                     android:focusable="false"
                     android:focusableInTouchMode="false"
                     android:hint="Código patrimonial" />
-            </android.support.design.widget.TextInputLayout>
+            </com.google.android.material.textfield.TextInputLayout>
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -100,7 +100,7 @@
                     android:clickable="false"
                     android:entries="@array/old_code_years" />
 
-                <android.support.design.widget.TextInputLayout
+                <com.google.android.material.textfield.TextInputLayout
                     android:id="@+id/tilOldCode"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
@@ -115,7 +115,7 @@
                         android:focusable="false"
                         android:focusableInTouchMode="false"
                         android:hint="Código antiguo" />
-                </android.support.design.widget.TextInputLayout>
+                </com.google.android.material.textfield.TextInputLayout>
 
             </LinearLayout>
 
@@ -126,7 +126,7 @@
                 android:enabled="false"
                 android:text="Este item se encuentra etiquetado" />
 
-            <android.support.design.widget.TextInputLayout
+            <com.google.android.material.textfield.TextInputLayout
                 android:id="@+id/tilDescription"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content">
@@ -141,9 +141,9 @@
                     android:focusableInTouchMode="false"
                     android:hint="@string/hint_description"
                     android:maxLines="1" />
-            </android.support.design.widget.TextInputLayout>
+            </com.google.android.material.textfield.TextInputLayout>
 
-            <android.support.design.widget.TextInputLayout
+            <com.google.android.material.textfield.TextInputLayout
                 android:id="@+id/tilColor"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content">
@@ -159,9 +159,9 @@
                     android:hint="@string/hint_color"
                     android:inputType="textCapCharacters"
                     android:singleLine="true" />
-            </android.support.design.widget.TextInputLayout>
+            </com.google.android.material.textfield.TextInputLayout>
 
-            <android.support.design.widget.TextInputLayout
+            <com.google.android.material.textfield.TextInputLayout
                 android:id="@+id/tilBrand"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content">
@@ -176,9 +176,9 @@
                     android:focusableInTouchMode="false"
                     android:hint="@string/hint_brand"
                     android:singleLine="true" />
-            </android.support.design.widget.TextInputLayout>
+            </com.google.android.material.textfield.TextInputLayout>
 
-            <android.support.design.widget.TextInputLayout
+            <com.google.android.material.textfield.TextInputLayout
                 android:id="@+id/tilModel"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content">
@@ -193,9 +193,9 @@
                     android:focusableInTouchMode="false"
                     android:hint="@string/hint_model"
                     android:singleLine="true" />
-            </android.support.design.widget.TextInputLayout>
+            </com.google.android.material.textfield.TextInputLayout>
 
-            <android.support.design.widget.TextInputLayout
+            <com.google.android.material.textfield.TextInputLayout
                 android:id="@+id/tilSeries"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content">
@@ -210,9 +210,9 @@
                     android:focusableInTouchMode="false"
                     android:hint="@string/hint_series"
                     android:singleLine="true" />
-            </android.support.design.widget.TextInputLayout>
+            </com.google.android.material.textfield.TextInputLayout>
 
-            <android.support.design.widget.TextInputLayout
+            <com.google.android.material.textfield.TextInputLayout
                 android:id="@+id/tilDimLong"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content">
@@ -228,9 +228,9 @@
                     android:hint="@string/hint_dim_long"
                     android:inputType="number"
                     android:singleLine="true" />
-            </android.support.design.widget.TextInputLayout>
+            </com.google.android.material.textfield.TextInputLayout>
 
-            <android.support.design.widget.TextInputLayout
+            <com.google.android.material.textfield.TextInputLayout
                 android:id="@+id/tilDimWidth"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content">
@@ -246,9 +246,9 @@
                     android:hint="@string/hint_dim_width"
                     android:inputType="number"
                     android:singleLine="true" />
-            </android.support.design.widget.TextInputLayout>
+            </com.google.android.material.textfield.TextInputLayout>
 
-            <android.support.design.widget.TextInputLayout
+            <com.google.android.material.textfield.TextInputLayout
                 android:id="@+id/tilDimHigh"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content">
@@ -264,9 +264,9 @@
                     android:hint="@string/hint_dim_high"
                     android:inputType="number"
                     android:singleLine="true" />
-            </android.support.design.widget.TextInputLayout>
+            </com.google.android.material.textfield.TextInputLayout>
 
-            <android.support.design.widget.TextInputLayout
+            <com.google.android.material.textfield.TextInputLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content">
 
@@ -281,7 +281,7 @@
                     android:hint="@string/hint_preservation"
                     android:inputType="number"
                     android:singleLine="true" />
-            </android.support.design.widget.TextInputLayout>
+            </com.google.android.material.textfield.TextInputLayout>
 
             <CheckBox
                 android:id="@+id/checkOperative"
@@ -290,7 +290,7 @@
                 android:enabled="false"
                 android:text="@string/hint_operative" />
 
-            <android.support.design.widget.TextInputLayout
+            <com.google.android.material.textfield.TextInputLayout
                 android:id="@+id/tilObservation"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content">
@@ -301,9 +301,9 @@
                     android:layout_height="wrap_content"
                     android:hint="@string/hint_observation"
                     android:singleLine="true" />
-            </android.support.design.widget.TextInputLayout>
+            </com.google.android.material.textfield.TextInputLayout>
         </LinearLayout>
 
-    </android.support.v4.widget.NestedScrollView>
+    </androidx.core.widget.NestedScrollView>
 
-</android.support.design.widget.CoordinatorLayout>
+</androidx.coordinatorlayout.widget.CoordinatorLayout>

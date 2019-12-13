@@ -1,13 +1,13 @@
 package com.youtube.sorcjc.redemnorte.ui.activity
 
 import android.os.Bundle
-import android.support.v4.app.FragmentTransaction
-import android.support.v7.app.AppCompatActivity
-import android.support.v7.widget.LinearLayoutManager
-import android.support.v7.widget.RecyclerView
-import android.support.v7.widget.Toolbar
 import android.view.Menu
 import android.view.View
+import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.widget.Toolbar
+import androidx.fragment.app.FragmentTransaction
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.youtube.sorcjc.redemnorte.R
 import com.youtube.sorcjc.redemnorte.io.MyApiAdapter
 import com.youtube.sorcjc.redemnorte.model.Sheet
@@ -108,7 +108,7 @@ class PanelActivity : AppCompatActivity(), View.OnClickListener, Callback<ArrayL
         val fragmentManager = supportFragmentManager
 
         // Empty sheetId => Create a new sheet
-        val newFragment = HeaderDialogFragment.newInstance("")
+        val newFragment = HeaderDialogFragment.newInstance(-1)
         val transaction = fragmentManager.beginTransaction()
 
         transaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)

@@ -1,7 +1,7 @@
 package com.youtube.sorcjc.redemnorte.model
 
 data class Sheet (
-        var id: String? = null,
+        var id: Int = -1,
 
         // Local
         var place: String? = null,

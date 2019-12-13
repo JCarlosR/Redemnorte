@@ -1,9 +1,9 @@
 package com.youtube.sorcjc.redemnorte.util
 
 import android.content.Context
-import android.support.v7.app.AlertDialog
 import android.widget.ArrayAdapter
 import android.widget.Toast
+import androidx.appcompat.app.AlertDialog
 
 fun Context.toast(message: CharSequence) =
         Toast.makeText(this, message, Toast.LENGTH_SHORT).show()
