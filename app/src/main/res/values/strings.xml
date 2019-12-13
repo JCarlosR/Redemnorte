@@ -99,4 +99,6 @@
     <string name="btn_negative_cancel">Cancelar</string>
     <string name="btn_login">Iniciar sesión</string>
     <string name="btn_show_contact_info">Número de soporte</string>
+    <string name="dialog_camera_title">Acceso a la cámara</string>
+    <string name="dialog_camera_explanation">A fin de escanear los códigos QR y de Barras, debes conceder a la aplicación el permiso de acceso a la cámara.</string>
 </resources>

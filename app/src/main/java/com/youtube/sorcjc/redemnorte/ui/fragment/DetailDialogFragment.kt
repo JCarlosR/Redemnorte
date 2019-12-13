@@ -3,6 +3,7 @@ package com.youtube.sorcjc.redemnorte.ui.fragment
 import android.Manifest
 import android.app.Activity
 import android.app.Dialog
+import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.os.Bundle
@@ -25,6 +26,7 @@ import com.youtube.sorcjc.redemnorte.model.Item
 import com.youtube.sorcjc.redemnorte.ui.activity.DetailsActivity
 import com.youtube.sorcjc.redemnorte.ui.activity.SimpleScannerActivity
 import com.youtube.sorcjc.redemnorte.util.getItemIndex
+import com.youtube.sorcjc.redemnorte.util.showConfirmDialog
 import com.youtube.sorcjc.redemnorte.util.showInfoDialog
 import com.youtube.sorcjc.redemnorte.util.toast
 import kotlinx.android.synthetic.main.dialog_new_detail.*
@@ -42,7 +44,7 @@ class DetailDialogFragment : DialogFragment(), View.OnClickListener {
 
     // Responsible associated with the header, so we can check if the detail is assigned to it
     // in old databases
-    private var responsable: String? = null
+    private var responsible: String? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -50,7 +52,7 @@ class DetailDialogFragment : DialogFragment(), View.OnClickListener {
         arguments?.let {
             sheetId = it.getInt("hoja_id")
             qrCodeParam = it.getString("qr_code")
-            responsable = it.getString("responsable")
+            responsible = it.getString("responsable")
         }
     }
 
@@ -276,24 +278,38 @@ class DetailDialogFragment : DialogFragment(), View.OnClickListener {
     }
 
     private fun startScannerFor(requestCode: Int) {
-        checkCameraPermission()
-
-        val intentQR = Intent(context, SimpleScannerActivity::class.java)
-        startActivityForResult(intentQR, requestCode)
+        activity?.let { context?.let { ctx -> checkCameraPermission(ctx, it, requestCode) } }
     }
 
-    private fun checkCameraPermission() {
-        val cameraPermission = context?.let { ContextCompat.checkSelfPermission(it, Manifest.permission.CAMERA) }
+    private fun checkCameraPermission(context: Context, activity: Activity, requestCode: Int) {
+        val cameraPermission = ContextCompat.checkSelfPermission(context, Manifest.permission.CAMERA)
+        /*
         Log.d("DetailDialogFragment", "context $context")
         Log.d("DetailDialogFragment", "cameraPermission $cameraPermission")
         Log.d("DetailDialogFragment", "PackageManager.PERMISSION_DENIED ${PackageManager.PERMISSION_DENIED}")
         Log.d("DetailDialogFragment", "activity $activity")
+        */
 
-        if (cameraPermission == PackageManager.PERMISSION_DENIED)
-            activity?.let {
-                ActivityCompat.requestPermissions(it, arrayOf(Manifest.permission.CAMERA), REQUEST_CAMERA_PERMISSION)
-                Log.d("DetailDialogFragment", "requestPermissions called")
+        if (cameraPermission == PackageManager.PERMISSION_DENIED) {
+            if (ActivityCompat.shouldShowRequestPermissionRationale(activity, Manifest.permission.CAMERA)) {
+                // Show an explanation to the user.
+                // After the user sees the explanation, try to request the permission.
+                context.showConfirmDialog(getString(R.string.dialog_camera_title), getString(R.string.dialog_camera_explanation)) {
+                        requestCameraPermission(activity)
+                }
+            } else {
+                // No explanation needed, we can request the permission.
+                requestCameraPermission(activity)
             }
+        } else {
+            val intentQR = Intent(context, SimpleScannerActivity::class.java)
+            startActivityForResult(intentQR, requestCode)
+        }
+    }
+
+    private fun requestCameraPermission(activity: Activity) {
+        ActivityCompat.requestPermissions(activity, arrayOf(Manifest.permission.CAMERA), REQUEST_CAMERA_PERMISSION)
+        Log.d("DetailDialogFragment", "requestPermissions called")
     }
 
     private fun performByPatrimonialRequest() {
@@ -357,9 +373,9 @@ class DetailDialogFragment : DialogFragment(), View.OnClickListener {
         spinnerPreservation.setSelection(spinnerPreservation.getItemIndex(preservation))
 
         val empleado = bienConsolidado.empleado!!.trim()
-        if (empleado != responsable) {
+        if (empleado != responsible) {
             var message = "Este bien le pertenece al usuario $empleado.\n"
-            message += "Verifica si el responsable de esta hoja $responsable se hará cargo.\n"
+            message += "Verifica si el responsable de esta hoja $responsible se hará cargo.\n"
             message += "De caso contrario, crea una nueva hoja, márcala con el estado pendiente y registra allí el bien."
             context?.showInfoDialog("Importante", message)
         }
@@ -388,7 +404,7 @@ class DetailDialogFragment : DialogFragment(), View.OnClickListener {
         }
 
         override fun onFailure(call: Call<ByOldCodeResponse?>, t: Throwable) {
-            context?.toast(t.localizedMessage)
+            context?.toast(t.localizedMessage ?: "")
         }
     }
 
@@ -405,7 +421,7 @@ class DetailDialogFragment : DialogFragment(), View.OnClickListener {
         }
 
         override fun onFailure(call: Call<SimpleResponse>, t: Throwable) {
-            context?.toast(t.localizedMessage)
+            context?.toast(t.localizedMessage ?: "")
         }
     }
 
@@ -429,6 +445,22 @@ class DetailDialogFragment : DialogFragment(), View.OnClickListener {
                 etOldCode!!.setText(result)
                 context?.toast("Usa el botón de la diana para buscar y traer datos.")
             }
+        }
+    }
+
+    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+
+        Log.d("DetailDialogFragment", "onRequestPermissionsResult called")
+        Log.d("DetailDialogFragment", "requestCode $requestCode")
+
+        when (requestCode) {
+            REQUEST_CAMERA_PERMISSION ->
+                if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    context?.toast("Permission Granted!")
+                } else {
+                    context?.toast("Permission Denied!")
+                }
         }
     }
 

@@ -18,6 +18,20 @@ fun Context.showInfoDialog(title: String, message: String) {
     alertDialog.show()
 }
 
+fun Context.showConfirmDialog(title: String, message: String, actionIfAgree: () -> Unit) {
+    val alertDialog = AlertDialog.Builder(this).create()
+    alertDialog.setTitle(title)
+    alertDialog.setMessage(message)
+    alertDialog.setButton(AlertDialog.BUTTON_NEGATIVE, "Cancel") { dialog, _ ->
+        dialog.dismiss()
+    }
+    alertDialog.setButton(AlertDialog.BUTTON_POSITIVE, "Ok") { dialog, _ ->
+        actionIfAgree()
+        dialog.dismiss()
+    }
+    alertDialog.show()
+}
+
 fun <T> Context.arrayAdapter(objects: List<T>): ArrayAdapter<T> {
     return ArrayAdapter(this, android.R.layout.simple_dropdown_item_1line, objects)
 }
