@@ -101,4 +101,5 @@
     <string name="btn_show_contact_info">Número de soporte</string>
     <string name="dialog_camera_title">Acceso a la cámara</string>
     <string name="dialog_camera_explanation">A fin de escanear los códigos QR y de Barras, debes conceder a la aplicación el permiso de acceso a la cámara.</string>
+    <string name="error_login_invalid_credentials">Los datos ingresados no coinciden con ningún usuario</string>
 </resources>

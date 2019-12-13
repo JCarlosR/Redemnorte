@@ -42,6 +42,8 @@ class MainActivity : AppCompatActivity(), View.OnClickListener, Callback<User> {
                 val username = etUsername.text.toString()
                 val password = etPassword.text.toString()
 
+                btnLogin.isEnabled = false
+
                 val call = MyApiAdapter.getApiService().postLogin(username, password)
                 call.enqueue(this)
 
@@ -61,18 +63,21 @@ class MainActivity : AppCompatActivity(), View.OnClickListener, Callback<User> {
                 login(it)
             }
         } else {
-            toast("Los datos ingresados no coinciden con ningún usuario")
+            toast(getString(R.string.error_login_invalid_credentials))
         }
+
+        btnLogin.isEnabled = true
     }
 
     private fun login(user: User) {
+        toast("Bienvenido ${user.name}!")
+
         val intentPanel = Intent(this, PanelActivity::class.java)
         startActivity(intentPanel)
-
-        toast("Bienvenido ${user.name}!")
     }
 
     override fun onFailure(call: Call<User>, t: Throwable) {
-        toast(t.localizedMessage)
+        toast(t.localizedMessage ?: "")
+        btnLogin.isEnabled = true
     }
 }
