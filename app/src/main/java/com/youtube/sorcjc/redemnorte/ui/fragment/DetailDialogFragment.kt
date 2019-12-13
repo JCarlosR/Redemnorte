@@ -226,7 +226,7 @@ class DetailDialogFragment : DialogFragment(), View.OnClickListener {
 
         call = if (itemId > -1) {
             MyApiAdapter.getApiService().updateItem(
-                    sheetId, qrCode, patrimonial, oldCode, oldYear,
+                    itemId, qrCode, patrimonial, oldCode, oldYear,
                     denomination, brand, model, series, color,
                     length, width, height,
                     status, labeled, operative, observation
@@ -246,7 +246,7 @@ class DetailDialogFragment : DialogFragment(), View.OnClickListener {
         override fun onResponse(call: Call<Item>, response: Response<Item>) {
             if (response.isSuccessful) {
                 response.body()?.let {
-                    context?.toast(getString(R.string.success_item_store))
+                    context?.toast(getString(R.string.success_item_store_update))
 
                     // re-load the recyclerView,
                     (activity as DetailsActivity?)?.loadItems()
@@ -254,7 +254,7 @@ class DetailDialogFragment : DialogFragment(), View.OnClickListener {
                     dismiss()
                 }
             } else {
-                context?.toast(getString(R.string.error_item_store))
+                context?.toast(getString(R.string.error_item_store_update))
             }
         }
 

@@ -115,8 +115,8 @@
     <string name="data_found_and_loaded">Se encontraron y cargaron datos</string>
     <string name="no_data_found">No se encontraron resultados</string>
     <string name="label_checkbox_labeled_status">El item está etiquetado</string>
-    <string name="error_item_store">No ha sido posible registrar el bien</string>
-    <string name="success_item_store">El bien se ha registrado correctamente</string>
+    <string name="error_item_store_update">Ha ocurrido un problema con la operación</string>
+    <string name="success_item_store_update">Operación exitosa</string>
     <string name="item_detail_btn_show">Ver datos</string>
     <string name="item_detail_btn_edit">Editar item</string>
     <string name="btn_take_item_photo">Capturar foto</string>

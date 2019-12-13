@@ -117,7 +117,7 @@ interface MyApiService {
     @PUT("items/{itemId}")
     @Headers("Accept: application/json")
     fun updateItem(
-            @Field("itemId") itemId: Int,
+            @Path("itemId") itemId: Int,
             @Field("inventory_code") qrCode: String?,
             @Field("patrimonial_code") patrimonial_code: String?,
             @Field("old_code") old_code: String?,
