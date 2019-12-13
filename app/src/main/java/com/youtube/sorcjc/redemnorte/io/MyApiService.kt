@@ -75,11 +75,11 @@ interface MyApiService {
     @GET("check-qr")
     fun getCheckQr(@Query("qr_code") qrCode: String?): Call<SimpleResponse>
 
-    @GET("take-by-patrimonial")
-    fun getByPatrimonial(@Query("patrimonial") patrimonial: String?): Call<ByPatrimonialResponse?>
+    @GET("expected-data/search")
+    fun getByPatrimonial(@Query("code") code: String): Call<Item>
 
-    @GET("take-by-old-code")
-    fun getByOldCode(@Query("year") year: String?, @Query("code") code: String?): Call<ByOldCodeResponse?>
+    @GET("old-data/search")
+    fun getByOldCode(@Query("year") year: String, @Query("code") code: String): Call<Item>
 
     @FormUrlEncoded
     @POST("items")

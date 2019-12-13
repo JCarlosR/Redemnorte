@@ -109,5 +109,9 @@
     <string name="instructions_use_button_to_check_qr_not_registered_yet">Usa el botón del ojito para verificar que no se repita el QR.</string>
     <string name="instructions_use_button_to_get_data_by_patrimonial_code">Usa el botón de la diana para buscar y traer datos.</string>
     <string name="instructions_use_button_to_get_data_by_old_code">Usa el botón de la diana para buscar y traer datos.</string>
-    <string name="empty_qr_code_check">Debes ingresar un QR para verificar si ya se ha registrado o aún no</string>
+    <string name="empty_qr_code_check">Debes ingresar un QR para verificar si ya se ha registrado o no</string>
+    <string name="empty_patrimonial_code_search">Debes ingresar un cód patrimonial para realizar la búsqueda</string>
+    <string name="empty_old_code_search">Debes ingresar un cód antiguo para realizar la búsqueda</string>
+    <string name="data_found_and_loaded">Se encontraron y cargaron datos</string>
+    <string name="no_data_found">No se encontraron resultados</string>
 </resources>

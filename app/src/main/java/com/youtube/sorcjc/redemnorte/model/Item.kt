@@ -30,17 +30,18 @@ data class Item(
         var operative: Boolean,
 
         // Meta-data
+        @SerializedName("old_code")
         var old_code: String? = null,
+        @SerializedName("year")
         var old_year: String? = null,
 
         var observation: String? = null,
 
         // Photo
-        var photo_extension: String? = null,
-        var image: String? = null,
+        var image: String? = null
 
         // Used when the data is taken using an old code
-        var codigoActivo: String? = null
+        // var codigoActivo: String? = null
 ) {
     fun photoUrl(): String {
         return "https://redemnorte.com/images/items/$image"

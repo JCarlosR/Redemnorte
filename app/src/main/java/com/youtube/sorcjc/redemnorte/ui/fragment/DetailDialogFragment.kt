@@ -7,7 +7,6 @@ import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.os.Bundle
-import android.util.Log
 import android.view.*
 import android.widget.EditText
 import androidx.appcompat.app.AppCompatActivity
@@ -17,16 +16,12 @@ import androidx.fragment.app.DialogFragment
 import com.google.android.material.textfield.TextInputLayout
 import com.youtube.sorcjc.redemnorte.R
 import com.youtube.sorcjc.redemnorte.io.MyApiAdapter
-import com.youtube.sorcjc.redemnorte.io.response.ByOldCodeResponse
-import com.youtube.sorcjc.redemnorte.io.response.ByPatrimonialResponse
 import com.youtube.sorcjc.redemnorte.io.response.SimpleResponse
-import com.youtube.sorcjc.redemnorte.model.BienConsolidado
 import com.youtube.sorcjc.redemnorte.model.Item
 import com.youtube.sorcjc.redemnorte.ui.activity.DetailsActivity
 import com.youtube.sorcjc.redemnorte.ui.activity.SimpleScannerActivity
 import com.youtube.sorcjc.redemnorte.util.getItemIndex
 import com.youtube.sorcjc.redemnorte.util.showConfirmDialog
-import com.youtube.sorcjc.redemnorte.util.showInfoDialog
 import com.youtube.sorcjc.redemnorte.util.toast
 import kotlinx.android.synthetic.main.dialog_new_detail.*
 import retrofit2.Call
@@ -281,12 +276,6 @@ class DetailDialogFragment : DialogFragment(), View.OnClickListener {
 
     private fun checkCameraPermission(context: Context, activity: Activity, requestCode: Int) {
         val cameraPermission = ContextCompat.checkSelfPermission(context, Manifest.permission.CAMERA)
-        /*
-        Log.d("DetailDialogFragment", "context $context")
-        Log.d("DetailDialogFragment", "cameraPermission $cameraPermission")
-        Log.d("DetailDialogFragment", "PackageManager.PERMISSION_DENIED ${PackageManager.PERMISSION_DENIED}")
-        Log.d("DetailDialogFragment", "activity $activity")
-        */
 
         if (cameraPermission == PackageManager.PERMISSION_DENIED) {
             if (ActivityCompat.shouldShowRequestPermissionRationale(activity, Manifest.permission.CAMERA)) {
@@ -311,55 +300,62 @@ class DetailDialogFragment : DialogFragment(), View.OnClickListener {
     }
 
     private fun performByPatrimonialRequest() {
-        val call = MyApiAdapter.getApiService().getByPatrimonial(etPatrimonial!!.text.toString().trim())
-        call.enqueue(TakeByPatrimonialCallback())
+        val patrimonial = etPatrimonial.text.toString().trim()
+
+        if (patrimonial.isEmpty()) {
+            context?.toast(getString(R.string.empty_patrimonial_code_search))
+        } else {
+            val call = MyApiAdapter.getApiService().getByPatrimonial(patrimonial)
+            call.enqueue(TakeByPatrimonialCallback())
+        }
     }
 
-    internal inner class TakeByPatrimonialCallback : Callback<ByPatrimonialResponse?> {
-        override fun onResponse(call: Call<ByPatrimonialResponse?>, response: Response<ByPatrimonialResponse?>) {
+    internal inner class TakeByPatrimonialCallback : Callback<Item> {
+        override fun onResponse(call: Call<Item>, response: Response<Item>) {
             if (response.isSuccessful) {
-                val byPatrimonialResponse = response.body()
-                // The message is used for both, successful and error responses
-                if (byPatrimonialResponse!!.isError) {
-                    context?.toast(byPatrimonialResponse.message)
-                } else {
-                    setBienConsolidadoInViews(byPatrimonialResponse.bienConsolidado)
-                    context?.toast(byPatrimonialResponse.message)
+                response.body()?.let { item ->
+                    setItemDataInViews(item)
+                    context?.toast(getString(R.string.data_found_and_loaded))
+                } ?: run {
+                    context?.toast(getString(R.string.no_data_found))
                 }
+            } else {
+                context?.toast(getString(R.string.no_data_found))
             }
         }
 
-        override fun onFailure(call: Call<ByPatrimonialResponse?>, t: Throwable) {
+        override fun onFailure(call: Call<Item>, t: Throwable) {
             context?.toast(t.localizedMessage ?: "")
         }
     }
 
-    private fun setBienConsolidadoInViews(bienConsolidado: BienConsolidado?) {
-        if (bienConsolidado == null) return
-        val description = bienConsolidado.description.trim()
-        val brand = bienConsolidado.brand!!.trim()
-        val model = bienConsolidado.model!!.trim()
-        val series = bienConsolidado.series!!.trim()
-        val estado = bienConsolidado.estado
-        val situacion = bienConsolidado.situacion!!.trim()
+    private fun setItemDataInViews(item: Item) {
+        val description = item.denomination.trim()
+        val brand = item.brand?.trim()
+        val model = item.model?.trim()
+        val series = item.series?.trim()
+        val status = item.status
 
-        // final String ubicacion = bienConsolidado.getUbicacion();
-        // final String local = bienConsolidado.getLocal();
-        // WHERE situacion =  'BP' OR situacion =  'BA' OR situacion =  'NO' OR situacion =  'NU'
+        // final String ubicacion = item.getUbicacion();
+        // final String local = item.getLocal();
 
+        /*
         if (situacion == "BP" || situacion == "BA" || situacion == "NO" || situacion == "NU") {
             val title = "Importante"
             val message = "Lamentablemente este bien ha sido dado de baja."
             context?.showInfoDialog(title, message)
             return
         }
+        */
+
         etDescription.setText(description)
         etBrand.setText(brand)
         etModel.setText(model)
         etSeries.setText(series)
 
+        /*
         var preservation = ""
-        when (estado) {
+        when (status) {
             "BU" -> preservation = "Bueno"
             "SE" -> preservation = "Bueno"
             "RE" -> preservation = "Regular"
@@ -369,39 +365,49 @@ class DetailDialogFragment : DialogFragment(), View.OnClickListener {
             "IN" -> preservation = "Malo"
         }
         spinnerPreservation.setSelection(spinnerPreservation.getItemIndex(preservation))
+        */
 
-        val empleado = bienConsolidado.empleado!!.trim()
-        if (empleado != responsible) {
-            var message = "Este bien le pertenece al usuario $empleado.\n"
+
+        /*
+        val expectedResponsible = item.responsible.trim()
+        if (expectedResponsible != responsible) {
+            var message = "Este bien le pertenece al usuario $expectedResponsible.\n"
             message += "Verifica si el responsable de esta hoja $responsible se hará cargo.\n"
             message += "De caso contrario, crea una nueva hoja, márcala con el estado pendiente y registra allí el bien."
             context?.showInfoDialog("Importante", message)
         }
+        */
     }
 
     private fun performByOldCodeRequest() {
-        val year = spinnerOldYear!!.selectedItem.toString()
-        val code = etOldCode!!.text.toString().trim()
-        val call = MyApiAdapter.getApiService().getByOldCode(year, code)
-        call.enqueue(TakeByOldCodeCallback())
+        val year = spinnerOldYear.selectedItem.toString()
+        val code = etOldCode.text.toString().trim()
+
+        if (code.isEmpty()) {
+            context?.toast(getString(R.string.empty_old_code_search))
+        } else {
+            val call = MyApiAdapter.getApiService().getByOldCode(year, code)
+            call.enqueue(TakeByOldCodeCallback())
+        }
     }
 
-    internal inner class TakeByOldCodeCallback : Callback<ByOldCodeResponse?> {
-        override fun onResponse(call: Call<ByOldCodeResponse?>, response: Response<ByOldCodeResponse?>) {
+    internal inner class TakeByOldCodeCallback : Callback<Item> {
+        override fun onResponse(call: Call<Item>, response: Response<Item>) {
             if (response.isSuccessful) {
-                val byOldCodeResponse = response.body()
-                // The message is used for both, successful and error responses
-                if (byOldCodeResponse!!.isError) {
-                    context?.toast(byOldCodeResponse.message)
-                } else {
-                    etDescription!!.setText(byOldCodeResponse.item.denomination)
-                    etPatrimonial!!.setText(byOldCodeResponse.item.codigoActivo)
-                    context?.toast(byOldCodeResponse.message)
+                response.body()?.let { item ->
+                    etDescription.setText(item.denomination)
+                    etPatrimonial.setText(item.patrimonial)
+
+                    context?.toast(getString(R.string.data_found_and_loaded))
+                } ?: run {
+                    context?.toast(getString(R.string.no_data_found))
                 }
+            } else {
+                context?.toast(getString(R.string.no_data_found))
             }
         }
 
-        override fun onFailure(call: Call<ByOldCodeResponse?>, t: Throwable) {
+        override fun onFailure(call: Call<Item>, t: Throwable) {
             context?.toast(t.localizedMessage ?: "")
         }
     }
