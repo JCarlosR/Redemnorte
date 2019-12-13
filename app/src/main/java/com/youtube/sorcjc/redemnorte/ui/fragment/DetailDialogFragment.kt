@@ -104,15 +104,26 @@ class DetailDialogFragment : DialogFragment(), View.OnClickListener {
     }
 
     private fun setupEditMode() {
-        // qr_code_param provided => edit mode
-        if (itemId > -1 ) {
+        // itemId provided => edit mode
+        if (itemId > -1) {
+            progressBarDetail.visibility = View.VISIBLE
+
             etQR.isEnabled = false
             btnCaptureQR.visibility = View.GONE
             btnCheckQR.visibility = View.GONE
 
             val call = MyApiAdapter.getApiService().getItem(itemId)
             call.enqueue(GetPreviousDataCallback())
+        } else {
+            // new item
+            showDialogContent()
         }
+    }
+
+    private fun showDialogContent() {
+        progressBarDetail.visibility = View.GONE
+
+        scrollViewDetail.visibility = View.VISIBLE
     }
 
     internal inner class GetPreviousDataCallback : Callback<Item> {
@@ -124,10 +135,14 @@ class DetailDialogFragment : DialogFragment(), View.OnClickListener {
             } else {
                 context?.toast(getString(R.string.error_format_server_response))
             }
+
+            showDialogContent()
         }
 
         override fun onFailure(call: Call<Item>, t: Throwable) {
             context?.toast(t.localizedMessage ?: "")
+
+            showDialogContent()
         }
     }
 

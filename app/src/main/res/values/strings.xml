@@ -119,4 +119,8 @@
     <string name="success_item_store">El bien se ha registrado correctamente</string>
     <string name="item_detail_btn_show">Ver datos</string>
     <string name="item_detail_btn_edit">Editar item</string>
+    <string name="btn_take_item_photo">Capturar foto</string>
+    <string name="item_photo_description">Foto del bien consolidado</string>
+    <string name="title_item_data">Datos del item</string>
+    <string name="hint_old_code">Código antiguo</string>
 </resources>

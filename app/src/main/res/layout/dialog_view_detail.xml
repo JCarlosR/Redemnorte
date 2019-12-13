@@ -2,8 +2,10 @@
 <androidx.coordinatorlayout.widget.CoordinatorLayout 
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="#ffffff"
     android:fitsSystemWindows="true">
 
     <com.google.android.material.appbar.AppBarLayout
@@ -22,9 +24,11 @@
     </com.google.android.material.appbar.AppBarLayout>
 
     <androidx.core.widget.NestedScrollView
+        android:id="@+id/scrollViewShowDetail"
+        android:visibility="gone"
+        tools:visibility="visible"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="#ffffff"
         app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
         <LinearLayout
@@ -40,11 +44,11 @@
                 android:id="@+id/btnCapturePhoto"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Capturar foto" />
+                android:text="@string/btn_take_item_photo" />
 
             <ImageView
                 android:id="@+id/ivPhoto"
-                android:contentDescription="Foto del bien consolidado"
+                android:contentDescription="@string/item_photo_description"
                 android:scaleType="center"
                 android:layout_width="match_parent"
                 android:layout_height="250dp" />
@@ -52,7 +56,7 @@
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Datos del item"
+                android:text="@string/title_item_data"
                 android:layout_marginTop="6dp"
                 android:textSize="20sp" />
 
@@ -69,7 +73,7 @@
                     android:cursorVisible="false"
                     android:focusable="false"
                     android:focusableInTouchMode="false"
-                    android:hint="QR 2016" />
+                    android:hint="@string/hint_qr_code" />
             </com.google.android.material.textfield.TextInputLayout>
 
             <com.google.android.material.textfield.TextInputLayout
@@ -85,7 +89,7 @@
                     android:cursorVisible="false"
                     android:focusable="false"
                     android:focusableInTouchMode="false"
-                    android:hint="Código patrimonial" />
+                    android:hint="@string/hint_patrimonial_code" />
             </com.google.android.material.textfield.TextInputLayout>
 
             <LinearLayout
@@ -114,7 +118,7 @@
                         android:cursorVisible="false"
                         android:focusable="false"
                         android:focusableInTouchMode="false"
-                        android:hint="Código antiguo" />
+                        android:hint="@string/hint_old_code" />
                 </com.google.android.material.textfield.TextInputLayout>
 
             </LinearLayout>
@@ -305,5 +309,10 @@
         </LinearLayout>
 
     </androidx.core.widget.NestedScrollView>
+
+    <ProgressBar
+        android:id="@+id/progressBarDetail"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

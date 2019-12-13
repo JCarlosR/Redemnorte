@@ -120,10 +120,20 @@ class ShowDetailDialog : DialogFragment(), Callback<Item>, View.OnClickListener 
         } else {
             context?.toast(getString(R.string.error_format_server_response))
         }
+
+        showDialogContent()
     }
 
     override fun onFailure(call: Call<Item>, t: Throwable) {
         context?.toast(t.localizedMessage ?: "")
+
+        showDialogContent()
+    }
+
+    private fun showDialogContent() {
+        progressBarDetail.visibility = View.GONE
+
+        scrollViewShowDetail.visibility = View.VISIBLE
     }
 
     override fun onClick(view: View) {
