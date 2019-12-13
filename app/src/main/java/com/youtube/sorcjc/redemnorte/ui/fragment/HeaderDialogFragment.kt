@@ -2,7 +2,6 @@ package com.youtube.sorcjc.redemnorte.ui.fragment
 
 import android.app.Dialog
 import android.os.Bundle
-import android.util.Log
 import android.view.*
 import android.widget.EditText
 import androidx.appcompat.app.AppCompatActivity
@@ -11,7 +10,6 @@ import com.google.android.material.textfield.TextInputLayout
 import com.youtube.sorcjc.redemnorte.R
 import com.youtube.sorcjc.redemnorte.io.MyApiAdapter
 import com.youtube.sorcjc.redemnorte.io.response.PublicDataResponse
-import com.youtube.sorcjc.redemnorte.io.response.SimpleResponse
 import com.youtube.sorcjc.redemnorte.model.Sheet
 import com.youtube.sorcjc.redemnorte.ui.activity.PanelActivity
 import com.youtube.sorcjc.redemnorte.util.PreferenceHelper
@@ -121,11 +119,21 @@ class HeaderDialogFragment : DialogFragment() {
             } else {
                 context?.toast(getString(R.string.error_format_server_response))
             }
+
+            showDialogContent()
         }
 
         override fun onFailure(call: Call<PublicDataResponse>, t: Throwable) {
-            context?.toast(t.localizedMessage)
+            context?.toast(t.localizedMessage ?: "")
+
+            showDialogContent()
         }
+    }
+
+    private fun showDialogContent() {
+        progressBarHeader.visibility = View.GONE
+
+        scrollViewHeader.visibility = View.VISIBLE
     }
 
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
@@ -227,7 +235,7 @@ class HeaderDialogFragment : DialogFragment() {
         }
 
         override fun onFailure(call: Call<Sheet>, t: Throwable) {
-            context?.toast(t.localizedMessage)
+            context?.toast(t.localizedMessage ?: "")
         }
     }
 
