@@ -24,11 +24,12 @@
         <activity
             android:name=".ui.activity.PanelActivity"
             android:label="@string/title_activity_panel"
-            android:windowSoftInputMode="stateAlwaysHidden|adjustResize"
+            android:windowSoftInputMode="adjustPan"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
             android:name=".ui.activity.DetailsActivity"
             android:parentActivityName=".ui.activity.PanelActivity"
+            android:windowSoftInputMode="adjustPan"
             android:theme="@style/AppTheme.NoActionBar" />
     </application>
 
