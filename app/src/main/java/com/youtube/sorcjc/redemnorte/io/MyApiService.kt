@@ -21,14 +21,6 @@ interface MyApiService {
     @Headers("Accept: application/json")
     fun getPublicData(): Call<PublicDataResponse>
 
-    @FormUrlEncoded
-    @POST("items/{itemId}/photos")
-    fun postPhoto(
-            @Path("itemId") itemId: Int,
-            @Field("image") base64: String?,
-            @Field("extension") extension: String?
-    ): Call<Item>
-
     @GET("sheets")
     fun getSheets(@Query("user_id") userId: Int): Call<ArrayList<Sheet>>
 
@@ -40,6 +32,14 @@ interface MyApiService {
 
     @GET("items/{itemId}")
     fun getItem(@Query("itemId") itemId: Int): Call<Item>
+
+    @FormUrlEncoded
+    @POST("items/{itemId}/photos")
+    fun postPhoto(
+            @Path("itemId") itemId: Int,
+            @Field("image") base64: String?,
+            @Field("extension") extension: String?
+    ): Call<Item>
 
     @FormUrlEncoded
     @POST("sheets")
@@ -73,7 +73,7 @@ interface MyApiService {
     ): Call<Sheet>
 
     @GET("check-qr")
-    fun getCheckQr(@Query("qr_code") QR_code: String?): Call<SimpleResponse>
+    fun getCheckQr(@Query("qr_code") qrCode: String?): Call<SimpleResponse>
 
     @GET("take-by-patrimonial")
     fun getByPatrimonial(@Query("patrimonial") patrimonial: String?): Call<ByPatrimonialResponse?>

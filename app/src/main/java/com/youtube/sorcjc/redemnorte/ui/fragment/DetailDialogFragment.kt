@@ -234,14 +234,12 @@ class DetailDialogFragment : DialogFragment(), View.OnClickListener {
     internal inner class CreateItemCallback : Callback<SimpleResponse> {
         override fun onResponse(call: Call<SimpleResponse>, response: Response<SimpleResponse>) {
             if (response.isSuccessful) {
-                if (response.body()!!.isError) {
-                    // Just show an error message.
-                    context?.toast(response.body()!!.message)
-                } else {
-                    // Show a successful message,
-                    context?.toast(response.body()!!.message)
+                response.body()?.let {
+                    // show error or successful message
+                    context?.toast(it.message)
+
                     // re-load the recyclerView,
-                    (activity as DetailsActivity?)!!.loadItems()
+                    (activity as DetailsActivity?)?.loadItems()
                     // and dismiss this dialog.
                     dismiss()
                 }
@@ -409,14 +407,22 @@ class DetailDialogFragment : DialogFragment(), View.OnClickListener {
     }
 
     private fun performCheckQrRequest() {
-        val call = MyApiAdapter.getApiService().getCheckQr(etQR.text.toString().trim())
-        call.enqueue(CheckRequestCallback())
+        val qrCode = etQR.text.toString().trim()
+
+        if (qrCode.isEmpty()) {
+            context?.toast(getString(R.string.empty_qr_code_check))
+        } else {
+            val call = MyApiAdapter.getApiService().getCheckQr(qrCode)
+            call.enqueue(CheckRequestCallback())
+        }
     }
 
     internal inner class CheckRequestCallback : Callback<SimpleResponse> {
         override fun onResponse(call: Call<SimpleResponse>, response: Response<SimpleResponse>) {
             if (response.isSuccessful) {
-                context?.toast(response.body()!!.message)
+                response.body()?.let {
+                    context?.toast(it.message)
+                }
             }
         }
 
@@ -427,23 +433,24 @@ class DetailDialogFragment : DialogFragment(), View.OnClickListener {
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
-        if (requestCode == 1) {
+
+        if (requestCode == REQUEST_QR_CODE) {
             if (resultCode == Activity.RESULT_OK) {
                 val result = data?.getStringExtra("code")
-                etQR!!.setText(result)
-                context?.toast("Usa el botón del ojito para verificar que no se repita el QR.")
+                etQR.setText(result)
+                context?.toast(getString(R.string.instructions_use_button_to_check_qr_not_registered_yet))
             }
-        } else if (requestCode == 2) {
+        } else if (requestCode == REQUEST_PATRIMONIAL_CODE) {
             if (resultCode == Activity.RESULT_OK) {
                 val result = data?.getStringExtra("code")
-                etPatrimonial!!.setText(result)
-                context?.toast("Usa el botón de la diana para buscar y traer datos.")
+                etPatrimonial.setText(result)
+                context?.toast(getString(R.string.instructions_use_button_to_get_data_by_patrimonial_code))
             }
-        } else if (requestCode == 3) {
+        } else if (requestCode == REQUEST_OLD_CODE) {
             if (resultCode == Activity.RESULT_OK) {
                 val result = data?.getStringExtra("code")
-                etOldCode!!.setText(result)
-                context?.toast("Usa el botón de la diana para buscar y traer datos.")
+                etOldCode.setText(result)
+                context?.toast(getString(R.string.instructions_use_button_to_get_data_by_old_code))
             }
         }
     }
@@ -451,15 +458,12 @@ class DetailDialogFragment : DialogFragment(), View.OnClickListener {
     override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
 
-        Log.d("DetailDialogFragment", "onRequestPermissionsResult called")
-        Log.d("DetailDialogFragment", "requestCode $requestCode")
-
         when (requestCode) {
             REQUEST_CAMERA_PERMISSION ->
                 if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                    context?.toast("Permission Granted!")
+                    context?.toast(getString(R.string.permission_camera_granted))
                 } else {
-                    context?.toast("Permission Denied!")
+                    context?.toast(getString(R.string.permission_camera_denied))
                 }
         }
     }

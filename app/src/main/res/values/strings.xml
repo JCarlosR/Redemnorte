@@ -104,4 +104,10 @@
     <string name="error_login_invalid_credentials">Los datos ingresados no coinciden con ningún usuario</string>
     <string name="item_photo_success">La foto se ha subido correctamente</string>
     <string name="item_photo_error">Ocurrió un problema al enviar la imagen</string>
+    <string name="permission_camera_denied">Permiso de cámara denegado</string>
+    <string name="permission_camera_granted">Permiso de cámara concedido</string>
+    <string name="instructions_use_button_to_check_qr_not_registered_yet">Usa el botón del ojito para verificar que no se repita el QR.</string>
+    <string name="instructions_use_button_to_get_data_by_patrimonial_code">Usa el botón de la diana para buscar y traer datos.</string>
+    <string name="instructions_use_button_to_get_data_by_old_code">Usa el botón de la diana para buscar y traer datos.</string>
+    <string name="empty_qr_code_check">Debes ingresar un QR para verificar si ya se ha registrado o aún no</string>
 </resources>
