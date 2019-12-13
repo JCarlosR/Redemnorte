@@ -125,9 +125,18 @@ class PanelActivity : AppCompatActivity(), View.OnClickListener, Callback<ArrayL
         } else {
             toast(getString(R.string.error_format_server_response))
         }
+        showRecyclerView()
     }
 
     override fun onFailure(call: Call<ArrayList<Sheet>>, t: Throwable) {
-        toast(t.localizedMessage)
+        toast(t.localizedMessage ?: "")
+        showRecyclerView()
+    }
+
+    private fun showRecyclerView() {
+        progressBarSheets.visibility = View.GONE
+
+        recyclerView.visibility = View.VISIBLE
+        fab.show()
     }
 }

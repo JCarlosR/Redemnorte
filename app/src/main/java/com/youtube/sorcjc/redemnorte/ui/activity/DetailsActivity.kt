@@ -43,7 +43,6 @@ class DetailsActivity : AppCompatActivity(), View.OnClickListener, Callback<Arra
         }
 
         recyclerView.layoutManager = LinearLayoutManager(this)
-
         recyclerView.adapter = detailAdapter
         loadItems()
 
@@ -110,9 +109,18 @@ class DetailsActivity : AppCompatActivity(), View.OnClickListener, Callback<Arra
         } else {
             toast(getString(R.string.error_format_server_response))
         }
+        showRecyclerView()
     }
 
     override fun onFailure(call: Call<ArrayList<Item>>, t: Throwable) {
         toast(t.localizedMessage ?: "")
+        showRecyclerView()
+    }
+
+    private fun showRecyclerView() {
+        progressBarItems.visibility = View.GONE
+
+        recyclerView.visibility = View.VISIBLE
+        fab.show()
     }
 }
