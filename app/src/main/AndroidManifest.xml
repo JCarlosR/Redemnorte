@@ -24,6 +24,7 @@
         <activity
             android:name=".ui.activity.PanelActivity"
             android:label="@string/title_activity_panel"
+            android:windowSoftInputMode="stateAlwaysHidden|adjustResize"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
             android:name=".ui.activity.DetailsActivity"

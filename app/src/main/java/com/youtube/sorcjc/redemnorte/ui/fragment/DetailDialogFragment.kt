@@ -309,7 +309,7 @@ class DetailDialogFragment : DialogFragment(), View.OnClickListener {
 
     private fun requestCameraPermission(activity: Activity) {
         ActivityCompat.requestPermissions(activity, arrayOf(Manifest.permission.CAMERA), REQUEST_CAMERA_PERMISSION)
-        Log.d("DetailDialogFragment", "requestPermissions called")
+        // Log.d("DetailDialogFragment", "requestPermissions called")
     }
 
     private fun performByPatrimonialRequest() {

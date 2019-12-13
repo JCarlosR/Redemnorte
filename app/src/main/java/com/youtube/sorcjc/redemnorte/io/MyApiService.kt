@@ -31,8 +31,8 @@ interface MyApiService {
     @GET("sheets")
     fun getSheets(@Query("user_id") userId: Int): Call<ArrayList<Sheet>>
 
-    @GET("/sheets/1")
-    fun getSheet(@Query("sheet_id") sheet_id: String?): Call<HojaResponse?>
+    @GET("sheets/{sheetId}")
+    fun getSheet(@Path("sheetId") sheetId: Int): Call<Sheet>
 
     @GET("sheets/{sheetId}/items")
     fun getItems(@Path("sheetId") sheetId: Int): Call<ArrayList<Item>>
@@ -46,7 +46,6 @@ interface MyApiService {
     @POST("sheets")
     @Headers("Accept: application/json")
     fun storeSheet(
-            @Field("id") id: String?,
             @Field("place") place: String?,
             @Field("location") location: String?,
             @Field("responsible_user") responsibleName: String?,
@@ -60,19 +59,19 @@ interface MyApiService {
     ): Call<Sheet>
 
     @FormUrlEncoded
-    @POST("editar-hoja")
+    @PUT("sheets/{sheetId}")
     fun updateSheet(
-            @Field("id") id: String?,
+            @Path("sheetId") sheetId: Int,
             @Field("place") place: String?,
-            @Field("ubicacion") ubicacion: String?,
-            @Field("responsable") responsable: String?,
+            @Field("location") location: String?,
+            @Field("responsible_user") responsibleName: String?,
             @Field("position") position: String?,
             @Field("office") office: String?,
             @Field("ambient") ambient: String?,
             @Field("area") area: String?,
             @Field("pending") pending: Boolean,
             @Field("observation") observation: String?
-    ): Call<SimpleResponse?>
+    ): Call<Sheet>
 
     @GET("check-qr")
     fun getCheckQr(@Query("qr_code") QR_code: String?): Call<SimpleResponse>

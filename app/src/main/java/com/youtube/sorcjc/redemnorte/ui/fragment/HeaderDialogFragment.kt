@@ -2,6 +2,7 @@ package com.youtube.sorcjc.redemnorte.ui.fragment
 
 import android.app.Dialog
 import android.os.Bundle
+import android.util.Log
 import android.view.*
 import android.widget.EditText
 import androidx.appcompat.app.AppCompatActivity
@@ -9,7 +10,6 @@ import androidx.fragment.app.DialogFragment
 import com.google.android.material.textfield.TextInputLayout
 import com.youtube.sorcjc.redemnorte.R
 import com.youtube.sorcjc.redemnorte.io.MyApiAdapter
-import com.youtube.sorcjc.redemnorte.io.response.HojaResponse
 import com.youtube.sorcjc.redemnorte.io.response.PublicDataResponse
 import com.youtube.sorcjc.redemnorte.io.response.SimpleResponse
 import com.youtube.sorcjc.redemnorte.model.Sheet
@@ -24,10 +24,9 @@ import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 
-
 class HeaderDialogFragment : DialogFragment() {
 
-    private var sheetId: String = ""
+    private var sheetId: Int = -1
 
     private val preferences by lazy {
         context?.let { PreferenceHelper.defaultPrefs(it) }
@@ -35,10 +34,6 @@ class HeaderDialogFragment : DialogFragment() {
     
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        
-        arguments?.getString("hoja_id")?.let {
-            sheetId = it
-        }
 
         setHasOptionsMenu(true)
     }
@@ -48,6 +43,10 @@ class HeaderDialogFragment : DialogFragment() {
 
         val view = inflater.inflate(R.layout.dialog_new_header, container, false)
 
+        arguments?.getInt("hoja_id")?.let {
+            sheetId = it
+        }
+
         fetchPublicData()
         return view
     }
@@ -56,13 +55,13 @@ class HeaderDialogFragment : DialogFragment() {
         super.onViewCreated(view, savedInstanceState)
 
         val title: String
-        if (sheetId.isEmpty()) {
+        if (sheetId == -1) {
             title = getString(R.string.title_sheet_create)
             etId.visibility = View.GONE
         } else {
             title = getString(R.string.title_sheet_edit)
-            fetchHeaderDataFromServer()
-            etId.setText(sheetId)
+            fetchSheetFromServer()
+            etId.setText(sheetId.toString())
             etId.isEnabled = false
         }
 
@@ -77,7 +76,7 @@ class HeaderDialogFragment : DialogFragment() {
         }
 
         // set for new headers (for edit mode will be set later)
-        if (sheetId.isEmpty()) {
+        if (sheetId == -1) {
             setCheckPendingOnChangeListener()
         }
     }
@@ -184,7 +183,7 @@ class HeaderDialogFragment : DialogFragment() {
             return
         }
 
-        val id = etId.text.toString().trim()
+        val id = etId.text.toString().trim().toInt()
         val place = atvPlace.text.toString().trim()
         val location = etLocation.text.toString().trim()
         val responsible = atvResponsible.text.toString().trim()
@@ -196,10 +195,10 @@ class HeaderDialogFragment : DialogFragment() {
         val obs = etObservation.text.toString().trim()
 
         // If we have received an ID, we have to edit the data, else we have to create a new record
-        if (sheetId.isEmpty()) {
+        if (sheetId == -1) {
             val author = preferences?.get("user_id", -1) ?: -1
             val call = MyApiAdapter.getApiService().storeSheet(
-                    id, place, location, responsible, position, office,
+                    place, location, responsible, position, office,
                     ambient, area, pending, obs, author
             )
             call.enqueue(CreateSheetCallback())
@@ -232,14 +231,12 @@ class HeaderDialogFragment : DialogFragment() {
         }
     }
 
-    internal inner class EditSheetCallback : Callback<SimpleResponse?> {
-        override fun onResponse(call: Call<SimpleResponse?>, response: Response<SimpleResponse?>) {
+    internal inner class EditSheetCallback : Callback<Sheet> {
+        override fun onResponse(call: Call<Sheet>, response: Response<Sheet>) {
             if (response.isSuccessful) {
-                val simpleResponse = response.body()
-                if (simpleResponse!!.isError) {
-                    context?.toast(simpleResponse.message)
-                } else {
+                response.body()?.let {
                     context?.toast(getString(R.string.success_sheet_updated_message))
+
                     // Re-load the sheets
                     (activity as PanelActivity?)?.loadInventorySheets()
                     dismiss()
@@ -249,7 +246,7 @@ class HeaderDialogFragment : DialogFragment() {
             }
         }
 
-        override fun onFailure(call: Call<SimpleResponse?>, t: Throwable) {
+        override fun onFailure(call: Call<Sheet>, t: Throwable) {
             context?.toast(t.localizedMessage)
         }
     }
@@ -264,26 +261,23 @@ class HeaderDialogFragment : DialogFragment() {
         return true
     }
 
-    private fun fetchHeaderDataFromServer() {
+    private fun fetchSheetFromServer() {
         val call = MyApiAdapter.getApiService().getSheet(sheetId)
         call.enqueue(ShowHeaderDataCallback())
     }
 
-    internal inner class ShowHeaderDataCallback : Callback<HojaResponse?> {
-        override fun onResponse(call: Call<HojaResponse?>, response: Response<HojaResponse?>) {
+    internal inner class ShowHeaderDataCallback : Callback<Sheet> {
+        override fun onResponse(call: Call<Sheet>, response: Response<Sheet>) {
             if (response.isSuccessful) {
-                val hojaResponse = response.body()
-                if (hojaResponse!!.isError) {
-                    context?.toast(hojaResponse.message)
-                } else {
-                    showHeaderDataInFields(hojaResponse.sheet)
+                response.body()?.let {
+                    showHeaderDataInFields(it)
                 }
             } else {
                 context?.toast(getString(R.string.error_format_server_response))
             }
         }
 
-        override fun onFailure(call: Call<HojaResponse?>, t: Throwable) {
+        override fun onFailure(call: Call<Sheet>, t: Throwable) {
             context?.toast(t.localizedMessage)
         }
 
@@ -310,10 +304,12 @@ class HeaderDialogFragment : DialogFragment() {
     companion object {
         @JvmStatic
         fun newInstance(sheetId: Int): HeaderDialogFragment {
-            val f = HeaderDialogFragment()
             val args = Bundle()
             args.putInt("hoja_id", sheetId)
+
+            val f = HeaderDialogFragment()
             f.arguments = args
+
             return f
         }
     }

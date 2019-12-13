@@ -2,6 +2,7 @@ package com.youtube.sorcjc.redemnorte.ui.adapter
 
 import android.content.Context
 import android.content.Intent
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -49,14 +50,16 @@ class HeaderAdapter(private var dataSet: ArrayList<Sheet> = ArrayList()) : Recyc
                     intent.putExtra("responsable", responsible)
                     context.startActivity(intent)
                 }
-                R.id.btnEditHeader -> showEditHeaderDialog(sheetId)
+                R.id.btnEditHeader -> {
+                    showEditHeaderDialog(sheetId)
+                }
             }
         }
 
         private fun showEditHeaderDialog(sheetId: Int) {
             val fragmentManager = (context as PanelActivity).supportFragmentManager
 
-            // sheet_id is required to => edit a specific header
+            // sheet_id is required to edit
             val newFragment = newInstance(sheetId)
             val transaction = fragmentManager.beginTransaction()
             transaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
@@ -127,6 +130,7 @@ class HeaderAdapter(private var dataSet: ArrayList<Sheet> = ArrayList()) : Recyc
 
         // params needed to show the details
         holder.sheetId = id
+        Log.d("HeaderAdapter", "sheetId in onBindViewH $id")
         holder.responsible = responsible?.trim()
     }
 
