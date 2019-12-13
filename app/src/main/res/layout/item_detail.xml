@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.cardview.widget.CardView
     xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     xmlns:card_view="http://schemas.android.com/tools"
     android:id="@+id/cardView"
     card_view:cardCornerRadius="4dp"
@@ -9,6 +10,7 @@
     android:layout_margin="5dp">
 
     <LinearLayout
+        android:padding="12dp"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
@@ -19,7 +21,7 @@
             android:textColor="@color/colorPrimary"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="QR: 10002505" />
+            tools:text="QR: 10002505" />
 
         <TextView
             android:id="@+id/tvDescription"
@@ -27,13 +29,13 @@
             android:layout_height="wrap_content"
             android:layout_margin="8dp"
             android:textAppearance="@android:style/TextAppearance"
-            android:text="ESTANTE DE MELAMINE DE 0.90 X 1.80 X 0.45 MTS C/ 02 PUERTAS SIN DIVISIONES" />
+            tools:text="ESTANTE DE MELAMINE DE 0.90 X 1.80 X 0.45 MTS C/ 02 PUERTAS SIN DIVISIONES" />
 
         <TextView
             android:id="@+id/tvPatrimonial"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Cód Patrimonial: 016603"/>
+            tools:text="Cód Patrimonial: 016603"/>
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -45,7 +47,7 @@
                 android:layout_width="0dp"
                 android:layout_weight="1"
                 android:layout_height="wrap_content"
-                android:text="Ver datos"
+                android:text="@string/item_detail_btn_show"
                 android:id="@+id/btnShowProduct" />
 
             <Button
@@ -53,7 +55,7 @@
                 android:layout_width="0dp"
                 android:layout_weight="1"
                 android:layout_height="wrap_content"
-                android:text="Editar item"
+                android:text="@string/item_detail_btn_edit"
                 android:id="@+id/btnEditProduct" />
         </LinearLayout>
 

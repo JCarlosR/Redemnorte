@@ -1,6 +1,8 @@
 package com.youtube.sorcjc.redemnorte.model
 
+import android.content.Context
 import com.google.gson.annotations.SerializedName
+import com.youtube.sorcjc.redemnorte.R
 
 data class Item(
         var id: Int = -1,
@@ -25,7 +27,7 @@ data class Item(
         var width: String? = null,
         var height: String? = null,
 
-        var status: String = "",
+        var status: Int,
         var labeled: Boolean,
         var operative: Boolean,
 
@@ -45,5 +47,10 @@ data class Item(
 ) {
     fun photoUrl(): String {
         return "https://redemnorte.com/images/items/$image"
+    }
+
+    fun getStatusText(context: Context): String {
+        val statusArr = context.resources.getStringArray(R.array.status_options)
+        return statusArr[status]
     }
 }

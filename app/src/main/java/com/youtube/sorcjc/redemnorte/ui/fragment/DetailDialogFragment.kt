@@ -57,8 +57,6 @@ class DetailDialogFragment : DialogFragment(), View.OnClickListener {
 
         setHasOptionsMenu(true)
 
-        setupEditMode()
-
         return view
     }
 
@@ -81,6 +79,8 @@ class DetailDialogFragment : DialogFragment(), View.OnClickListener {
             it.setHomeButtonEnabled(true)
             it.setHomeAsUpIndicator(R.drawable.ic_close)
         }
+
+        setupEditMode()
 
         registerListeners()
     }
@@ -137,19 +137,19 @@ class DetailDialogFragment : DialogFragment(), View.OnClickListener {
         etOldCode.setText(item.old_code)
 
         spinnerOldYear.setSelection(spinnerOldYear.getItemIndex(item.old_year))
-        spinnerPreservation.setSelection(spinnerPreservation.getItemIndex(item.status))
+        spinnerStatus.setSelection(item.status)
 
         checkOperative.isChecked = item.operative
-        checkEtiquetado.isChecked = item.labeled
+        checkLabeled.isChecked = item.labeled
 
         etDescription.setText(item.denomination)
         etColor.setText(item.color)
         etBrand.setText(item.brand)
         etModel.setText(item.model)
         etSeries.setText(item.series)
-        etDimLong.setText(item.length)
-        etDimWidth.setText(item.width)
-        etDimHigh.setText(item.height)
+        etLong.setText(item.length)
+        etWidth.setText(item.width)
+        etHeight.setText(item.height)
         etObservation.setText(item.observation)
     }
 
@@ -197,15 +197,16 @@ class DetailDialogFragment : DialogFragment(), View.OnClickListener {
         val model = etModel.text.toString().trim()
         val series = etSeries.text.toString().trim()
         val color = etColor.text.toString().trim()
-        val length = etDimLong.text.toString().trim()
-        val width = etDimWidth.text.toString().trim()
-        val height = etDimHigh.text.toString().trim()
-        val status = spinnerPreservation.selectedItem.toString()
-        val labeled = checkEtiquetado.isChecked
+        val length = etLong.text.toString().trim()
+        val width = etWidth.text.toString().trim()
+        val height = etHeight.text.toString().trim()
+        // val status = spinnerPreservation.selectedItem.toString()
+        val status = spinnerStatus.selectedItemPosition
+        val labeled = checkLabeled.isChecked
         val operative = checkOperative.isChecked
         val observation = etObservation.text.toString().trim()
 
-        val call: Call<SimpleResponse>
+        val call: Call<Item>
         // Qr code provided => edit mode
 
         call = if (itemId > -1) {
@@ -215,7 +216,7 @@ class DetailDialogFragment : DialogFragment(), View.OnClickListener {
                     length, width, height,
                     status, labeled, operative, observation
             )
-        } else { // Qr code assigned => register new detail
+        } else {
             MyApiAdapter.getApiService().storeItem(
                     sheetId, qrCode, patrimonial, oldCode, oldYear,
                     denomination, brand, model, series, color,
@@ -226,12 +227,11 @@ class DetailDialogFragment : DialogFragment(), View.OnClickListener {
         call.enqueue(CreateItemCallback())
     }
 
-    internal inner class CreateItemCallback : Callback<SimpleResponse> {
-        override fun onResponse(call: Call<SimpleResponse>, response: Response<SimpleResponse>) {
+    internal inner class CreateItemCallback : Callback<Item> {
+        override fun onResponse(call: Call<Item>, response: Response<Item>) {
             if (response.isSuccessful) {
                 response.body()?.let {
-                    // show error or successful message
-                    context?.toast(it.message)
+                    context?.toast(getString(R.string.success_item_store))
 
                     // re-load the recyclerView,
                     (activity as DetailsActivity?)?.loadItems()
@@ -239,11 +239,11 @@ class DetailDialogFragment : DialogFragment(), View.OnClickListener {
                     dismiss()
                 }
             } else {
-                context?.toast(getString(R.string.error_format_server_response))
+                context?.toast(getString(R.string.error_item_store))
             }
         }
 
-        override fun onFailure(call: Call<SimpleResponse>, t: Throwable) {
+        override fun onFailure(call: Call<Item>, t: Throwable) {
             context?.toast(t.localizedMessage ?: "")
         }
     }
@@ -352,6 +352,7 @@ class DetailDialogFragment : DialogFragment(), View.OnClickListener {
         etBrand.setText(brand)
         etModel.setText(model)
         etSeries.setText(series)
+        spinnerStatus.setSelection(status)
 
         /*
         var preservation = ""

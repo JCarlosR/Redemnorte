@@ -41,16 +41,16 @@
 
     <string name="hint_preservation">Estado de conservación</string>
 
-    <!-- New detail preservation options -->
-    <string-array name="preservation_options">
+    <!-- Item status options -->
+    <string-array name="status_options">
         <item>Nuevo</item>
         <item>Bueno</item>
         <item>Regular</item>
         <item>Malo</item>
     </string-array>
-    <string name="preservation_prompt">Seleccione condición</string>
+    <string name="status_prompt">Seleccione condición</string>
 
-    <!-- New detail old year options -->
+    <!-- Old year options -->
     <string-array name="old_code_years">
         <item>2018</item>
         <item>2017</item>
@@ -114,4 +114,9 @@
     <string name="empty_old_code_search">Debes ingresar un cód antiguo para realizar la búsqueda</string>
     <string name="data_found_and_loaded">Se encontraron y cargaron datos</string>
     <string name="no_data_found">No se encontraron resultados</string>
+    <string name="label_checkbox_labeled_status">El item está etiquetado</string>
+    <string name="error_item_store">No ha sido posible registrar el bien</string>
+    <string name="success_item_store">El bien se ha registrado correctamente</string>
+    <string name="item_detail_btn_show">Ver datos</string>
+    <string name="item_detail_btn_edit">Editar item</string>
 </resources>

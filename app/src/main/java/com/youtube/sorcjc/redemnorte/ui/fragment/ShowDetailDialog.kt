@@ -13,10 +13,8 @@ import android.view.*
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.DialogFragment
 import com.squareup.picasso.Picasso
-import com.youtube.sorcjc.redemnorte.Global
 import com.youtube.sorcjc.redemnorte.R
 import com.youtube.sorcjc.redemnorte.io.MyApiAdapter
-import com.youtube.sorcjc.redemnorte.io.response.SimpleResponse
 import com.youtube.sorcjc.redemnorte.model.Item
 import com.youtube.sorcjc.redemnorte.util.getBase64
 import com.youtube.sorcjc.redemnorte.util.getItemIndex
@@ -42,8 +40,6 @@ class ShowDetailDialog : DialogFragment(), Callback<Item>, View.OnClickListener 
 
         setHasOptionsMenu(true)
 
-        btnCapturePhoto.setOnClickListener(this)
-
         productDataByQrCode
         return view
     }
@@ -60,6 +56,8 @@ class ShowDetailDialog : DialogFragment(), Callback<Item>, View.OnClickListener 
             it.setDisplayHomeAsUpEnabled(true)
             it.setHomeButtonEnabled(true)
         }
+
+        btnCapturePhoto.setOnClickListener(this)
     }
 
     private val productDataByQrCode: Unit
@@ -98,17 +96,17 @@ class ShowDetailDialog : DialogFragment(), Callback<Item>, View.OnClickListener 
         etPatrimonial.setText(item.patrimonial)
         etOldCode.setText(item.old_code)
         spinnerOldYear.setSelection(spinnerOldYear.getItemIndex(item.old_year))
-        etPreservation.setText(item.status)
+        etPreservation.setText(context?.let { item.getStatusText(it) })
         checkOperative.isChecked = item.operative
-        checkEtiquetado.isChecked = item.labeled
+        checkLabeled.isChecked = item.labeled
         etDescription.setText(item.denomination)
         etColor.setText(item.color)
         etBrand.setText(item.brand)
         etModel.setText(item.model)
         etSeries.setText(item.series)
-        etDimLong.setText(item.length)
-        etDimWidth.setText(item.width)
-        etDimHigh.setText(item.height)
+        etLong.setText(item.length)
+        etWidth.setText(item.width)
+        etHeight.setText(item.height)
         etObservation.setText(item.observation)
 
         loadDetailPhoto(item)

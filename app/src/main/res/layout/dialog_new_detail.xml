@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.coordinatorlayout.widget.CoordinatorLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    xmlns:tools="http://schemas.android.com/tools"
     android:fitsSystemWindows="true">
 
     <com.google.android.material.appbar.AppBarLayout
@@ -133,10 +133,10 @@
             </LinearLayout>
 
             <CheckBox
-                android:id="@+id/checkEtiquetado"
+                android:id="@+id/checkLabeled"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="El item está etiquetado" />
+                android:text="@string/label_checkbox_labeled_status" />
 
             <com.google.android.material.textfield.TextInputLayout
                 android:id="@+id/tilDescription"
@@ -146,6 +146,7 @@
                 <EditText
                     android:id="@+id/etDescription"
                     android:hint="@string/hint_description"
+                    android:inputType="textCapWords"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:singleLine="true" />
@@ -161,6 +162,7 @@
                     android:layout_width="match_parent"
                     android:singleLine="true"
                     android:hint="@string/hint_color"
+                    android:inputType="textCapWords"
                     android:layout_height="wrap_content" />
             </com.google.android.material.textfield.TextInputLayout>
 
@@ -173,6 +175,7 @@
                     android:id="@+id/etBrand"
                     android:layout_width="match_parent"
                     android:hint="@string/hint_brand"
+                    android:inputType="textCapWords"
                     android:singleLine="true"
                     android:layout_height="wrap_content" />
             </com.google.android.material.textfield.TextInputLayout>
@@ -187,6 +190,7 @@
                     android:layout_width="match_parent"
                     android:singleLine="true"
                     android:hint="@string/hint_model"
+                    android:inputType="textCapWords"
                     android:layout_height="wrap_content" />
             </com.google.android.material.textfield.TextInputLayout>
 
@@ -200,15 +204,16 @@
                     android:layout_width="match_parent"
                     android:singleLine="true"
                     android:hint="@string/hint_series"
+                    android:inputType="textCapWords"
                     android:layout_height="wrap_content" />
             </com.google.android.material.textfield.TextInputLayout>
 
             <com.google.android.material.textfield.TextInputLayout
-                android:id="@+id/tilDimLong"
+                android:id="@+id/tilLong"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content">
                 <EditText
-                    android:id="@+id/etDimLong"
+                    android:id="@+id/etLong"
                     android:layout_width="match_parent"
                     android:singleLine="true"
                     android:hint="@string/hint_dim_long"
@@ -217,11 +222,11 @@
             </com.google.android.material.textfield.TextInputLayout>
 
             <com.google.android.material.textfield.TextInputLayout
-                android:id="@+id/tilDimWidth"
+                android:id="@+id/tilWidth"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content">
                 <EditText
-                    android:id="@+id/etDimWidth"
+                    android:id="@+id/etWidth"
                     android:layout_width="match_parent"
                     android:singleLine="true"
                     android:hint="@string/hint_dim_width"
@@ -230,11 +235,11 @@
             </com.google.android.material.textfield.TextInputLayout>
 
             <com.google.android.material.textfield.TextInputLayout
-                android:id="@+id/tilDimHigh"
+                android:id="@+id/tilHeight"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content">
                 <EditText
-                    android:id="@+id/etDimHigh"
+                    android:id="@+id/etHeight"
                     android:layout_width="match_parent"
                     android:singleLine="true"
                     android:hint="@string/hint_dim_high"
@@ -243,12 +248,17 @@
             </com.google.android.material.textfield.TextInputLayout>
 
             <Spinner
-                android:id="@+id/spinnerPreservation"
+                android:id="@+id/spinnerStatus"
+                tools:background="@color/colorAccent"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:entries="@array/preservation_options"
+                android:paddingTop="6dp"
+                android:paddingBottom="6dp"
+                android:layout_marginTop="6dp"
+                android:layout_marginBottom="6dp"
+                android:entries="@array/status_options"
                 android:spinnerMode="dialog"
-                android:prompt="@string/preservation_prompt"/>
+                android:prompt="@string/status_prompt"/>
 
             <CheckBox
                 android:id="@+id/checkOperative"
