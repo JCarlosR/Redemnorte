@@ -16,7 +16,6 @@ import com.squareup.picasso.Picasso
 import com.youtube.sorcjc.redemnorte.Global
 import com.youtube.sorcjc.redemnorte.R
 import com.youtube.sorcjc.redemnorte.io.MyApiAdapter
-import com.youtube.sorcjc.redemnorte.io.response.BienResponse
 import com.youtube.sorcjc.redemnorte.io.response.SimpleResponse
 import com.youtube.sorcjc.redemnorte.model.Item
 import com.youtube.sorcjc.redemnorte.util.getBase64
@@ -29,14 +28,14 @@ import retrofit2.Response
 import java.io.File
 import java.io.IOException
 
-class ShowDetailDialog : DialogFragment(), Callback<BienResponse>, View.OnClickListener {
+class ShowDetailDialog : DialogFragment(), Callback<Item>, View.OnClickListener {
 
     // Location of the last photo taken
     private var currentPhotoPath: String? = null
 
     // Params required for the request
     private var sheetId: Int = -1
-    private var qrCode: String = ""
+    private var itemId: Int = -1
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         val view = inflater.inflate(R.layout.dialog_view_detail, container, false)
@@ -65,7 +64,7 @@ class ShowDetailDialog : DialogFragment(), Callback<BienResponse>, View.OnClickL
 
     private val productDataByQrCode: Unit
         get() {
-            val call = MyApiAdapter.getApiService().getItem(sheetId, qrCode)
+            val call = MyApiAdapter.getApiService().getItem(itemId)
             call.enqueue(this)
         }
 
@@ -73,8 +72,8 @@ class ShowDetailDialog : DialogFragment(), Callback<BienResponse>, View.OnClickL
         super.onCreate(savedInstanceState)
 
         arguments?.let {
-            qrCode = it.getString("qr_code", "")
             sheetId = it.getInt("hoja_id")
+            itemId = it.getInt("item_id")
         }
     }
 
@@ -112,23 +111,21 @@ class ShowDetailDialog : DialogFragment(), Callback<BienResponse>, View.OnClickL
         etDimHigh.setText(item.height)
         etObservation.setText(item.observation)
 
-        val extension = item.photo_extension
-        if (extension != null && extension.isNotEmpty()) {
-            loadDetailPhoto(extension)
-        }
+        loadDetailPhoto(item)
     }
 
-    override fun onResponse(call: Call<BienResponse>, response: Response<BienResponse>) {
+    override fun onResponse(call: Call<Item>, response: Response<Item>) {
         if (response.isSuccessful) {
-            val item = response.body()!!.item
-            setProductDataToViews(item)
+            response.body()?.let {
+                setProductDataToViews(it)
+            }
         } else {
             context?.toast(getString(R.string.error_format_server_response))
         }
     }
 
-    override fun onFailure(call: Call<BienResponse>, t: Throwable) {
-        context?.toast(t.localizedMessage)
+    override fun onFailure(call: Call<Item>, t: Throwable) {
+        context?.toast(t.localizedMessage ?: "")
     }
 
     override fun onClick(view: View) {
@@ -188,29 +185,33 @@ class ShowDetailDialog : DialogFragment(), Callback<BienResponse>, View.OnClickL
 
     }
 
-    private fun postPicture(bitmap: Bitmap, extension: String = Companion.DEFAULT_PHOTO_EXTENSION) {
+    private fun postPicture(bitmap: Bitmap, extension: String = DEFAULT_PHOTO_EXTENSION) {
         val base64 = bitmap.getBase64()
+
         val call = MyApiAdapter.getApiService()
-                .postPhoto(base64, extension, sheetId, qrCode)
-        call.enqueue(object : Callback<SimpleResponse?> {
-            override fun onResponse(call: Call<SimpleResponse?>, response: Response<SimpleResponse?>) {
+                .postPhoto(itemId, base64, extension)
+
+        call.enqueue(object : Callback<Item> {
+            override fun onResponse(call: Call<Item>, response: Response<Item>) {
                 if (response.isSuccessful) {
-                    context?.toast("La foto se ha subido correctamente")
-                    loadDetailPhoto(Companion.DEFAULT_PHOTO_EXTENSION)
+                    context?.toast(getString(R.string.item_photo_success))
+                    response.body()?.let { loadDetailPhoto(it) }
                 } else {
-                    activity?.toast("Ocurrió un problema al enviar la imagen")
+                    activity?.toast(getString(R.string.item_photo_error))
                 }
             }
 
-            override fun onFailure(call: Call<SimpleResponse?>, t: Throwable) {
-                context?.toast(t.localizedMessage)
+            override fun onFailure(call: Call<Item>, t: Throwable) {
+                context?.toast(t.localizedMessage ?: "")
             }
         })
     }
 
-    private fun loadDetailPhoto(extension: String) {
-        val imageUrl = Global.getProductPhotoUrl(sheetId.toString(), qrCode, extension)
-        Picasso.with(context).load(imageUrl).fit().centerCrop().into(ivPhoto)
+    private fun loadDetailPhoto(item: Item) {
+        Picasso.with(context)
+                .load(item.photoUrl())
+                .fit().centerCrop().into(ivPhoto)
+
         btnCapturePhoto.text = getString(R.string.btn_replace_item_photo)
     }
 
@@ -218,11 +219,12 @@ class ShowDetailDialog : DialogFragment(), Callback<BienResponse>, View.OnClickL
         private const val REQUEST_CODE_CAMERA = 10101
 
         @JvmStatic
-        fun newInstance(sheetId: Int, qrCode: String): ShowDetailDialog {
-            val f = ShowDetailDialog()
+        fun newInstance(sheetId: Int, itemId: Int): ShowDetailDialog {
             val args = Bundle()
             args.putInt("hoja_id", sheetId)
-            args.putString("qr_code", qrCode)
+            args.putInt("item_id", itemId)
+
+            val f = ShowDetailDialog()
             f.arguments = args
             return f
         }

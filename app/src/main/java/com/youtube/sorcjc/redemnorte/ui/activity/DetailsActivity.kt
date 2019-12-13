@@ -94,7 +94,7 @@ class DetailsActivity : AppCompatActivity(), View.OnClickListener, Callback<Arra
 
     private fun showCreateDetailDialog() {
         val fragmentManager = supportFragmentManager
-        val newFragment = DetailDialogFragment.newInstance(sheetId, "", responsible)
+        val newFragment = DetailDialogFragment.newInstance(sheetId, -1, responsible)
         val transaction = fragmentManager.beginTransaction()
         transaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE)
         transaction.add(android.R.id.content, newFragment)
@@ -113,6 +113,6 @@ class DetailsActivity : AppCompatActivity(), View.OnClickListener, Callback<Arra
     }
 
     override fun onFailure(call: Call<ArrayList<Item>>, t: Throwable) {
-        toast(t.localizedMessage)
+        toast(t.localizedMessage ?: "")
     }
 }

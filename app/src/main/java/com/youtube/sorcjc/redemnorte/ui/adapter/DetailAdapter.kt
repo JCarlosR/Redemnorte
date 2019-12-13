@@ -30,7 +30,7 @@ class DetailAdapter
         private var btnEditProduct: Button = v.findViewById<View>(R.id.btnEditProduct) as Button
         // id
         var sheetId: Int = -1
-        var qrCode: String = ""
+        var itemId: Int = -1
         var responsible: String = ""
 
         fun setOnClickListeners() {
@@ -47,7 +47,7 @@ class DetailAdapter
 
         private fun showProductDataDialog() {
             val fragmentManager = (context as DetailsActivity).supportFragmentManager
-            val newFragment = newInstance(sheetId, qrCode)
+            val newFragment = newInstance(sheetId, itemId)
             val transaction = fragmentManager.beginTransaction()
             transaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE)
             transaction.add(android.R.id.content, newFragment)
@@ -56,7 +56,7 @@ class DetailAdapter
 
         private fun editProductDialog() {
             val fragmentManager = (context as DetailsActivity).supportFragmentManager
-            val newFragment = newInstance(sheetId, qrCode, responsible)
+            val newFragment = newInstance(sheetId, itemId, responsible)
             val transaction = fragmentManager.beginTransaction()
             transaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE)
             transaction.add(android.R.id.content, newFragment)
@@ -78,9 +78,9 @@ class DetailAdapter
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        val (qr, patrimonial, denomination) = dataSet[position]
+        val (itemId, qr, patrimonial, denomination) = dataSet[position]
 
-        holder.qrCode = qr
+        holder.itemId = itemId
         holder.sheetId = sheetId
         holder.responsible = responsible
 

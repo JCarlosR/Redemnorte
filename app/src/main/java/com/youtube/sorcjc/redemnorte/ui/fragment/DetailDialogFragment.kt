@@ -17,7 +17,6 @@ import androidx.fragment.app.DialogFragment
 import com.google.android.material.textfield.TextInputLayout
 import com.youtube.sorcjc.redemnorte.R
 import com.youtube.sorcjc.redemnorte.io.MyApiAdapter
-import com.youtube.sorcjc.redemnorte.io.response.BienResponse
 import com.youtube.sorcjc.redemnorte.io.response.ByOldCodeResponse
 import com.youtube.sorcjc.redemnorte.io.response.ByPatrimonialResponse
 import com.youtube.sorcjc.redemnorte.io.response.SimpleResponse
@@ -40,7 +39,7 @@ class DetailDialogFragment : DialogFragment(), View.OnClickListener {
     private var sheetId: Int = -1
 
     // Only provided in edit mode
-    private var qrCodeParam: String? = null
+    private var itemId: Int = -1
 
     // Responsible associated with the header, so we can check if the detail is assigned to it
     // in old databases
@@ -51,7 +50,7 @@ class DetailDialogFragment : DialogFragment(), View.OnClickListener {
 
         arguments?.let {
             sheetId = it.getInt("hoja_id")
-            qrCodeParam = it.getString("qr_code")
+            itemId = it.getInt("item_id")
             responsible = it.getString("responsable")
         }
     }
@@ -73,7 +72,7 @@ class DetailDialogFragment : DialogFragment(), View.OnClickListener {
 
         var title = getString(R.string.title_item_create)
 
-        qrCodeParam?.let {
+        if (itemId > -1) {
             title = getString(R.string.title_item_edit)
         }
 
@@ -111,30 +110,29 @@ class DetailDialogFragment : DialogFragment(), View.OnClickListener {
 
     private fun setupEditMode() {
         // qr_code_param provided => edit mode
-        if (qrCodeParam?.isNotEmpty() == true) {
+        if (itemId > -1 ) {
             etQR.isEnabled = false
             btnCaptureQR.visibility = View.GONE
             btnCheckQR.visibility = View.GONE
 
-            val call = MyApiAdapter.getApiService().getItem(sheetId, qrCodeParam)
+            val call = MyApiAdapter.getApiService().getItem(itemId)
             call.enqueue(GetPreviousDataCallback())
         }
     }
 
-    internal inner class GetPreviousDataCallback : Callback<BienResponse> {
-        override fun onResponse(call: Call<BienResponse>, response: Response<BienResponse>) {
+    internal inner class GetPreviousDataCallback : Callback<Item> {
+        override fun onResponse(call: Call<Item>, response: Response<Item>) {
             if (response.isSuccessful) {
                 response.body()?.let {
-                    setProductDataToViews(it.item)
+                    setProductDataToViews(it)
                 }
-
             } else {
                 context?.toast(getString(R.string.error_format_server_response))
             }
         }
 
-        override fun onFailure(call: Call<BienResponse>, t: Throwable) {
-            context?.toast(t.localizedMessage)
+        override fun onFailure(call: Call<Item>, t: Throwable) {
+            context?.toast(t.localizedMessage ?: "")
         }
     }
 
@@ -213,7 +211,9 @@ class DetailDialogFragment : DialogFragment(), View.OnClickListener {
         val observation = etObservation.text.toString().trim()
 
         val call: Call<SimpleResponse>
-        call = if (qrCodeParam != null && qrCodeParam!!.isNotEmpty()) { // Qr code provided => edit mode
+        // Qr code provided => edit mode
+
+        call = if (itemId > -1) {
             MyApiAdapter.getApiService().updateItem(
                     sheetId, qrCode, patrimonial, oldCode, oldYear,
                     denomination, brand, model, series, color,
@@ -251,7 +251,7 @@ class DetailDialogFragment : DialogFragment(), View.OnClickListener {
         }
 
         override fun onFailure(call: Call<SimpleResponse>, t: Throwable) {
-            context?.toast(t.localizedMessage)
+            context?.toast(t.localizedMessage ?: "")
         }
     }
 
@@ -332,7 +332,7 @@ class DetailDialogFragment : DialogFragment(), View.OnClickListener {
         }
 
         override fun onFailure(call: Call<ByPatrimonialResponse?>, t: Throwable) {
-            context?.toast(t.localizedMessage)
+            context?.toast(t.localizedMessage ?: "")
         }
     }
 
@@ -466,12 +466,13 @@ class DetailDialogFragment : DialogFragment(), View.OnClickListener {
 
     companion object {
         @JvmStatic
-        fun newInstance(sheetId: Int, qr_code: String?, responsible: String?): DetailDialogFragment {
-            val f = DetailDialogFragment()
+        fun newInstance(sheetId: Int, itemId: Int, responsible: String?): DetailDialogFragment {
             val args = Bundle()
             args.putInt("hoja_id", sheetId)
-            args.putString("qr_code", qr_code)
+            args.putInt("item_id", itemId)
             args.putString("responsable", responsible)
+
+            val f = DetailDialogFragment()
             f.arguments = args
             return f
         }

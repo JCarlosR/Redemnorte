@@ -22,11 +22,12 @@ interface MyApiService {
     fun getPublicData(): Call<PublicDataResponse>
 
     @FormUrlEncoded
-    @POST("registrar-foto")
+    @POST("items/{itemId}/photos")
     fun postPhoto(
-            @Field("image") base64: String?, @Field("extension") extension: String?,
-            @Field("sheet_id") sheetId: Int, @Field("QR_code") QR_code: String?
-    ): Call<SimpleResponse?>
+            @Path("itemId") itemId: Int,
+            @Field("image") base64: String?,
+            @Field("extension") extension: String?
+    ): Call<Item>
 
     @GET("sheets")
     fun getSheets(@Query("user_id") userId: Int): Call<ArrayList<Sheet>>
@@ -37,10 +38,8 @@ interface MyApiService {
     @GET("sheets/{sheetId}/items")
     fun getItems(@Path("sheetId") sheetId: Int): Call<ArrayList<Item>>
 
-    @GET("bien")
-    fun getItem(
-            @Query("sheet_id") sheetId: Int, @Query("QR_code") QR_code: String?
-    ): Call<BienResponse>
+    @GET("items/{itemId}")
+    fun getItem(@Query("itemId") itemId: Int): Call<Item>
 
     @FormUrlEncoded
     @POST("sheets")
@@ -105,10 +104,11 @@ interface MyApiService {
     ): Call<SimpleResponse>
 
     @FormUrlEncoded
-    @POST("items/update")
+    @PUT("items/{itemId}")
     fun updateItem(
-            @Field("sheet_id") sheetId: Int,
+            @Field("itemId") itemId: Int,
             @Field("QR_code") QR_code: String?,
+
             @Field("patrimonial_code") patrimonial_code: String?,
             @Field("old_code") old_code: String?,
             @Field("old_year") old_year: String?,

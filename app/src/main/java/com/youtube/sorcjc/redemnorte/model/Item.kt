@@ -3,6 +3,7 @@ package com.youtube.sorcjc.redemnorte.model
 import com.google.gson.annotations.SerializedName
 
 data class Item(
+        var id: Int = -1,
         var inventory_code: String, // QR code
 
         @SerializedName("patrimonial_code")
@@ -36,7 +37,12 @@ data class Item(
 
         // Photo
         var photo_extension: String? = null,
+        var image: String? = null,
 
         // Used when the data is taken using an old code
         var codigoActivo: String? = null
-)
+) {
+    fun photoUrl(): String {
+        return "https://redemnorte.com/images/items/$image"
+    }
+}
