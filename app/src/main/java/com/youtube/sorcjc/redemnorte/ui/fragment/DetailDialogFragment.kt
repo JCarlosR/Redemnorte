@@ -3,15 +3,12 @@ package com.youtube.sorcjc.redemnorte.ui.fragment
 import android.Manifest
 import android.app.Activity
 import android.app.Dialog
-import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.os.Bundle
 import android.view.*
 import android.widget.EditText
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.app.ActivityCompat
-import androidx.core.content.ContextCompat
 import androidx.fragment.app.DialogFragment
 import com.google.android.material.textfield.TextInputLayout
 import com.youtube.sorcjc.redemnorte.R
@@ -20,8 +17,8 @@ import com.youtube.sorcjc.redemnorte.io.response.SimpleResponse
 import com.youtube.sorcjc.redemnorte.model.Item
 import com.youtube.sorcjc.redemnorte.ui.activity.DetailsActivity
 import com.youtube.sorcjc.redemnorte.ui.activity.SimpleScannerActivity
+import com.youtube.sorcjc.redemnorte.util.checkAndRequestPermission
 import com.youtube.sorcjc.redemnorte.util.getItemIndex
-import com.youtube.sorcjc.redemnorte.util.showConfirmDialog
 import com.youtube.sorcjc.redemnorte.util.toast
 import kotlinx.android.synthetic.main.dialog_new_detail.*
 import retrofit2.Call
@@ -275,9 +272,9 @@ class DetailDialogFragment : DialogFragment(), View.OnClickListener {
 
     override fun onClick(view: View) {
         when (view.id) {
-            R.id.btnCaptureQR -> startScannerFor(REQUEST_QR_CODE)
-            R.id.btnCapturePatrimonial -> startScannerFor(REQUEST_PATRIMONIAL_CODE)
-            R.id.btnCaptureOldCode -> startScannerFor(REQUEST_OLD_CODE)
+            R.id.btnCaptureQR -> scanCodeIfPermissionIsGranted(REQUEST_QR_CODE)
+            R.id.btnCapturePatrimonial -> scanCodeIfPermissionIsGranted(REQUEST_PATRIMONIAL_CODE)
+            R.id.btnCaptureOldCode -> scanCodeIfPermissionIsGranted(REQUEST_OLD_CODE)
 
             R.id.btnCheckQR -> performCheckQrRequest()
             R.id.btnTakeByPatrimonial -> performByPatrimonialRequest()
@@ -285,33 +282,19 @@ class DetailDialogFragment : DialogFragment(), View.OnClickListener {
         }
     }
 
-    private fun startScannerFor(requestCode: Int) {
-        activity?.let { context?.let { ctx -> checkCameraPermission(ctx, it, requestCode) } }
-    }
-
-    private fun checkCameraPermission(context: Context, activity: Activity, requestCode: Int) {
-        val cameraPermission = ContextCompat.checkSelfPermission(context, Manifest.permission.CAMERA)
-
-        if (cameraPermission == PackageManager.PERMISSION_DENIED) {
-            if (ActivityCompat.shouldShowRequestPermissionRationale(activity, Manifest.permission.CAMERA)) {
-                // Show an explanation to the user.
-                // After the user sees the explanation, try to request the permission.
-                context.showConfirmDialog(getString(R.string.dialog_camera_title), getString(R.string.dialog_camera_explanation)) {
-                        requestCameraPermission(activity)
-                }
-            } else {
-                // No explanation needed, we can request the permission.
-                requestCameraPermission(activity)
-            }
-        } else {
-            val intentQR = Intent(context, SimpleScannerActivity::class.java)
-            startActivityForResult(intentQR, requestCode)
+    private fun scanCodeIfPermissionIsGranted(requestCode: Int) {
+        activity?.checkAndRequestPermission(
+                getString(R.string.dialog_camera_title),
+                getString(R.string.dialog_camera_explanation),
+                Manifest.permission.CAMERA, REQUEST_CAMERA_PERMISSION
+        ) {
+            startScanner(requestCode)
         }
     }
 
-    private fun requestCameraPermission(activity: Activity) {
-        ActivityCompat.requestPermissions(activity, arrayOf(Manifest.permission.CAMERA), REQUEST_CAMERA_PERMISSION)
-        // Log.d("DetailDialogFragment", "requestPermissions called")
+    private fun startScanner(requestCode: Int) {
+        val intentQR = Intent(context, SimpleScannerActivity::class.java)
+        startActivityForResult(intentQR, requestCode)
     }
 
     private fun performByPatrimonialRequest() {

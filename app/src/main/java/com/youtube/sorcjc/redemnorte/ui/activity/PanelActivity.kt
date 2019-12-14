@@ -1,6 +1,11 @@
 package com.youtube.sorcjc.redemnorte.ui.activity
 
+import android.Manifest
+import android.location.Location
+import android.location.LocationListener
+import android.location.LocationManager
 import android.os.Bundle
+import android.util.Log
 import android.view.Menu
 import android.view.View
 import androidx.appcompat.app.AppCompatActivity
@@ -15,6 +20,7 @@ import com.youtube.sorcjc.redemnorte.ui.adapter.HeaderAdapter
 import com.youtube.sorcjc.redemnorte.ui.fragment.HeaderDialogFragment
 import com.youtube.sorcjc.redemnorte.util.PreferenceHelper
 import com.youtube.sorcjc.redemnorte.util.PreferenceHelper.get
+import com.youtube.sorcjc.redemnorte.util.checkAndRequestPermission
 import com.youtube.sorcjc.redemnorte.util.toast
 import kotlinx.android.synthetic.main.activity_panel.*
 import retrofit2.Call
@@ -32,6 +38,8 @@ class PanelActivity : AppCompatActivity(), View.OnClickListener, Callback<ArrayL
         PreferenceHelper.defaultPrefs(this)
     }
 
+    private var locationManager : LocationManager? = null
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_panel)
@@ -47,8 +55,40 @@ class PanelActivity : AppCompatActivity(), View.OnClickListener, Callback<ArrayL
         hideAndDisplayToolbarAccordingly()
 
         fab.setOnClickListener(this)
+        trackLocationIfPermissionIsGranted()
 
         btnQuery.setOnClickListener(this)
+    }
+
+    private fun trackLocationIfPermissionIsGranted() {
+        checkAndRequestPermission(
+                getString(R.string.dialog_location_title),
+                getString(R.string.dialog_location_explanation),
+                Manifest.permission.ACCESS_FINE_LOCATION, REQUEST_LOCATION_PERMISSION,
+                ::createLocationManagerReference
+        )
+    }
+
+    private fun createLocationManagerReference() {
+        // Create persistent LocationManager reference
+        locationManager = getSystemService(LOCATION_SERVICE) as LocationManager?
+
+        try {
+            // Request location updates
+            locationManager?.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 0L, 0f, locationListener)
+        } catch(ex: SecurityException) {
+            Log.d("PanelActivity", "Security Exception, no location available")
+        }
+    }
+
+    private val locationListener: LocationListener = object : LocationListener {
+        override fun onLocationChanged(location: Location) {
+            Log.d("PanelActivity", "longitude ${location.longitude}, latitude ${location.latitude}")
+        }
+
+        override fun onStatusChanged(provider: String, status: Int, extras: Bundle) {}
+        override fun onProviderEnabled(provider: String) {}
+        override fun onProviderDisabled(provider: String) {}
     }
 
     private fun hideAndDisplayToolbarAccordingly() {
@@ -138,5 +178,9 @@ class PanelActivity : AppCompatActivity(), View.OnClickListener, Callback<ArrayL
 
         recyclerView.visibility = View.VISIBLE
         fab.show()
+    }
+
+    companion object {
+        private const val REQUEST_LOCATION_PERMISSION = 10100
     }
 }

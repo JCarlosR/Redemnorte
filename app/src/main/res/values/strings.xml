@@ -105,6 +105,9 @@
     <string name="dialog_storage_title">Permiso de almacenamiento</string>
     <string name="dialog_storage_explanation">A fin de capturar fotos por cada bien, y subir éstas al servidor por favor conceder este permiso.</string>
 
+    <string name="dialog_location_title">Acceso al GPS</string>
+    <string name="dialog_location_explanation">A fin de brindar una mejor experiencia, por favor activar el GPS.</string>
+
     <string name="error_login_invalid_credentials">Los datos ingresados no coinciden con ningún usuario</string>
     <string name="item_photo_success">La foto se ha subido correctamente</string>
     <string name="item_photo_error">Ocurrió un problema al enviar la imagen</string>

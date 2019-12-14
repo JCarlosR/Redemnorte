@@ -8,7 +8,6 @@ import android.content.Intent
 import android.content.pm.PackageManager
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
-import android.net.Uri
 import android.os.Bundle
 import android.os.Environment
 import android.provider.MediaStore
@@ -24,10 +23,7 @@ import com.youtube.sorcjc.redemnorte.BuildConfig
 import com.youtube.sorcjc.redemnorte.R
 import com.youtube.sorcjc.redemnorte.io.MyApiAdapter
 import com.youtube.sorcjc.redemnorte.model.Item
-import com.youtube.sorcjc.redemnorte.util.getBase64
-import com.youtube.sorcjc.redemnorte.util.getItemIndex
-import com.youtube.sorcjc.redemnorte.util.showConfirmDialog
-import com.youtube.sorcjc.redemnorte.util.toast
+import com.youtube.sorcjc.redemnorte.util.*
 import kotlinx.android.synthetic.main.dialog_view_detail.*
 import retrofit2.Call
 import retrofit2.Callback
@@ -152,29 +148,12 @@ class ShowDetailDialog : DialogFragment(), Callback<Item>, View.OnClickListener 
     }
 
     private fun capturePhotoIfPermissionIsGranted() {
-        activity?.let { context?.let { ctx -> checkExternalStoragePermission(ctx, it) } }
-    }
-
-    private fun checkExternalStoragePermission(context: Context, activity: Activity) {
-        val cameraPermission = ContextCompat.checkSelfPermission(context, Manifest.permission.WRITE_EXTERNAL_STORAGE)
-
-        if (cameraPermission == PackageManager.PERMISSION_DENIED) {
-            if (ActivityCompat.shouldShowRequestPermissionRationale(activity, Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
-                // Show an explanation to the user
-                context.showConfirmDialog(getString(R.string.dialog_storage_title), getString(R.string.dialog_storage_explanation)) {
-                    requestExternalStoragePermission(activity)
-                }
-            } else {
-                // No explanation needed, we can request the permission.
-                requestExternalStoragePermission(activity)
-            }
-        } else {
-            capturePhoto()
-        }
-    }
-
-    private fun requestExternalStoragePermission(activity: Activity) {
-        ActivityCompat.requestPermissions(activity, arrayOf(Manifest.permission.WRITE_EXTERNAL_STORAGE), REQUEST_STORAGE_PERMISSION)
+        activity?.checkAndRequestPermission(
+            getString(R.string.dialog_storage_title),
+            getString(R.string.dialog_storage_explanation),
+            Manifest.permission.WRITE_EXTERNAL_STORAGE, REQUEST_STORAGE_PERMISSION,
+            ::capturePhoto
+        )
     }
 
     private fun capturePhoto() {
@@ -282,6 +261,7 @@ class ShowDetailDialog : DialogFragment(), Callback<Item>, View.OnClickListener 
                 }
         }
     }
+
     companion object {
         private const val REQUEST_STORAGE_PERMISSION = 10100
         private const val REQUEST_CODE_CAMERA = 10101
