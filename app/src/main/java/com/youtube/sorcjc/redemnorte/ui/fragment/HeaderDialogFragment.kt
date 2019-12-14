@@ -191,7 +191,6 @@ class HeaderDialogFragment : DialogFragment() {
             return
         }
 
-        val id = etId.text.toString().trim().toInt()
         val place = atvPlace.text.toString().trim()
         val location = etLocation.text.toString().trim()
         val responsible = atvResponsible.text.toString().trim()
@@ -211,6 +210,8 @@ class HeaderDialogFragment : DialogFragment() {
             )
             call.enqueue(CreateSheetCallback())
         } else {
+            val id = etId.text.toString().trim().toInt()
+
             val call = MyApiAdapter.getApiService().updateSheet(
                     id, place, location, responsible, position, office,
                     ambient, area, pending, obs

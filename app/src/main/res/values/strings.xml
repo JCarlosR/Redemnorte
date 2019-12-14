@@ -14,8 +14,9 @@
     <string name="hint_ubicacion">UBICACIÓN (Módulo A, Módulo B)</string>
     <string name="hint_cargo">CARGO (Gerente, Asistente)</string>
     <string name="hint_area">ÁREA (Logística, RRHH)</string>
-    <string name="hint_oficina">OFICINA (Compras, Patrimonio, Personal)</string>
+    <string name="hint_office">OFICINA (Compras, Patrimonio, Personal)</string>
     <string name="hint_ambiente">AMBIENTE (Primer piso, Taller)</string>
+    <string name="hint_responsible">USUARIO RESPONSABLE</string>
 
     <!-- Dialog new header errors -->
     <string name="error_hoja_id">Es necesario ingresar el nro de hoja</string>
@@ -37,8 +38,6 @@
     <string name="hint_dim_high">Alto</string>
     <string name="hint_operative">Operativo?</string>
     <string name="hint_observation">Observación</string>
-    <string name="hint_responsible">Usuario responsable</string>
-
     <string name="hint_preservation">Estado de conservación</string>
 
     <!-- Item status options -->

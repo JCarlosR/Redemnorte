@@ -2,6 +2,7 @@
 <androidx.coordinatorlayout.widget.CoordinatorLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="#ffffff"
@@ -25,6 +26,7 @@
     <androidx.core.widget.NestedScrollView
         android:id="@+id/scrollViewHeader"
         android:visibility="gone"
+        tools:visibility="visible"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         app:layout_behavior="@string/appbar_scrolling_view_behavior">
@@ -63,6 +65,9 @@
                     android:hint="@string/hint_local"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:singleLine="true"
+                    android:nextFocusForward="@id/etLocation"
+                    android:imeOptions="actionNext"
                     android:inputType="textCapWords"
                     android:maxLines="1" />
             </com.google.android.material.textfield.TextInputLayout>
@@ -91,7 +96,7 @@
                     android:layout_width="match_parent"
                     android:singleLine="true"
                     android:inputType="textCapWords"
-                    android:hint="@string/hint_oficina"
+                    android:hint="@string/hint_office"
                     android:layout_height="wrap_content" />
             </com.google.android.material.textfield.TextInputLayout>
 
@@ -104,6 +109,8 @@
                     android:hint="@string/hint_responsible"
                     android:id="@+id/atvResponsible"
                     android:inputType="textCapWords"
+                    android:nextFocusForward="@id/etPosition"
+                    android:imeOptions="actionNext"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content" />
             </com.google.android.material.textfield.TextInputLayout>
@@ -126,13 +133,16 @@
                 android:id="@+id/tilArea"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content">
+
                 <AutoCompleteTextView
                     android:id="@+id/atvArea"
                     android:layout_width="match_parent"
-                    android:inputType="textCapWords"
-                    android:singleLine="true"
+                    android:layout_height="wrap_content"
                     android:hint="@string/hint_area"
-                    android:layout_height="wrap_content" />
+                    android:nextFocusForward="@id/etAmbient"
+                    android:imeOptions="actionNext"
+                    android:inputType="textCapWords"
+                    android:singleLine="true" />
             </com.google.android.material.textfield.TextInputLayout>
 
             <com.google.android.material.textfield.TextInputLayout
@@ -173,6 +183,7 @@
 
     <ProgressBar
         android:id="@+id/progressBarHeader"
+        tools:visibility="gone"
         android:layout_width="match_parent"
         android:layout_height="match_parent" />
 
