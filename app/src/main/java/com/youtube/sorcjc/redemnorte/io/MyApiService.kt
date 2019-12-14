@@ -38,7 +38,7 @@ interface MyApiService {
     fun getItem(@Path("itemId") itemId: Int): Call<Item>
 
     @FormUrlEncoded
-    @POST("items/{itemId}/photos")
+    @POST("items/{itemId}/photo")
     @Headers("Accept: application/json")
     fun postPhoto(
             @Path("itemId") itemId: Int,

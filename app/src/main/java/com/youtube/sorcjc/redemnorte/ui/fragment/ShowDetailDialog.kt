@@ -1,23 +1,32 @@
 package com.youtube.sorcjc.redemnorte.ui.fragment
 
+import android.Manifest
 import android.app.Activity
 import android.app.Dialog
+import android.content.Context
 import android.content.Intent
+import android.content.pm.PackageManager
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.net.Uri
 import android.os.Bundle
 import android.os.Environment
 import android.provider.MediaStore
+import android.util.Log
 import android.view.*
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.app.ActivityCompat
+import androidx.core.content.ContextCompat
+import androidx.core.content.FileProvider
 import androidx.fragment.app.DialogFragment
 import com.squareup.picasso.Picasso
+import com.youtube.sorcjc.redemnorte.BuildConfig
 import com.youtube.sorcjc.redemnorte.R
 import com.youtube.sorcjc.redemnorte.io.MyApiAdapter
 import com.youtube.sorcjc.redemnorte.model.Item
 import com.youtube.sorcjc.redemnorte.util.getBase64
 import com.youtube.sorcjc.redemnorte.util.getItemIndex
+import com.youtube.sorcjc.redemnorte.util.showConfirmDialog
 import com.youtube.sorcjc.redemnorte.util.toast
 import kotlinx.android.synthetic.main.dialog_view_detail.*
 import retrofit2.Call
@@ -138,11 +147,38 @@ class ShowDetailDialog : DialogFragment(), Callback<Item>, View.OnClickListener 
 
     override fun onClick(view: View) {
         when (view.id) {
-            R.id.btnCapturePhoto -> capturePhoto()
+            R.id.btnCapturePhoto -> capturePhotoIfPermissionIsGranted()
         }
     }
 
-    private fun capturePhoto() { // Create the File where the photo should go
+    private fun capturePhotoIfPermissionIsGranted() {
+        activity?.let { context?.let { ctx -> checkExternalStoragePermission(ctx, it) } }
+    }
+
+    private fun checkExternalStoragePermission(context: Context, activity: Activity) {
+        val cameraPermission = ContextCompat.checkSelfPermission(context, Manifest.permission.WRITE_EXTERNAL_STORAGE)
+
+        if (cameraPermission == PackageManager.PERMISSION_DENIED) {
+            if (ActivityCompat.shouldShowRequestPermissionRationale(activity, Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
+                // Show an explanation to the user
+                context.showConfirmDialog(getString(R.string.dialog_storage_title), getString(R.string.dialog_storage_explanation)) {
+                    requestExternalStoragePermission(activity)
+                }
+            } else {
+                // No explanation needed, we can request the permission.
+                requestExternalStoragePermission(activity)
+            }
+        } else {
+            capturePhoto()
+        }
+    }
+
+    private fun requestExternalStoragePermission(activity: Activity) {
+        ActivityCompat.requestPermissions(activity, arrayOf(Manifest.permission.WRITE_EXTERNAL_STORAGE), REQUEST_STORAGE_PERMISSION)
+    }
+
+    private fun capturePhoto() {
+        // Create a File for the item photo
         val photoFile: File?
 
         photoFile = try {
@@ -153,34 +189,45 @@ class ShowDetailDialog : DialogFragment(), Callback<Item>, View.OnClickListener 
 
         // Continue only if the File was successfully created
         val takePictureIntent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
-        takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, Uri.fromFile(photoFile))
+
+        val photoURI = context?.let {
+            FileProvider.getUriForFile(it,  BuildConfig.APPLICATION_ID + ".provider", photoFile)
+        }
+
+        takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, photoURI)
+        takePictureIntent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
         startActivityForResult(takePictureIntent, REQUEST_CODE_CAMERA)
     }
 
     @Throws(IOException::class)
     private fun createDestinationFile(): File { // Path for the temporary image and its name
-        val storageDirectory = Environment.getExternalStoragePublicDirectory(
-                Environment.DIRECTORY_PICTURES)
-        val imageFileName = "" + System.currentTimeMillis()
+        val storageDirectory = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES)
+        val imageFileName = System.currentTimeMillis().toString()
         val image = File.createTempFile(
                 imageFileName,  // prefix
                 ".$DEFAULT_PHOTO_EXTENSION",  // suffix
                 storageDirectory // directory
         )
+
         // Save a the file path
         currentPhotoPath = image.absolutePath
+        Log.d("ShowDetailDialog", "currentPhotoPath $currentPhotoPath")
+
         return image
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
+
         if (resultCode == Activity.RESULT_OK) {
-            if (requestCode == REQUEST_CODE_CAMERA)
-                data?.let { onCaptureImageResult(it) }
+            if (requestCode == REQUEST_CODE_CAMERA) {
+                Log.d("ShowDetailDialog", "REQUEST_CODE_CAMERA = $REQUEST_CODE_CAMERA")
+                onCaptureImageResult()
+            }
         }
     }
 
-    private fun onCaptureImageResult(data: Intent) {
+    private fun onCaptureImageResult() {
         val bitmap = BitmapFactory.decodeFile(currentPhotoPath)
         postPicture(bitmap)
 
@@ -223,7 +270,20 @@ class ShowDetailDialog : DialogFragment(), Callback<Item>, View.OnClickListener 
         btnCapturePhoto.text = getString(R.string.btn_replace_item_photo)
     }
 
+    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+
+        when (requestCode) {
+            REQUEST_STORAGE_PERMISSION ->
+                if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    context?.toast(getString(R.string.permission_storage_granted))
+                } else {
+                    context?.toast(getString(R.string.permission_storage_denied))
+                }
+        }
+    }
     companion object {
+        private const val REQUEST_STORAGE_PERMISSION = 10100
         private const val REQUEST_CODE_CAMERA = 10101
 
         @JvmStatic

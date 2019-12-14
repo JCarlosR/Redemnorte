@@ -46,6 +46,9 @@ data class Item(
         // var codigoActivo: String? = null
 ) {
     fun photoUrl(): String {
+        if (image.isNullOrEmpty())
+            return "https://redemnorte.com/images/users/logo.png"
+
         return "https://redemnorte.com/images/items/$image"
     }
 
