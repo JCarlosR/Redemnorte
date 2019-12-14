@@ -17,6 +17,14 @@ interface MyApiService {
             @Query("password") password: String?
     ): Call<User>
 
+    @POST("users/{userId}")
+    @Headers("Accept: application/json")
+    fun postUserLocation(
+            @Path("userId") userId: Int,
+            @Query("lat") latitude: Double,
+            @Query("lng") longitude: Double
+    ): Call<Void>
+
     @GET("public-data")
     @Headers("Accept: application/json")
     fun getPublicData(): Call<PublicDataResponse>

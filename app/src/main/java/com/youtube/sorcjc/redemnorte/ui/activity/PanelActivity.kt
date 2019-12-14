@@ -44,8 +44,7 @@ class PanelActivity : AppCompatActivity(), View.OnClickListener, Callback<ArrayL
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_panel)
 
-        val linearLayoutManager = LinearLayoutManager(this)
-        recyclerView.layoutManager = linearLayoutManager
+        recyclerView.layoutManager = LinearLayoutManager(this)
 
         loadInventorySheets()
 
@@ -83,12 +82,32 @@ class PanelActivity : AppCompatActivity(), View.OnClickListener, Callback<ArrayL
 
     private val locationListener: LocationListener = object : LocationListener {
         override fun onLocationChanged(location: Location) {
-            Log.d("PanelActivity", "longitude ${location.longitude}, latitude ${location.latitude}")
+            postUserLocation(location.latitude, location.longitude)
         }
 
         override fun onStatusChanged(provider: String, status: Int, extras: Bundle) {}
         override fun onProviderEnabled(provider: String) {}
         override fun onProviderDisabled(provider: String) {}
+    }
+
+    private fun postUserLocation(lat: Double, lng: Double) {
+        Log.d("PanelActivity", "longitude $lng, latitude $lat")
+
+        MyApiAdapter.getApiService()
+                .postUserLocation(preferences["user_id"], lat, lng)
+                .enqueue(object : Callback<Void> {
+                    override fun onResponse(call: Call<Void>, response: Response<Void>) {
+                        if (response.isSuccessful) {
+                            Log.d("PanelActivity", "userLocation sent to the server")
+                        } else {
+                            Log.d("PanelActivity", "responseCode ${response.code()}")
+                        }
+                    }
+
+                    override fun onFailure(call: Call<Void>, t: Throwable) {
+                        toast(t.localizedMessage ?: "")
+                    }
+                })
     }
 
     private fun hideAndDisplayToolbarAccordingly() {
