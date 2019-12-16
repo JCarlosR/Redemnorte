@@ -5,9 +5,8 @@ import android.os.Bundle
 import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.DialogFragment
 import com.youtube.sorcjc.redemnorte.R
-import com.youtube.sorcjc.redemnorte.ui.fragment.MessageDialogFragment
 
-class MessageDialogFragment : DialogFragment() {
+class MessageDialog : DialogFragment() {
     interface MessageDialogListener {
         fun onDialogPositiveClick(dialog: DialogFragment?)
         fun onDialogNeutralClick(dialog: DialogFragment?)
@@ -28,25 +27,25 @@ class MessageDialogFragment : DialogFragment() {
                 .setTitle(mTitle)
         builder.setPositiveButton(getString(R.string.btn_positive_use_code)) { dialog, id ->
             if (mListener != null) {
-                mListener!!.onDialogPositiveClick(this@MessageDialogFragment)
+                mListener!!.onDialogPositiveClick(this@MessageDialog)
             }
         }
         builder.setNeutralButton(getString(R.string.btn_neutral_take_again)) { dialog, id ->
             if (mListener != null) {
-                mListener!!.onDialogNeutralClick(this@MessageDialogFragment)
+                mListener!!.onDialogNeutralClick(this@MessageDialog)
             }
         }
         builder.setNegativeButton(getString(R.string.btn_negative_cancel)) { dialog, id ->
             if (mListener != null) {
-                mListener!!.onDialogNegativeClick(this@MessageDialogFragment)
+                mListener!!.onDialogNegativeClick(this@MessageDialog)
             }
         }
         return builder.create()
     }
 
     companion object {
-        fun newInstance(title: String?, message: String?, listener: MessageDialogListener?): MessageDialogFragment {
-            val fragment = MessageDialogFragment()
+        fun newInstance(title: String?, message: String?, listener: MessageDialogListener?): MessageDialog {
+            val fragment = MessageDialog()
             fragment.mTitle = title
             fragment.mMessage = message
             fragment.mListener = listener

@@ -8,8 +8,8 @@ import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.DialogFragment
 import com.youtube.sorcjc.redemnorte.R
-import com.youtube.sorcjc.redemnorte.ui.fragment.MessageDialogFragment
-import com.youtube.sorcjc.redemnorte.ui.fragment.MessageDialogFragment.MessageDialogListener
+import com.youtube.sorcjc.redemnorte.ui.fragment.MessageDialog
+import com.youtube.sorcjc.redemnorte.ui.fragment.MessageDialog.MessageDialogListener
 import me.dm7.barcodescanner.zbar.Result
 import me.dm7.barcodescanner.zbar.ZBarScannerView
 
@@ -66,7 +66,7 @@ class SimpleScannerActivity : AppCompatActivity(), ZBarScannerView.ResultHandler
     }
 
     private fun showMessageDialog(message: String?) {
-        val fragment: DialogFragment = MessageDialogFragment.newInstance(getString(R.string.scanner_results), message, this)
+        val fragment: DialogFragment = MessageDialog.newInstance(getString(R.string.scanner_results), message, this)
         fragment.show(supportFragmentManager, "")
     }
 

@@ -22,7 +22,7 @@ import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 
-class HeaderDialogFragment : DialogFragment() {
+class HeaderDialog : DialogFragment() {
 
     private var sheetId: Int = -1
 
@@ -98,11 +98,6 @@ class HeaderDialogFragment : DialogFragment() {
             atvArea.setAdapter(it.arrayAdapter(publicDataResponse.areas))
             atvPlace.setAdapter(it.arrayAdapter(publicDataResponse.places))
         }
-
-        /*spinnerResponsible.onItemClickListener = OnItemClickListener { adapterView, _, position, _ ->
-            val responsible = adapterView.getItemAtPosition(position) as ResponsibleUser
-            Log.i("SelectedText", responsible.name)
-        }*/
     }
 
     private fun fetchPublicData() {
@@ -132,8 +127,8 @@ class HeaderDialogFragment : DialogFragment() {
 
     private fun showDialogContent() {
         progressBarHeader.visibility = View.GONE
-
         scrollViewHeader.visibility = View.VISIBLE
+        enableSaveAction()
     }
 
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
@@ -148,6 +143,22 @@ class HeaderDialogFragment : DialogFragment() {
             it.removeItem(R.id.itemSearch)
             it.removeItem(R.id.itemSignature)
         }
+
+        val item = menu.findItem(R.id.save)
+        if (allowSave) {
+            item.isEnabled = true
+            item.icon.alpha = 255
+        } else { // disabled
+            item.isEnabled = false
+            item.icon.alpha = 130
+        }
+    }
+
+    var allowSave = false
+
+    private fun enableSaveAction(enabled: Boolean = true) {
+        allowSave = enabled
+        activity?.invalidateOptionsMenu()
     }
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
@@ -192,6 +203,12 @@ class HeaderDialogFragment : DialogFragment() {
             return
         }
 
+        performCreateOrUpdateRequest()
+    }
+
+    private fun performCreateOrUpdateRequest() {
+        enableSaveAction(false)
+
         val place = atvPlace.text.toString().trim()
         val location = etLocation.text.toString().trim()
         val responsible = atvResponsible.text.toString().trim()
@@ -233,11 +250,13 @@ class HeaderDialogFragment : DialogFragment() {
                 }
             } else {
                 context?.toast(getString(R.string.error_format_server_response))
+                enableSaveAction()
             }
         }
 
         override fun onFailure(call: Call<Sheet>, t: Throwable) {
             context?.toast(t.localizedMessage ?: "")
+            enableSaveAction()
         }
     }
 
@@ -253,11 +272,13 @@ class HeaderDialogFragment : DialogFragment() {
                 }
             } else {
                 context?.toast(getString(R.string.error_format_server_response))
+                enableSaveAction()
             }
         }
 
         override fun onFailure(call: Call<Sheet>, t: Throwable) {
-            context?.toast(t.localizedMessage)
+            context?.toast(t.localizedMessage ?: "")
+            enableSaveAction()
         }
     }
 
@@ -313,11 +334,11 @@ class HeaderDialogFragment : DialogFragment() {
 
     companion object {
         @JvmStatic
-        fun newInstance(sheetId: Int): HeaderDialogFragment {
+        fun newInstance(sheetId: Int): HeaderDialog {
             val args = Bundle()
             args.putInt("hoja_id", sheetId)
 
-            val f = HeaderDialogFragment()
+            val f = HeaderDialog()
             f.arguments = args
 
             return f

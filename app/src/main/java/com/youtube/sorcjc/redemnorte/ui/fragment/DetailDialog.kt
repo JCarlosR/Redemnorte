@@ -25,7 +25,8 @@ import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 
-class DetailDialogFragment : DialogFragment(), View.OnClickListener {
+
+class DetailDialog : DialogFragment(), View.OnClickListener {
 
     // Parent header
     private var sheetId: Int = -1
@@ -119,8 +120,8 @@ class DetailDialogFragment : DialogFragment(), View.OnClickListener {
 
     private fun showDialogContent() {
         progressBarDetail.visibility = View.GONE
-
         scrollViewDetail.visibility = View.VISIBLE
+        enableSaveAction()
     }
 
     internal inner class GetPreviousDataCallback : Callback<Item> {
@@ -189,6 +190,20 @@ class DetailDialogFragment : DialogFragment(), View.OnClickListener {
         return super.onOptionsItemSelected(item)
     }
 
+    override fun onPrepareOptionsMenu(menu: Menu) {
+        val item = menu.findItem(R.id.save)
+
+        if (allowSave) {
+            item.isEnabled = true
+            item.icon.alpha = 255
+        } else { // disabled
+            item.isEnabled = false
+            item.icon.alpha = 130
+        }
+    }
+
+    var allowSave = false
+
     private fun validateForm() {
         if (!validateEditText(etQR, tilQR, R.string.error_til_qr)) {
             return
@@ -199,7 +214,14 @@ class DetailDialogFragment : DialogFragment(), View.OnClickListener {
         performRegisterRequest()
     }
 
+    private fun enableSaveAction(enabled: Boolean = true) {
+        allowSave = enabled
+        activity?.invalidateOptionsMenu()
+    }
+
     private fun performRegisterRequest() {
+        enableSaveAction(false)
+
         val qrCode = etQR.text.toString().trim()
         val patrimonial = etPatrimonial.text.toString().trim()
         val oldCode = etOldCode.text.toString().trim()
@@ -212,7 +234,7 @@ class DetailDialogFragment : DialogFragment(), View.OnClickListener {
         val length = etLong.text.toString().trim()
         val width = etWidth.text.toString().trim()
         val height = etHeight.text.toString().trim()
-        // val status = spinnerPreservation.selectedItem.toString()
+
         val status = spinnerStatus.selectedItemPosition
         val labeled = checkLabeled.isChecked
         val operative = checkOperative.isChecked
@@ -252,11 +274,13 @@ class DetailDialogFragment : DialogFragment(), View.OnClickListener {
                 }
             } else {
                 context?.toast(getString(R.string.error_item_store_update))
+                enableSaveAction()
             }
         }
 
         override fun onFailure(call: Call<Item>, t: Throwable) {
             context?.toast(t.localizedMessage ?: "")
+            enableSaveAction()
         }
     }
 
@@ -334,9 +358,8 @@ class DetailDialogFragment : DialogFragment(), View.OnClickListener {
         val model = item.model?.trim()
         val series = item.series?.trim()
         val status = item.status
-
-        // final String ubicacion = item.getUbicacion();
-        // final String local = item.getLocal();
+        // val location = item.
+        // val place = item.
 
         /*
         if (situacion == "BP" || situacion == "BA" || situacion == "NO" || situacion == "NU") {
@@ -478,13 +501,13 @@ class DetailDialogFragment : DialogFragment(), View.OnClickListener {
 
     companion object {
         @JvmStatic
-        fun newInstance(sheetId: Int, itemId: Int, responsible: String?): DetailDialogFragment {
+        fun newInstance(sheetId: Int, itemId: Int, responsible: String?): DetailDialog {
             val args = Bundle()
             args.putInt("hoja_id", sheetId)
             args.putInt("item_id", itemId)
             args.putString("responsable", responsible)
 
-            val f = DetailDialogFragment()
+            val f = DetailDialog()
             f.arguments = args
             return f
         }

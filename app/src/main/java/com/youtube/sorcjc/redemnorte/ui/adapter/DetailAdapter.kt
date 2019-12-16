@@ -11,7 +11,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.youtube.sorcjc.redemnorte.R
 import com.youtube.sorcjc.redemnorte.model.Item
 import com.youtube.sorcjc.redemnorte.ui.activity.DetailsActivity
-import com.youtube.sorcjc.redemnorte.ui.fragment.DetailDialogFragment.Companion.newInstance
+import com.youtube.sorcjc.redemnorte.ui.fragment.DetailDialog.Companion.newInstance
 import com.youtube.sorcjc.redemnorte.ui.fragment.ShowDetailDialog.Companion.newInstance
 import java.util.*
 

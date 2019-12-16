@@ -14,7 +14,7 @@ import com.youtube.sorcjc.redemnorte.R
 import com.youtube.sorcjc.redemnorte.model.Sheet
 import com.youtube.sorcjc.redemnorte.ui.activity.DetailsActivity
 import com.youtube.sorcjc.redemnorte.ui.activity.PanelActivity
-import com.youtube.sorcjc.redemnorte.ui.fragment.HeaderDialogFragment.Companion.newInstance
+import com.youtube.sorcjc.redemnorte.ui.fragment.HeaderDialog.Companion.newInstance
 
 class HeaderAdapter(private var dataSet: ArrayList<Sheet> = ArrayList()) : RecyclerView.Adapter<HeaderAdapter.ViewHolder>() {
     private var filteredDataSet: ArrayList<Sheet>

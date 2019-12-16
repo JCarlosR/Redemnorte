@@ -18,7 +18,7 @@ import com.youtube.sorcjc.redemnorte.R
 import com.youtube.sorcjc.redemnorte.io.MyApiAdapter
 import com.youtube.sorcjc.redemnorte.model.Sheet
 import com.youtube.sorcjc.redemnorte.ui.adapter.HeaderAdapter
-import com.youtube.sorcjc.redemnorte.ui.fragment.HeaderDialogFragment
+import com.youtube.sorcjc.redemnorte.ui.fragment.HeaderDialog
 import com.youtube.sorcjc.redemnorte.util.PreferenceHelper
 import com.youtube.sorcjc.redemnorte.util.PreferenceHelper.get
 import com.youtube.sorcjc.redemnorte.util.checkAndRequestPermission
@@ -177,7 +177,7 @@ class PanelActivity : AppCompatActivity(), View.OnClickListener, Callback<ArrayL
         val fragmentManager = supportFragmentManager
 
         // Empty sheetId => Create a new sheet
-        val newFragment = HeaderDialogFragment.newInstance(-1)
+        val newFragment = HeaderDialog.newInstance(-1)
         val transaction = fragmentManager.beginTransaction()
 
         transaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
