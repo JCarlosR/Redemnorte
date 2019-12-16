@@ -8,14 +8,6 @@
     android:layout_height="match_parent"
     tools:context=".ui.activity.SignatureActivity">
 
-
-    <LinearLayout
-        android:id="@+id/linearLayout"
-        android:orientation="vertical"
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="1"/>
-
     <com.google.android.material.textfield.TextInputLayout
         android:id="@+id/tilResponsible"
         android:layout_width="match_parent"
@@ -43,4 +35,11 @@
         android:text="@string/signature_clear"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"/>
+
+    <LinearLayout
+        android:id="@+id/linearLayout"
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"/>
 </LinearLayout>

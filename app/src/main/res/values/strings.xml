@@ -141,4 +141,5 @@
     <string name="action_signature_input">Ingresar firma</string>
     <string name="signature_save">Guardar firma</string>
     <string name="signature_clear">Limpiar</string>
+    <string name="missing_responsible_name">Olvidaste ingresar el nombre del responsable</string>
 </resources>

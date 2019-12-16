@@ -21,7 +21,12 @@ class CaptureSignatureView(context: Context?, attr: AttributeSet?) : View(contex
 
     override fun onSizeChanged(w: Int, h: Int, oldw: Int, oldh: Int) {
         super.onSizeChanged(w, h, oldw, oldh)
-        myBitmap = Bitmap.createBitmap(w, if (h > 0) h else (this.parent as View).height, Bitmap.Config.ARGB_8888)
+
+        myBitmap = Bitmap.createBitmap(
+            w,
+            if (h > 0) h else (this.parent as View).height,
+            Bitmap.Config.ARGB_8888
+        )
 
         myBitmap?.let {
             canvas = Canvas(myBitmap as Bitmap)
@@ -32,9 +37,11 @@ class CaptureSignatureView(context: Context?, attr: AttributeSet?) : View(contex
         super.onDraw(canvas)
 
         canvas.drawColor(Color.WHITE)
+
         myBitmap?.let {
             canvas.drawBitmap(it, 0f, 0f, bitmapPaint)
         }
+
         canvas.drawPath(path, paint)
     }
 
@@ -103,10 +110,10 @@ class CaptureSignatureView(context: Context?, attr: AttributeSet?) : View(contex
 
     val bitmap: Bitmap
         get() {
-            val v: View = this.getParent() as View
-            val b = Bitmap.createBitmap(v.getWidth(), v.getHeight(), Bitmap.Config.ARGB_8888)
+            val v: View = this.parent as View
+            val b = Bitmap.createBitmap(v.width, v.height, Bitmap.Config.ARGB_8888)
             val c = Canvas(b)
-            v.layout(v.getLeft(), v.getTop(), v.getRight(), v.getBottom())
+            v.layout(v.left, v.top, v.right, v.bottom)
             v.draw(c)
             return b
         }

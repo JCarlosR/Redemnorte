@@ -46,8 +46,13 @@ class SignatureActivity : AppCompatActivity() {
     }
 
     private fun registerSignature(bitmap: Bitmap) {
-        val base64 = bitmap.getBase64()
         val responsibleName = atvResponsible.text.toString().trim()
+        if (responsibleName.isEmpty()) {
+            toast(getString(R.string.missing_responsible_name))
+            return
+        }
+
+        val base64 = bitmap.getBase64()
 
         val call = MyApiAdapter.getApiService()
                 .postSignature(responsibleId, responsibleName, base64)

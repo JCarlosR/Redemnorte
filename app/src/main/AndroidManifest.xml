@@ -44,6 +44,8 @@
             android:windowSoftInputMode="adjustPan" />
 
         <activity android:name=".ui.activity.SignatureActivity"
+            android:parentActivityName=".ui.activity.PanelActivity"
+            android:windowSoftInputMode="adjustPan"
             android:launchMode="singleInstance"/>
 
         <provider
