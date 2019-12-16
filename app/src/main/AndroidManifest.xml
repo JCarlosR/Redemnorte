@@ -3,10 +3,15 @@
     xmlns:tools="http://schemas.android.com/tools"
     package="com.youtube.sorcjc.redemnorte">
 
-    <uses-permission android:name="android.permission.CAMERA" tools:remove="android:maxSdkVersion" />
-    <uses-permission android:name="android.permission.INTERNET" tools:remove="android:maxSdkVersion" />
-    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" tools:remove="android:maxSdkVersion" />
-
+    <uses-permission
+        android:name="android.permission.CAMERA"
+        tools:remove="android:maxSdkVersion" />
+    <uses-permission
+        android:name="android.permission.INTERNET"
+        tools:remove="android:maxSdkVersion" />
+    <uses-permission
+        android:name="android.permission.WRITE_EXTERNAL_STORAGE"
+        tools:remove="android:maxSdkVersion" />
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
 
@@ -17,9 +22,11 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         tools:ignore="GoogleAppIndexingWarning">
+
         <activity android:name=".ui.activity.MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
+
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
@@ -27,13 +34,17 @@
         <activity
             android:name=".ui.activity.PanelActivity"
             android:label="@string/title_activity_panel"
-            android:windowSoftInputMode="adjustPan"
-            android:theme="@style/AppTheme.NoActionBar" />
+            android:theme="@style/AppTheme.NoActionBar"
+            android:launchMode="singleInstance"
+            android:windowSoftInputMode="adjustPan" />
         <activity
             android:name=".ui.activity.DetailsActivity"
             android:parentActivityName=".ui.activity.PanelActivity"
-            android:windowSoftInputMode="adjustPan"
-            android:theme="@style/AppTheme.NoActionBar" />
+            android:theme="@style/AppTheme.NoActionBar"
+            android:windowSoftInputMode="adjustPan" />
+
+        <activity android:name=".ui.activity.SignatureActivity"
+            android:launchMode="singleInstance"/>
 
         <provider
             android:name="androidx.core.content.FileProvider"
@@ -42,7 +53,7 @@
             android:grantUriPermissions="true">
             <meta-data
                 android:name="android.support.FILE_PROVIDER_PATHS"
-                android:resource="@xml/provider_paths"/>
+                android:resource="@xml/provider_paths" />
         </provider>
     </application>
 

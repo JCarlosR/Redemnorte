@@ -1,6 +1,7 @@
 package com.youtube.sorcjc.redemnorte.ui.activity
 
 import android.Manifest
+import android.content.Intent
 import android.location.Location
 import android.location.LocationListener
 import android.location.LocationManager
@@ -129,16 +130,25 @@ class PanelActivity : AppCompatActivity(), View.OnClickListener, Callback<ArrayL
         toolbar.setOnMenuItemClickListener(
                 Toolbar.OnMenuItemClickListener { item ->
                     val id = item.itemId
-                    if (id == R.id.search) {
-                        if (layoutSearchBox.visibility == View.VISIBLE)
-                            layoutSearchBox.visibility = View.GONE
-                        else
-                            layoutSearchBox.visibility = View.VISIBLE
-
-                        return@OnMenuItemClickListener true
+                    if (id == R.id.itemSearch) {
+                        actionSearch()
+                    } else if (id == R.id.itemSignature) {
+                        actionSignature()
                     }
-                    true
+                    return@OnMenuItemClickListener true
                 })
+    }
+
+    private fun actionSearch() {
+        if (layoutSearchBox.visibility == View.VISIBLE)
+            layoutSearchBox.visibility = View.GONE
+        else
+            layoutSearchBox.visibility = View.VISIBLE
+    }
+
+    private fun actionSignature() {
+        val intent = Intent(this, SignatureActivity::class.java)
+        startActivity(intent)
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {

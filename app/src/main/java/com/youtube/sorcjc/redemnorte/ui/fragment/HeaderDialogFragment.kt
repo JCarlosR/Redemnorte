@@ -145,7 +145,8 @@ class HeaderDialogFragment : DialogFragment() {
     override fun onPrepareOptionsMenu(menu: Menu) {
         menu.let {
             super.onPrepareOptionsMenu(it)
-            it.removeItem(R.id.search)
+            it.removeItem(R.id.itemSearch)
+            it.removeItem(R.id.itemSignature)
         }
     }
 
@@ -287,7 +288,7 @@ class HeaderDialogFragment : DialogFragment() {
         }
 
         override fun onFailure(call: Call<Sheet>, t: Throwable) {
-            context?.toast(t.localizedMessage)
+            context?.toast(t.localizedMessage ?: "")
         }
 
         private fun showHeaderDataInFields(sheet: Sheet) {

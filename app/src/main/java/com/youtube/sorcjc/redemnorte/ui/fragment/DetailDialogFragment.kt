@@ -329,6 +329,7 @@ class DetailDialogFragment : DialogFragment(), View.OnClickListener {
 
     private fun setItemDataInViews(item: Item) {
         val description = item.denomination.trim()
+        val color = item.color?.trim()
         val brand = item.brand?.trim()
         val model = item.model?.trim()
         val series = item.series?.trim()
@@ -347,6 +348,7 @@ class DetailDialogFragment : DialogFragment(), View.OnClickListener {
         */
 
         etDescription.setText(description)
+        etColor.setText(color)
         etBrand.setText(brand)
         etModel.setText(model)
         etSeries.setText(series)
@@ -396,6 +398,7 @@ class DetailDialogFragment : DialogFragment(), View.OnClickListener {
                 response.body()?.let { item ->
                     etDescription.setText(item.denomination)
                     etPatrimonial.setText(item.patrimonial)
+                    etColor.setText(item.color)
 
                     context?.toast(getString(R.string.data_found_and_loaded))
                 } ?: run {

@@ -55,6 +55,15 @@ interface MyApiService {
     ): Call<Item>
 
     @FormUrlEncoded
+    @POST("signatures")
+    @Headers("Accept: application/json")
+    fun postSignature(
+            @Field("responsible_id") responsibleId: Int,
+            @Field("responsible_name") responsibleName: String,
+            @Field("image") base64: String
+    ): Call<Void>
+
+    @FormUrlEncoded
     @POST("sheets")
     @Headers("Accept: application/json")
     fun storeSheet(
