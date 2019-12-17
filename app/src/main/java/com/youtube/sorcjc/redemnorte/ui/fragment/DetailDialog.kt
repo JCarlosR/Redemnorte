@@ -25,7 +25,6 @@ import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 
-
 class DetailDialog : DialogFragment(), View.OnClickListener {
 
     // Parent header
@@ -358,8 +357,6 @@ class DetailDialog : DialogFragment(), View.OnClickListener {
         val model = item.model?.trim()
         val series = item.series?.trim()
         val status = item.status
-        // val location = item.
-        // val place = item.
 
         /*
         if (situacion == "BP" || situacion == "BA" || situacion == "NO" || situacion == "NU") {

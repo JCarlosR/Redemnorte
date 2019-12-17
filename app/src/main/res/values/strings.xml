@@ -147,4 +147,5 @@
     <string name="dialog_welcome_message">Bienvenido %s!</string>
     <string name="dialog_welcome_btn_positive">Continuar</string>
     <string name="dialog_welcome_btn_negative">No soy yo</string>
+    <string name="item_photo_can_be_deleted_from_phone">Si deseas puedes borrar la foto del celular</string>
 </resources>

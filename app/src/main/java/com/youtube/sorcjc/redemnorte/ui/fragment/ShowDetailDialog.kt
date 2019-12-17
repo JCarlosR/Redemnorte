@@ -190,7 +190,7 @@ class ShowDetailDialog : DialogFragment(), Callback<Item>, View.OnClickListener 
 
         // Save a the file path
         currentPhotoPath = image.absolutePath
-        Log.d("ShowDetailDialog", "currentPhotoPath $currentPhotoPath")
+        // Log.d("ShowDetailDialog", "currentPhotoPath $currentPhotoPath")
 
         return image
     }
@@ -200,7 +200,7 @@ class ShowDetailDialog : DialogFragment(), Callback<Item>, View.OnClickListener 
 
         if (resultCode == Activity.RESULT_OK) {
             if (requestCode == REQUEST_CODE_CAMERA) {
-                Log.d("ShowDetailDialog", "REQUEST_CODE_CAMERA = $REQUEST_CODE_CAMERA")
+                // Log.d("ShowDetailDialog", "REQUEST_CODE_CAMERA = $REQUEST_CODE_CAMERA")
                 onCaptureImageResult()
             }
         }
@@ -213,7 +213,7 @@ class ShowDetailDialog : DialogFragment(), Callback<Item>, View.OnClickListener 
         currentPhotoPath?.let {
             val deleted = File(it).delete()
             if (!deleted) {
-                context?.toast("Si desea luego puede eliminar la foto del celular")
+                context?.toast(getString(R.string.item_photo_can_be_deleted_from_phone))
             }
         }
 
