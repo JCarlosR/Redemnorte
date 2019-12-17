@@ -23,6 +23,7 @@ import com.youtube.sorcjc.redemnorte.ui.fragment.HeaderDialog
 import com.youtube.sorcjc.redemnorte.util.PreferenceHelper
 import com.youtube.sorcjc.redemnorte.util.PreferenceHelper.get
 import com.youtube.sorcjc.redemnorte.util.checkAndRequestPermission
+import com.youtube.sorcjc.redemnorte.util.snack
 import com.youtube.sorcjc.redemnorte.util.toast
 import kotlinx.android.synthetic.main.activity_panel.*
 import retrofit2.Call
@@ -190,7 +191,7 @@ class PanelActivity : AppCompatActivity(), View.OnClickListener, Callback<ArrayL
         if (response.isSuccessful) {
             response.body()?.let { sheets ->
                 headerAdapter.setDataSet(sheets)
-                Snackbar.make(panelRootLayout, getString(R.string.sheets_count_message, sheets.size), Snackbar.LENGTH_LONG).show()
+                panelRootLayout.snack(getString(R.string.sheets_count_message, sheets.size))
             }
         } else {
             toast(getString(R.string.error_format_server_response))

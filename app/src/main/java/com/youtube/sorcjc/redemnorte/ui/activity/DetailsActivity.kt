@@ -13,6 +13,7 @@ import com.youtube.sorcjc.redemnorte.io.MyApiAdapter
 import com.youtube.sorcjc.redemnorte.model.Item
 import com.youtube.sorcjc.redemnorte.ui.adapter.DetailAdapter
 import com.youtube.sorcjc.redemnorte.ui.fragment.DetailDialog
+import com.youtube.sorcjc.redemnorte.util.snack
 import com.youtube.sorcjc.redemnorte.util.toast
 import kotlinx.android.synthetic.main.activity_details.*
 import retrofit2.Call
@@ -104,7 +105,7 @@ class DetailsActivity : AppCompatActivity(), View.OnClickListener, Callback<Arra
         if (response.isSuccessful) {
             response.body()?.let {
                 detailAdapter.setDataSet(it)
-                toast(getString(R.string.items_count_message) + " " + it.size)
+                detailsRootLayout.snack(getString(R.string.items_count_message, it.size))
             }
         } else {
             toast(getString(R.string.error_format_server_response))

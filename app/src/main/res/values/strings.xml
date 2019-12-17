@@ -90,7 +90,7 @@
     <string name="title_activity_details">Hoja #</string>
     <string name="label_patrimonial_code">Cód Patrimonial: %1$s </string>
     <string name="label_qr_code">QR: %1$s</string>
-    <string name="items_count_message">Items registrados:</string>
+    <string name="items_count_message">Bienes registrados: %d</string>
     <string name="title_activity_panel">Hojas de inventario</string>
     <string name="hint_qr_code">QR 2019</string>
     <string name="hint_patrimonial_code">Código patrimonial</string>
