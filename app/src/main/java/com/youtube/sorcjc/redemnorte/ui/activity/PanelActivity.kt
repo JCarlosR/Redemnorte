@@ -14,6 +14,7 @@ import androidx.appcompat.widget.Toolbar
 import androidx.fragment.app.FragmentTransaction
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.google.android.material.snackbar.Snackbar
 import com.youtube.sorcjc.redemnorte.R
 import com.youtube.sorcjc.redemnorte.io.MyApiAdapter
 import com.youtube.sorcjc.redemnorte.model.Sheet
@@ -189,7 +190,7 @@ class PanelActivity : AppCompatActivity(), View.OnClickListener, Callback<ArrayL
         if (response.isSuccessful) {
             response.body()?.let { sheets ->
                 headerAdapter.setDataSet(sheets)
-                toast(getString(R.string.sheets_count_message) + " " + sheets.size)
+                Snackbar.make(panelRootLayout, getString(R.string.sheets_count_message, sheets.size), Snackbar.LENGTH_LONG).show()
             }
         } else {
             toast(getString(R.string.error_format_server_response))

@@ -35,12 +35,13 @@
             android:name=".ui.activity.PanelActivity"
             android:label="@string/title_activity_panel"
             android:theme="@style/AppTheme.NoActionBar"
-            android:launchMode="singleInstance"
+            android:launchMode="singleTask"
             android:windowSoftInputMode="adjustPan" />
         <activity
             android:name=".ui.activity.DetailsActivity"
             android:parentActivityName=".ui.activity.PanelActivity"
             android:theme="@style/AppTheme.NoActionBar"
+            android:launchMode="singleTask"
             android:windowSoftInputMode="adjustPan" />
 
         <activity android:name=".ui.activity.SignatureActivity"

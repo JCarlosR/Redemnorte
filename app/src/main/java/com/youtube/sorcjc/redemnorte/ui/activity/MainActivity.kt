@@ -10,6 +10,8 @@ import com.youtube.sorcjc.redemnorte.model.User
 import com.youtube.sorcjc.redemnorte.util.PreferenceHelper
 import com.youtube.sorcjc.redemnorte.util.PreferenceHelper.get
 import com.youtube.sorcjc.redemnorte.util.PreferenceHelper.set
+import com.youtube.sorcjc.redemnorte.util.showConfirmDialog
+import com.youtube.sorcjc.redemnorte.util.showInfoDialog
 import com.youtube.sorcjc.redemnorte.util.toast
 import kotlinx.android.synthetic.main.activity_main.*
 import retrofit2.Call
@@ -42,6 +44,9 @@ class MainActivity : AppCompatActivity(), View.OnClickListener, Callback<User> {
                 val username = etUsername.text.toString()
                 val password = etPassword.text.toString()
 
+                if (username.trim().isEmpty() || password.trim().isEmpty())
+                    return
+
                 btnLogin.isEnabled = false
 
                 val call = MyApiAdapter.getApiService().postLogin(username, password)
@@ -60,7 +65,14 @@ class MainActivity : AppCompatActivity(), View.OnClickListener, Callback<User> {
 
             user?.let {
                 preferences["user_id"] = user.id
-                login(it)
+                showConfirmDialog(
+                        getString(R.string.dialog_welcome_title),
+                        getString(R.string.dialog_welcome_message, user.name),
+                        getString(R.string.dialog_welcome_btn_positive),
+                        getString(R.string.dialog_welcome_btn_negative)
+                ) {
+                    login(it)
+                }
             }
         } else {
             toast(getString(R.string.error_login_invalid_credentials))
@@ -70,8 +82,6 @@ class MainActivity : AppCompatActivity(), View.OnClickListener, Callback<User> {
     }
 
     private fun login(user: User) {
-        toast("Bienvenido ${user.name}!")
-
         val intentPanel = Intent(this, PanelActivity::class.java)
         startActivity(intentPanel)
     }

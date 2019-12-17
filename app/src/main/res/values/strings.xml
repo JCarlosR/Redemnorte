@@ -67,7 +67,8 @@
     <string name="error_til_description">Ingresa una descripción</string>
 
     <string name="error_login">Los datos son incorrectos</string>
-    <string name="sheets_count_message">Hojas registradas:</string>
+    <string name="sheets_count_message">Hojas registradas: %d</string>
+
     <string name="scanner_results">Resultados</string>
     <string name="error_format_server_response">Error en el formato de respuesta</string>
     <string name="success_sheet_updated_message">Se ha editado correctamente la hoja</string>
@@ -142,4 +143,8 @@
     <string name="signature_save">Guardar firma</string>
     <string name="signature_clear">Limpiar</string>
     <string name="missing_responsible_name">Olvidaste ingresar el nombre del responsable</string>
+    <string name="dialog_welcome_title">Sesión correcta</string>
+    <string name="dialog_welcome_message">Bienvenido %s!</string>
+    <string name="dialog_welcome_btn_positive">Continuar</string>
+    <string name="dialog_welcome_btn_negative">No soy yo</string>
 </resources>
