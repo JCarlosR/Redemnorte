@@ -148,4 +148,6 @@
     <string name="dialog_welcome_btn_positive">Continuar</string>
     <string name="dialog_welcome_btn_negative">No soy yo</string>
     <string name="item_photo_can_be_deleted_from_phone">Si deseas puedes borrar la foto del celular</string>
+    <string name="important">Importante</string>
+    <string name="item_patrimonial_code_already_registered">Se ha encontrado información del bien, pero no se ha cargado en el aplicativo, porque este código patrimonial ya se encuentra registrado.</string>
 </resources>

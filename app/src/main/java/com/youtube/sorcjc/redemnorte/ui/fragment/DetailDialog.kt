@@ -13,12 +13,14 @@ import androidx.fragment.app.DialogFragment
 import com.google.android.material.textfield.TextInputLayout
 import com.youtube.sorcjc.redemnorte.R
 import com.youtube.sorcjc.redemnorte.io.MyApiAdapter
+import com.youtube.sorcjc.redemnorte.io.response.ExpectedDataResponse
 import com.youtube.sorcjc.redemnorte.io.response.SimpleResponse
 import com.youtube.sorcjc.redemnorte.model.Item
 import com.youtube.sorcjc.redemnorte.ui.activity.DetailsActivity
 import com.youtube.sorcjc.redemnorte.ui.activity.SimpleScannerActivity
 import com.youtube.sorcjc.redemnorte.util.checkAndRequestPermission
 import com.youtube.sorcjc.redemnorte.util.getItemIndex
+import com.youtube.sorcjc.redemnorte.util.showInfoDialog
 import com.youtube.sorcjc.redemnorte.util.toast
 import kotlinx.android.synthetic.main.dialog_new_detail.*
 import retrofit2.Call
@@ -331,12 +333,14 @@ class DetailDialog : DialogFragment(), View.OnClickListener {
         }
     }
 
-    internal inner class TakeByPatrimonialCallback : Callback<Item> {
-        override fun onResponse(call: Call<Item>, response: Response<Item>) {
+    internal inner class TakeByPatrimonialCallback : Callback<ExpectedDataResponse> {
+        override fun onResponse(call: Call<ExpectedDataResponse>, response: Response<ExpectedDataResponse>) {
             if (response.isSuccessful) {
-                response.body()?.let { item ->
-                    setItemDataInViews(item)
-                    context?.toast(getString(R.string.data_found_and_loaded))
+                response.body()?.let {
+                    if (it.found)
+                        setItemDataInViews(it.item, it.alreadyRegistered)
+                    else
+                        context?.toast(getString(R.string.no_data_found))
                 } ?: run {
                     context?.toast(getString(R.string.no_data_found))
                 }
@@ -345,12 +349,19 @@ class DetailDialog : DialogFragment(), View.OnClickListener {
             }
         }
 
-        override fun onFailure(call: Call<Item>, t: Throwable) {
+        override fun onFailure(call: Call<ExpectedDataResponse>, t: Throwable) {
             context?.toast(t.localizedMessage ?: "")
         }
     }
 
-    private fun setItemDataInViews(item: Item) {
+    private fun setItemDataInViews(item: Item, alreadyRegistered: Boolean) {
+        if (alreadyRegistered) {
+            context?.showInfoDialog(getString(R.string.important), getString(R.string.item_patrimonial_code_already_registered))
+            return
+        }
+
+        context?.toast(getString(R.string.data_found_and_loaded))
+
         val description = item.denomination.trim()
         val color = item.color?.trim()
         val brand = item.brand?.trim()
@@ -358,9 +369,10 @@ class DetailDialog : DialogFragment(), View.OnClickListener {
         val series = item.series?.trim()
         val status = item.status
 
+        checkLabeled.isChecked = true
+
         /*
-        if (situacion == "BP" || situacion == "BA" || situacion == "NO" || situacion == "NU") {
-            val title = "Importante"
+        if (status == "BP" || status == "BA" || status == "NO" || status == "NU") {
             val message = "Lamentablemente este bien ha sido dado de baja."
             context?.showInfoDialog(title, message)
             return
@@ -375,7 +387,6 @@ class DetailDialog : DialogFragment(), View.OnClickListener {
         spinnerStatus.setSelection(status)
 
         /*
-        var preservation = ""
         when (status) {
             "BU" -> preservation = "Bueno"
             "SE" -> preservation = "Bueno"
@@ -389,15 +400,19 @@ class DetailDialog : DialogFragment(), View.OnClickListener {
         */
 
 
-        /*
-        val expectedResponsible = item.responsible.trim()
-        if (expectedResponsible != responsible) {
-            var message = "Este bien le pertenece al usuario $expectedResponsible.\n"
-            message += "Verifica si el responsable de esta hoja $responsible se hará cargo.\n"
-            message += "De caso contrario, crea una nueva hoja, márcala con el estado pendiente y registra allí el bien."
-            context?.showInfoDialog("Importante", message)
+        item.responsible?.let {
+            val expectedResponsible = it.trim()
+
+            if (expectedResponsible.isNotEmpty() && expectedResponsible != responsible) {
+                val message = (
+                    "Este bien le pertenece a $expectedResponsible.\n"
+                        + "Verifica si el responsable de esta hoja ($responsible) se hará cargo.\n"
+                        + "De caso contrario, crea una nueva hoja, márcala como pendiente y registra allí el bien."
+                )
+
+                context?.showInfoDialog(getString(R.string.important), message)
+            }
         }
-        */
     }
 
     private fun performByOldCodeRequest() {

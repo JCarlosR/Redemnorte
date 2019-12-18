@@ -36,6 +36,8 @@ data class Item(
         var old_code: String? = null,
         @SerializedName("year")
         var old_year: String? = null,
+        @SerializedName("responsible_name")
+        var responsible: String? = null,
 
         var observation: String? = null,
 

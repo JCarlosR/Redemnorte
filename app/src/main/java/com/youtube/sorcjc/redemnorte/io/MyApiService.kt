@@ -101,7 +101,7 @@ interface MyApiService {
 
     @GET("expected-data/search")
     @Headers("Accept: application/json")
-    fun getByPatrimonial(@Query("code") code: String): Call<Item>
+    fun getByPatrimonial(@Query("code") code: String): Call<ExpectedDataResponse>
 
     @GET("old-data/search")
     @Headers("Accept: application/json")
