@@ -150,4 +150,6 @@
     <string name="item_photo_can_be_deleted_from_phone">Si deseas puedes borrar la foto del celular</string>
     <string name="important">Importante</string>
     <string name="item_patrimonial_code_already_registered">Se ha encontrado información del bien, pero no se ha cargado en el aplicativo, porque este código patrimonial ya se encuentra registrado.</string>
+    <string name="must_validate_unique_qr">Debes validar que no se repita</string>
+    <string name="already_registered_qr">Este QR ya ha sido registrado</string>
 </resources>

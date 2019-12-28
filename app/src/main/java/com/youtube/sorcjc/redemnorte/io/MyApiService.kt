@@ -2,7 +2,6 @@ package com.youtube.sorcjc.redemnorte.io
 
 import com.youtube.sorcjc.redemnorte.io.response.*
 import com.youtube.sorcjc.redemnorte.model.Item
-import com.youtube.sorcjc.redemnorte.model.ResponsibleUser
 import com.youtube.sorcjc.redemnorte.model.Sheet
 import com.youtube.sorcjc.redemnorte.model.User
 import retrofit2.Call
@@ -97,7 +96,7 @@ interface MyApiService {
 
     @GET("check-qr")
     @Headers("Accept: application/json")
-    fun getCheckQr(@Query("qr_code") qrCode: String?): Call<SimpleResponse>
+    fun getCheckQr(@Query("qr_code") qrCode: String?): Call<ExistsResponse>
 
     @GET("expected-data/search")
     @Headers("Accept: application/json")

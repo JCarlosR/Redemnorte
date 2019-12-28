@@ -6,6 +6,8 @@ import android.app.Dialog
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.os.Bundle
+import android.text.Editable
+import android.text.TextWatcher
 import android.view.*
 import android.widget.EditText
 import androidx.appcompat.app.AppCompatActivity
@@ -14,7 +16,7 @@ import com.google.android.material.textfield.TextInputLayout
 import com.youtube.sorcjc.redemnorte.R
 import com.youtube.sorcjc.redemnorte.io.MyApiAdapter
 import com.youtube.sorcjc.redemnorte.io.response.ExpectedDataResponse
-import com.youtube.sorcjc.redemnorte.io.response.SimpleResponse
+import com.youtube.sorcjc.redemnorte.io.response.ExistsResponse
 import com.youtube.sorcjc.redemnorte.model.Item
 import com.youtube.sorcjc.redemnorte.ui.activity.DetailsActivity
 import com.youtube.sorcjc.redemnorte.ui.activity.SimpleScannerActivity
@@ -27,6 +29,7 @@ import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 
+
 class DetailDialog : DialogFragment(), View.OnClickListener {
 
     // Parent header
@@ -38,6 +41,9 @@ class DetailDialog : DialogFragment(), View.OnClickListener {
     // Responsible associated with the header, so we can check if the detail is assigned to it
     // in old databases
     private var responsible: String? = null
+
+    // Check QR before registration
+    private var qrAlreadyExists: Boolean? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -100,6 +106,16 @@ class DetailDialog : DialogFragment(), View.OnClickListener {
         // Take data by old code
         btnTakeByOldCode.setOnClickListener(this)
 
+        // Validation is required if the QR code is changed
+        etQR.addTextChangedListener(object : TextWatcher {
+            override fun afterTextChanged(s: Editable) {}
+            override fun beforeTextChanged(s: CharSequence, start: Int, count: Int, after: Int) {}
+
+            override fun onTextChanged(s: CharSequence, start: Int,
+                                       before: Int, count: Int) {
+                qrAlreadyExists = null
+            }
+        })
     }
 
     private fun setupEditMode() {
@@ -209,9 +225,23 @@ class DetailDialog : DialogFragment(), View.OnClickListener {
         if (!validateEditText(etQR, tilQR, R.string.error_til_qr)) {
             return
         }
+
+        when (qrAlreadyExists) {
+            null -> {
+                tilQR.error = getString(R.string.must_validate_unique_qr)
+            }
+            true -> {
+                tilQR.error = getString(R.string.already_registered_qr)
+            }
+            else -> {
+                tilQR.isErrorEnabled = false
+            }
+        }
+
         if (!validateEditText(etDescription, tilDescription, R.string.error_til_description)) {
             return
         }
+
         performRegisterRequest()
     }
 
@@ -285,13 +315,14 @@ class DetailDialog : DialogFragment(), View.OnClickListener {
         }
     }
 
-    private fun validateEditText(editText: EditText?, textInputLayout: TextInputLayout?, errorString: Int): Boolean {
-        if (editText!!.text.toString().trim().isEmpty()) {
-            textInputLayout!!.error = getString(errorString)
+    private fun validateEditText(editText: EditText, textInputLayout: TextInputLayout, errorString: Int): Boolean {
+        if (editText.text.toString().trim().isEmpty()) {
+            textInputLayout.error = getString(errorString)
             return false
         } else {
-            textInputLayout!!.isErrorEnabled = false
+            textInputLayout.isErrorEnabled = false
         }
+
         return true
     }
 
@@ -460,17 +491,18 @@ class DetailDialog : DialogFragment(), View.OnClickListener {
         }
     }
 
-    internal inner class CheckRequestCallback : Callback<SimpleResponse> {
-        override fun onResponse(call: Call<SimpleResponse>, response: Response<SimpleResponse>) {
+    internal inner class CheckRequestCallback : Callback<ExistsResponse> {
+        override fun onResponse(call: Call<ExistsResponse>, response: Response<ExistsResponse>) {
             if (response.isSuccessful) {
                 response.body()?.let {
                     context?.toast(it.message)
+                    qrAlreadyExists = it.exists
                 }
             }
         }
 
-        override fun onFailure(call: Call<SimpleResponse>, t: Throwable) {
-            context?.toast(t.localizedMessage ?: "")
+        override fun onFailure(call: Call<ExistsResponse>, t: Throwable) {
+            context?.toast(t.toString())
         }
     }
 

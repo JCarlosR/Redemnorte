@@ -1,6 +1,6 @@
 package com.youtube.sorcjc.redemnorte.io.response
 
-data class SimpleResponse (
+data class ExistsResponse (
     val message: String,
-    val error: Boolean
+    val exists: Boolean
 )
