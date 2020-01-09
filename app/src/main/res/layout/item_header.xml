@@ -51,6 +51,13 @@
             android:layout_height="wrap_content"
             android:text="@string/label_sheet_already_printed" />
 
+        <TextView
+            android:id="@+id/tvSigned"
+            android:textColor="@color/purple"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/label_sheet_already_signed" />
+
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"

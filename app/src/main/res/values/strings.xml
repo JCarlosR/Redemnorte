@@ -78,6 +78,7 @@
     <string name="btn_edit_sheet">Editar hoja</string>
     <string name="btn_see_items">Ver bienes</string>
     <string name="label_sheet_already_printed">ESTA HOJA YA SE HA IMPRESO</string>
+    <string name="label_sheet_already_signed">ESTA HOJA YA HA SIDO FIRMADA</string>
     <string name="checkbox_mark_as_review_pending">Marcar como hoja pendiente de revisión</string>
     <string name="btn_replace_item_photo">Reemplazar foto</string>
     <string name="title_item_show">Datos del bien seleccionado</string>

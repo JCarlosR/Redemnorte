@@ -27,5 +27,6 @@ data class Sheet (
         var created_at: String? = null,
         var pending: Boolean,
         var observation: String? = null,
-        var printed: Boolean
+        var printed: Boolean,
+        var signed: Boolean
 )

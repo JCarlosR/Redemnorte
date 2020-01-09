@@ -28,6 +28,7 @@ class HeaderAdapter(private var dataSet: ArrayList<Sheet> = ArrayList()) : Recyc
         var responsibleName: TextView = v.findViewById(R.id.responsibleName)
         var headerDate: TextView = v.findViewById(R.id.headerDate)
         var tvPrinted: TextView = v.findViewById(R.id.tvPrinted)
+        var tvSigned: TextView = v.findViewById(R.id.tvSigned)
 
         // buttons
         private var btnDetails: Button = v.findViewById(R.id.btnDetails)
@@ -113,13 +114,19 @@ class HeaderAdapter(private var dataSet: ArrayList<Sheet> = ArrayList()) : Recyc
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         // get element from dataSet at this position
         // and replace the contents of the view
-        val (id, fecha, _, _, responsible, _, _, _, _, _, _, _, printed) = filteredDataSet[position]
+        val (id, fecha, _, _, responsible, _, _, _, _, _, _, _, printed, signed) = filteredDataSet[position]
 
         holder.headerCode.text = id.toString()
         holder.responsibleName.text = responsible
         holder.headerDate.text = fecha
 
         holder.tvPrinted.visibility = if (printed) {
+            View.VISIBLE
+        } else {
+            View.GONE
+        }
+
+        holder.tvSigned.visibility = if (signed) {
             View.VISIBLE
         } else {
             View.GONE
